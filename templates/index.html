@@ -1,11 +1,135 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Projeto Agendamento</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda Fácil</title>
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
 </head>
+
 <body>
-    <h1>Página inicial do projeto</h1>
-    <p>Essa página está sendo carregada pelo Django.</p>
+
+    <header>
+        <a class="botao-login" href="/login/">Login</a>
+
+        <h1>Agenda Fácil</h1>
+        <p>Agende serviços de forma simples, rápida e organizada.</p>
+    </header>
+
+    <main>
+        <section>
+            <h2>Escolha seu pacote</h2>
+
+            <div class="servicos">
+                <div class="card">
+                    <h3>Básico</h3>
+                    <p>Ideal para trabalhos simples.</p>
+                    <strong>R$ 1500,00</strong>
+                </div>
+
+                <div class="card">
+                    <h3>Intermediário</h3>
+                    <p>Para serviços com maior duração.</p>
+                    <strong>R$ 3000,00</strong>
+                </div>
+
+                <div class="card">
+                    <h3>Avançado</h3>
+                    <p>Pacote completo.</p>
+                    <strong>R$ 5000,00</strong>
+                </div>
+            </div>
+
+            <section class="secao-mapa">
+                <h2>Escolha região</h2>
+
+                <div class="caixa-mapa">
+                    <img src="{% static 'img/mapa.png' %}" alt="Mapa da região do serviço">
+                </div>
+            </section>
+
+            <section class="secao-calendario">
+                <h2>Disponibilidade</h2>
+
+                <div class="calendario-container">
+                    <div class="cabecalho-calendario">
+                        <h3>Maio 2026</h3>
+                    </div>
+
+                    <div class="calendario">
+                        <div class="dia-semana">Seg</div>
+                        <div class="dia-semana">Ter</div>
+                        <div class="dia-semana">Qua</div>
+                        <div class="dia-semana">Qui</div>
+                        <div class="dia-semana">Sex</div>
+                        <div class="dia-semana">Sáb</div>
+                        <div class="dia-semana">Dom</div>
+
+                        <div class="dia vazio"></div>
+                        <div class="dia vazio"></div>
+                        <div class="dia vazio"></div>
+                        <div class="dia vazio"></div>
+
+                        <div class="dia disponivel">1</div>
+                        <div class="dia indisponivel">2</div>
+                        <div class="dia disponivel">3</div>
+
+                        <div class="dia disponivel">4</div>
+                        <div class="dia disponivel">5</div>
+                        <div class="dia indisponivel">6</div>
+                        <div class="dia disponivel">7</div>
+                        <div class="dia disponivel">8</div>
+                        <div class="dia indisponivel">9</div>
+                        <div class="dia disponivel">10</div>
+
+                        <div class="dia indisponivel">11</div>
+                        <div class="dia disponivel">12</div>
+                        <div class="dia disponivel">13</div>
+                        <div class="dia indisponivel">14</div>
+                        <div class="dia disponivel selecionado">15</div>
+                        <div class="dia disponivel">16</div>
+                        <div class="dia indisponivel">17</div>
+
+                        <div class="dia disponivel">18</div>
+                        <div class="dia indisponivel">19</div>
+                        <div class="dia disponivel">20</div>
+                        <div class="dia disponivel">21</div>
+                        <div class="dia indisponivel">22</div>
+                        <div class="dia disponivel">23</div>
+                        <div class="dia disponivel">24</div>
+
+                        <div class="dia indisponivel">25</div>
+                        <div class="dia disponivel">26</div>
+                        <div class="dia disponivel">27</div>
+                        <div class="dia indisponivel">28</div>
+                        <div class="dia disponivel">29</div>
+                        <div class="dia disponivel">30</div>
+                        <div class="dia indisponivel">31</div>
+                    </div>
+
+                    <div class="legenda-calendario">
+                        <div>
+                            <span class="legenda disponivel-legenda"></span>
+                            Disponível
+                        </div>
+
+                        <div>
+                            <span class="legenda indisponivel-legenda"></span>
+                            Indisponível
+                        </div>
+
+                        <div>
+                            <span class="legenda selecionado-legenda"></span>
+                            Selecionado
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </section>
+    </main>
+
 </body>
 </html>

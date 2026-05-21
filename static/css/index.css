@@ -1,0 +1,202 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background-color: #f5f1e8;
+    color: #333;
+}
+
+header {
+    position: relative;
+    text-align: center;
+    padding: 40px;
+    background-color: #6b7b4b;
+    color: white;
+}
+
+.botao-login {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    padding: 10px 18px;
+    background-color: white;
+    color: #6b7b4b;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.botao-login:hover {
+    background-color: #f5f1e8;
+}
+
+main {
+    padding: 40px;
+}
+
+section {
+    max-width: 900px;
+    margin: auto;
+    text-align: center;
+}
+
+.servicos {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.card {
+    background-color: white;
+    padding: 25px;
+    width: 250px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+/* Parte do mapa */
+
+.secao-mapa {
+    margin-top: 50px;
+    margin-bottom: 40px;
+}
+
+.caixa-mapa {
+    width: 100%;
+    max-width: 900px;
+    height: 280px;
+    margin: 20px auto 0 auto;
+    border: 2px solid #b5c7c2;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.caixa-mapa img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.marcador-mapa {
+    font-size: 40px;
+    margin-top: 10px;
+}
+
+/* Parte do calendário */
+
+.secao-calendario {
+    margin-top: 60px;
+    margin-bottom: 50px;
+}
+
+.secao-calendario h2 {
+    margin-bottom: 10px;
+}
+
+.calendario-container {
+    background-color: white;
+    margin-top: 25px;
+    padding: 10px;
+    border-radius: 16px;
+    box-shadow: 0 0 12px rgba(0,0,0,0.1);
+}
+
+.cabecalho-calendario {
+    margin-bottom: 20px;
+}
+
+.cabecalho-calendario h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #333;
+}
+
+.cabecalho-calendario p {
+    margin-top: 8px;
+    color: #666;
+}
+
+.calendario {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+}
+
+.dia-semana {
+    font-weight: bold;
+    color: #6b7b4b;
+    padding: 10px;
+    text-align: center;
+}
+
+.dia {
+    height: 38px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    border: 1px solid #ddd;
+}
+
+.vazio {
+    background-color: transparent;
+    border: none;
+}
+
+.disponivel {
+    background-color: #d9e6e3;
+    color: #333;
+    border: 1px solid #6b7b4b;
+}
+
+.indisponivel {
+    background-color: #eeeeee;
+    color: #999;
+    border: 1px solid #dddddd;
+}
+
+.selecionado {
+    background-color: #6b7b4b;
+    color: white;
+    border: 1px solid #6b7b4b;
+}
+
+.legenda-calendario {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    margin-top: 25px;
+    font-size: 14px;
+}
+
+.legenda-calendario div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.legenda {
+    width: 15px;
+    height: 15px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.disponivel-legenda {
+    background-color: #d9e6e3;
+    border: 1px solid #6b7b4b;
+}
+
+.indisponivel-legenda {
+    background-color: #eeeeee;
+    border: 1px solid #dddddd;
+}
+
+.selecionado-legenda {
+    background-color: #6b7b4b;
+}
+
