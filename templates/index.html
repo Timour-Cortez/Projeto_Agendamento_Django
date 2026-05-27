@@ -23,23 +23,13 @@
             <h2>Escolha seu pacote</h2>
 
             <div class="servicos">
-                <div class="card">
-                    <h3>Básico</h3>
-                    <p>Ideal para trabalhos simples.</p>
-                    <strong>R$ 1500,00</strong>
-                </div>
-
-                <div class="card">
-                    <h3>Intermediário</h3>
-                    <p>Para serviços com maior duração.</p>
-                    <strong>R$ 3000,00</strong>
-                </div>
-
-                <div class="card">
-                    <h3>Avançado</h3>
-                    <p>Pacote completo.</p>
-                    <strong>R$ 5000,00</strong>
-                </div>
+                {% for servico in servicos %}
+                    <div class="card">
+                        <h3>{{ servico.nome }}</h3>
+                        <p>{{ servico.descricao }}</p>
+                        <strong>R$ {{ servico.preco }}</strong>
+                    </div>
+                {% endfor %}
             </div>
 
             <section class="secao-mapa">

@@ -1,0 +1,32 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendar Serviço</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+</head>
+
+<body>
+
+    <main class="container-login">
+        <section class="caixa-login">
+            <h1>Agendar Serviço</h1>
+            <p>Preencha as informações para solicitar seu agendamento.</p>
+
+            <form method="POST">
+                {% csrf_token %}
+
+                {{ form.as_p }}
+
+                <button type="submit">Confirmar agendamento</button>
+            </form>
+
+            <a class="voltar" href="/">Voltar para a página inicial</a>
+        </section>
+    </main>
+
+</body>
+</html>
