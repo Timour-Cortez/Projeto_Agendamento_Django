@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Agenda Fácil</title>
+    <title>Cadastro - Agenda Fácil</title>
     <link rel="stylesheet" href="{% static 'css/login.css' %}">
 </head>
 
@@ -13,20 +13,20 @@
 
     <main class="container-login">
         <section class="caixa-login">
-            <h1>Login</h1>
-            <p>Acesse sua conta para continuar seu agendamento.</p>
+            <h1>Criar conta</h1>
+            <p>Cadastre-se para agendar seus serviços.</p>
 
             <form method="POST">
                 {% csrf_token %}
 
                 {{ form.as_p }}
 
-                <button type="submit">Entrar</button>
+                <button type="submit">Criar conta</button>
             </form>
 
             <p class="texto-cadastro">
-                Ainda não tem conta?
-                <a href="/cadastro/">Criar conta</a>
+                Já tem uma conta?
+                <a href="/login/">Entrar</a>
             </p>
 
             <a class="voltar" href="/">Voltar para a página inicial</a>

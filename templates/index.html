@@ -12,7 +12,11 @@
 <body>
 
     <header>
-        <a class="botao-login" href="/login/">Login</a>
+        {% if user.is_authenticated %}
+    <a class="botao-login" href="/logout/">Sair</a>
+{% else %}
+    <a class="botao-login" href="/login/">Login</a>
+{% endif %}
 
         <h1>Agenda Fácil</h1>
         <p>Agende serviços de forma simples, rápida e organizada.</p>
