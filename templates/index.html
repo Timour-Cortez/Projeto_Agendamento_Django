@@ -2,21 +2,28 @@
 
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agenda Fácil</title>
+
     <link rel="stylesheet" href="{% static 'css/index.css' %}">
+
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
 </head>
 
 <body>
 
     <header>
         {% if user.is_authenticated %}
-    <a class="botao-login" href="/logout/">Sair</a>
-{% else %}
-    <a class="botao-login" href="/login/">Login</a>
-{% endif %}
+            <a class="botao-login" href="/logout/">Sair</a>
+        {% else %}
+            <a class="botao-login" href="/login/">Login</a>
+        {% endif %}
 
         <h1>Agenda Fácil</h1>
         <p>Agende serviços de forma simples, rápida e organizada.</p>
@@ -24,106 +31,241 @@
 
     <main>
         <section>
-            <h2>Escolha seu pacote</h2>
+            <form method="POST" action="/montar-pedido/" class="form-pedido">
+                {% csrf_token %}
 
-            <div class="servicos">
-                {% for servico in servicos %}
-                    <div class="card">
-                        <h3>{{ servico.nome }}</h3>
-                        <p>{{ servico.descricao }}</p>
-                        <strong>R$ {{ servico.preco }}</strong>
-                    </div>
-                {% endfor %}
-            </div>
+                <h2>Escolha seu pacote</h2>
 
-            <section class="secao-mapa">
-                <h2>Escolha região</h2>
+                <input type="hidden" name="servico_id" id="servico_id">
+                <input type="hidden" name="data_servico" id="data_servico">
 
-                <div class="caixa-mapa">
-                    <img src="{% static 'img/mapa.png' %}" alt="Mapa da região do serviço">
+                <div class="servicos">
+                    {% for servico in servicos %}
+                        <button
+                            type="button"
+                            class="card card-servico"
+                            data-servico-id="{{ servico.id }}"
+                        >
+                            <h3>{{ servico.nome }}</h3>
+                            <p>{{ servico.descricao }}</p>
+                            <strong>R$ {{ servico.preco }}</strong>
+                        </button>
+                    {% endfor %}
                 </div>
-            </section>
 
-            <section class="secao-calendario">
-                <h2>Disponibilidade</h2>
+                <section class="secao-mapa">
+                    <h2>Escolha região</h2>
 
-                <div class="calendario-container">
-                    <div class="cabecalho-calendario">
-                        <h3>Maio 2026</h3>
-                    </div>
+                    <div class="campo-endereco">
+                        <label for="endereco">Endereço do serviço:</label>
 
-                    <div class="calendario">
-                        <div class="dia-semana">Seg</div>
-                        <div class="dia-semana">Ter</div>
-                        <div class="dia-semana">Qua</div>
-                        <div class="dia-semana">Qui</div>
-                        <div class="dia-semana">Sex</div>
-                        <div class="dia-semana">Sáb</div>
-                        <div class="dia-semana">Dom</div>
+                        <div class="linha-endereco">
+                            <input
+                                type="text"
+                                id="endereco"
+                                name="endereco"
+                                placeholder="Digite o endereço do serviço"
+                            >
 
-                        <div class="dia vazio"></div>
-                        <div class="dia vazio"></div>
-                        <div class="dia vazio"></div>
-                        <div class="dia vazio"></div>
-
-                        <div class="dia disponivel">1</div>
-                        <div class="dia indisponivel">2</div>
-                        <div class="dia disponivel">3</div>
-
-                        <div class="dia disponivel">4</div>
-                        <div class="dia disponivel">5</div>
-                        <div class="dia indisponivel">6</div>
-                        <div class="dia disponivel">7</div>
-                        <div class="dia disponivel">8</div>
-                        <div class="dia indisponivel">9</div>
-                        <div class="dia disponivel">10</div>
-
-                        <div class="dia indisponivel">11</div>
-                        <div class="dia disponivel">12</div>
-                        <div class="dia disponivel">13</div>
-                        <div class="dia indisponivel">14</div>
-                        <div class="dia disponivel selecionado">15</div>
-                        <div class="dia disponivel">16</div>
-                        <div class="dia indisponivel">17</div>
-
-                        <div class="dia disponivel">18</div>
-                        <div class="dia indisponivel">19</div>
-                        <div class="dia disponivel">20</div>
-                        <div class="dia disponivel">21</div>
-                        <div class="dia indisponivel">22</div>
-                        <div class="dia disponivel">23</div>
-                        <div class="dia disponivel">24</div>
-
-                        <div class="dia indisponivel">25</div>
-                        <div class="dia disponivel">26</div>
-                        <div class="dia disponivel">27</div>
-                        <div class="dia indisponivel">28</div>
-                        <div class="dia disponivel">29</div>
-                        <div class="dia disponivel">30</div>
-                        <div class="dia indisponivel">31</div>
-                    </div>
-
-                    <div class="legenda-calendario">
-                        <div>
-                            <span class="legenda disponivel-legenda"></span>
-                            Disponível
-                        </div>
-
-                        <div>
-                            <span class="legenda indisponivel-legenda"></span>
-                            Indisponível
-                        </div>
-
-                        <div>
-                            <span class="legenda selecionado-legenda"></span>
-                            Selecionado
+                            <button type="button" id="buscar-endereco" class="botao-buscar">
+                                Buscar
+                            </button>
                         </div>
                     </div>
-                </div>
-            </section>
 
+                    <input type="hidden" name="latitude" id="latitude">
+                    <input type="hidden" name="longitude" id="longitude">
+
+                    <div id="mapa-interativo" class="caixa-mapa"></div>
+                </section>
+
+                <section class="secao-calendario">
+                    <h2>Disponibilidade</h2>
+
+                    <div class="calendario-container">
+                        <div class="cabecalho-calendario">
+                            <h3>Maio 2026</h3>
+                        </div>
+
+                        <div class="calendario">
+                            <div class="dia-semana">Seg</div>
+                            <div class="dia-semana">Ter</div>
+                            <div class="dia-semana">Qua</div>
+                            <div class="dia-semana">Qui</div>
+                            <div class="dia-semana">Sex</div>
+                            <div class="dia-semana">Sáb</div>
+                            <div class="dia-semana">Dom</div>
+
+                            <div class="dia vazio"></div>
+                            <div class="dia vazio"></div>
+                            <div class="dia vazio"></div>
+                            <div class="dia vazio"></div>
+
+                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-01">1</button>
+                            <button type="button" class="dia indisponivel" disabled>2</button>
+                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-03">3</button>
+
+                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-04">4</button>
+                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-05">5</button>
+                            <button type="button" class="dia indisponivel" disabled>6</button>
+                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-07">7</button>
+                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-08">8</button>
+                            <button type="button" class="dia indisponivel" disabled>9</button>
+                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-10">10</button>
+
+                            <button type="button" class="dia indisponivel" disabled>11</button>
+                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-12">12</button>
+                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-13">13</button>
+                            <button type="button" class="dia indisponivel" disabled>14</button>
+                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-15">15</button>
+                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-16">16</button>
+                            <button type="button" class="dia indisponivel" disabled>17</button>
+
+                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-18">18</button>
+                            <button type="button" class="dia indisponivel" disabled>19</button>
+                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-20">20</button>
+                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-21">21</button>
+                            <button type="button" class="dia indisponivel" disabled>22</button>
+                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-23">23</button>
+                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-24">24</button>
+
+                            <button type="button" class="dia indisponivel" disabled>25</button>
+                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-26">26</button>
+                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-27">27</button>
+                            <button type="button" class="dia indisponivel" disabled>28</button>
+                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-29">29</button>
+                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-30">30</button>
+                            <button type="button" class="dia indisponivel" disabled>31</button>
+                        </div>
+
+                        <div class="legenda-calendario">
+                            <div>
+                                <span class="legenda disponivel-legenda"></span>
+                                Disponível
+                            </div>
+
+                            <div>
+                                <span class="legenda indisponivel-legenda"></span>
+                                Indisponível
+                            </div>
+
+                            <div>
+                                <span class="legenda selecionado-legenda"></span>
+                                Selecionado
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <button type="submit" class="botao-continuar">
+                    Continuar agendamento
+                </button>
+            </form>
         </section>
     </main>
 
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        const cardsServico = document.querySelectorAll('.card-servico');
+        const inputServico = document.getElementById('servico_id');
+
+        cardsServico.forEach(card => {
+            card.addEventListener('click', () => {
+                cardsServico.forEach(c => {
+                    c.classList.remove('selecionado-servico');
+                    c.style.border = '3px solid transparent';
+                    c.style.backgroundColor = 'white';
+                    c.style.boxShadow = '0 0 10px rgba(0,0,0,0.1)';
+                    c.style.transform = 'none';
+                });
+
+                card.classList.add('selecionado-servico');
+                card.style.border = '5px solid #6b7b4b';
+                card.style.backgroundColor = '#eef3e4';
+                card.style.boxShadow = '0 0 25px rgba(107, 123, 75, 0.7)';
+                card.style.transform = 'translateY(-5px)';
+
+                inputServico.value = card.dataset.servicoId;
+            });
+        });
+
+        const diasCalendario = document.querySelectorAll('.dia-calendario');
+        const inputData = document.getElementById('data_servico');
+
+        diasCalendario.forEach(dia => {
+            dia.addEventListener('click', () => {
+                diasCalendario.forEach(d => d.classList.remove('selecionado'));
+
+                dia.classList.add('selecionado');
+                inputData.value = dia.dataset.data;
+            });
+        });
+
+        const inputEndereco = document.getElementById('endereco');
+        const botaoBuscarEndereco = document.getElementById('buscar-endereco');
+        const inputLatitude = document.getElementById('latitude');
+        const inputLongitude = document.getElementById('longitude');
+
+        const mapa = L.map('mapa-interativo').setView([-22.9068, -43.1729], 12);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(mapa);
+
+        let marcador = null;
+
+        function marcarLocal(latitude, longitude, texto) {
+            if (marcador) {
+                mapa.removeLayer(marcador);
+            }
+
+            marcador = L.marker([latitude, longitude]).addTo(mapa);
+            marcador.bindPopup(texto).openPopup();
+
+            inputLatitude.value = latitude;
+            inputLongitude.value = longitude;
+        }
+
+        mapa.on('click', function(evento) {
+            const latitude = evento.latlng.lat;
+            const longitude = evento.latlng.lng;
+
+            marcarLocal(latitude, longitude, 'Local selecionado no mapa');
+        });
+
+        botaoBuscarEndereco.addEventListener('click', function() {
+            const endereco = inputEndereco.value;
+
+            if (endereco.trim() === '') {
+                alert('Digite um endereço antes de buscar.');
+                return;
+            }
+
+            const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(endereco)}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length === 0) {
+                        alert('Endereço não encontrado. Tente escrever de outra forma.');
+                        return;
+                    }
+
+                    const resultado = data[0];
+                    const latitude = resultado.lat;
+                    const longitude = resultado.lon;
+
+                    mapa.setView([latitude, longitude], 15);
+                    marcarLocal(latitude, longitude, endereco);
+                })
+                .catch(error => {
+                    alert('Erro ao buscar o endereço.');
+                    console.log(error);
+                });
+        });
+    </script>
+
 </body>
+
 </html>

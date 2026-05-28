@@ -200,3 +200,93 @@ section {
     background-color: #6b7b4b;
 }
 
+/* Formulário de montagem do pedido */
+
+.form-pedido {
+    text-align: center;
+}
+
+/* Campo de endereço */
+
+.campo-endereco {
+    margin: 20px auto;
+    max-width: 600px;
+    text-align: left;
+}
+
+.campo-endereco label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.campo-endereco input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+    font-size: 15px;
+    box-sizing: border-box;
+}
+
+/* Cards de serviço clicáveis */
+
+.card-servico {
+    background-color: white;
+    padding: 25px;
+    width: 250px;
+    border-radius: 12px;
+    border: 3px solid transparent;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    cursor: pointer;
+    font-family: inherit;
+    color: inherit;
+    text-align: center;
+    transition: 0.2s;
+    appearance: none;
+}
+
+.card-servico:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 16px rgba(0,0,0,0.16);
+}
+
+.card-servico.selecionado-servico {
+    border: 4px solid #6b7b4b;
+    background-color: #eef3e4;
+    transform: translateY(-5px);
+    box-shadow: 0 0 22px rgba(107, 123, 75, 0.6);
+}
+
+/* Dias do calendário clicáveis */
+
+.dia {
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.dia:disabled {
+    cursor: not-allowed;
+}
+
+.dia-calendario:hover {
+    transform: scale(1.05);
+}
+
+/* Botão final */
+
+.botao-continuar {
+    margin-top: 30px;
+    padding: 14px 24px;
+    background-color: #6b7b4b;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.botao-continuar:hover {
+    background-color: #55633b;
+}

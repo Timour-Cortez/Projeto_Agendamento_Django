@@ -52,3 +52,22 @@ def agendar(request):
         form = AgendamentoForm()
 
     return render(request, 'agendar.html', {'form': form})
+
+def montar_pedido(request):
+    if request.method == 'POST':
+        servico_id = request.POST.get('servico_id')
+        endereco = request.POST.get('endereco')
+        data_servico = request.POST.get('data_servico')
+
+        request.session['pedido'] = {
+            'servico_id': servico_id,
+            'endereco': endereco,
+            'data_servico': data_servico,
+        }
+
+        if request.user.is_authenticated:
+            return redirect('agendar')
+        else:
+            return redirect('login')
+
+    return redirect('home')
