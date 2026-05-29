@@ -16,6 +16,10 @@ def login_view(request):
         if form.is_valid():
             usuario = form.get_user()
             login(request, usuario)
+
+            if 'pedido' in request.session:
+                return redirect('pagamento')
+
             return redirect('home')
     else:
         form = LoginUsuarioForm()
@@ -34,6 +38,10 @@ def cadastro(request):
         if form.is_valid():
             usuario = form.save()
             login(request, usuario)
+
+            if 'pedido' in request.session:
+                return redirect('pagamento')
+
             return redirect('home')
     else:
         form = CadastroUsuarioForm()
@@ -70,8 +78,19 @@ def montar_pedido(request):
         }
 
         if request.user.is_authenticated:
-            return redirect('agendar')
+            return redirect('pagamento')
         else:
             return redirect('login')
 
     return redirect('home')
+
+def pagamento(request):
+    pedido = request.session.get('pedido')
+
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    if not pedido:
+        return redirect('home')
+
+    return render(request, 'pagamento.html', {'pedido': pedido})
