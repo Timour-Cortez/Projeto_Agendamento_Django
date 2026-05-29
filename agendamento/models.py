@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Cliente(models.Model):
@@ -37,6 +38,7 @@ class Agendamento(models.Model):
         ('cancelado', 'Cancelado'),
     ]
 
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     servico = models.ForeignKey(Servico, on_delete=models.CASCADE)
     local = models.ForeignKey(LocalAtendimento, on_delete=models.CASCADE)

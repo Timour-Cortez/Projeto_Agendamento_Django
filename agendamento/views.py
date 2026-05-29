@@ -57,11 +57,15 @@ def montar_pedido(request):
     if request.method == 'POST':
         servico_id = request.POST.get('servico_id')
         endereco = request.POST.get('endereco')
+        latitude = request.POST.get('latitude')
+        longitude = request.POST.get('longitude')
         data_servico = request.POST.get('data_servico')
 
         request.session['pedido'] = {
             'servico_id': servico_id,
             'endereco': endereco,
+            'latitude': latitude,
+            'longitude': longitude,
             'data_servico': data_servico,
         }
 
