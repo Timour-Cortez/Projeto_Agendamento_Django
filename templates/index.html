@@ -38,6 +38,8 @@
 
                 <input type="hidden" name="servico_id" id="servico_id">
                 <input type="hidden" name="data_servico" id="data_servico">
+                <input type="hidden" name="latitude" id="latitude">
+                <input type="hidden" name="longitude" id="longitude">
 
                 <div class="servicos">
                     {% for servico in servicos %}
@@ -73,9 +75,6 @@
                         </div>
                     </div>
 
-                    <input type="hidden" name="latitude" id="latitude">
-                    <input type="hidden" name="longitude" id="longitude">
-
                     <div id="mapa-interativo" class="caixa-mapa"></div>
                 </section>
 
@@ -84,69 +83,25 @@
 
                     <div class="calendario-container">
                         <div class="cabecalho-calendario">
-                            <h3>Maio 2026</h3>
+                            <button type="button" id="mes-anterior" class="botao-mes">
+                                ◀
+                            </button>
+
+                            <h3 id="mes-atual">Mês Ano</h3>
+
+                            <button type="button" id="proximo-mes" class="botao-mes">
+                                ▶
+                            </button>
                         </div>
 
-                        <div class="calendario">
-                            <div class="dia-semana">Seg</div>
-                            <div class="dia-semana">Ter</div>
-                            <div class="dia-semana">Qua</div>
-                            <div class="dia-semana">Qui</div>
-                            <div class="dia-semana">Sex</div>
-                            <div class="dia-semana">Sáb</div>
-                            <div class="dia-semana">Dom</div>
-
-                            <div class="dia vazio"></div>
-                            <div class="dia vazio"></div>
-                            <div class="dia vazio"></div>
-                            <div class="dia vazio"></div>
-
-                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-01">1</button>
-                            <button type="button" class="dia indisponivel" disabled>2</button>
-                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-03">3</button>
-
-                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-04">4</button>
-                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-05">5</button>
-                            <button type="button" class="dia indisponivel" disabled>6</button>
-                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-07">7</button>
-                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-08">8</button>
-                            <button type="button" class="dia indisponivel" disabled>9</button>
-                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-10">10</button>
-
-                            <button type="button" class="dia indisponivel" disabled>11</button>
-                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-12">12</button>
-                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-13">13</button>
-                            <button type="button" class="dia indisponivel" disabled>14</button>
-                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-15">15</button>
-                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-16">16</button>
-                            <button type="button" class="dia indisponivel" disabled>17</button>
-
-                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-18">18</button>
-                            <button type="button" class="dia indisponivel" disabled>19</button>
-                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-20">20</button>
-                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-21">21</button>
-                            <button type="button" class="dia indisponivel" disabled>22</button>
-                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-23">23</button>
-                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-24">24</button>
-
-                            <button type="button" class="dia indisponivel" disabled>25</button>
-                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-26">26</button>
-                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-27">27</button>
-                            <button type="button" class="dia indisponivel" disabled>28</button>
-                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-29">29</button>
-                            <button type="button" class="dia disponivel dia-calendario" data-data="2026-05-30">30</button>
-                            <button type="button" class="dia indisponivel" disabled>31</button>
+                        <div class="calendario" id="calendario">
+                            <!-- O JavaScript cria os dias aqui -->
                         </div>
 
                         <div class="legenda-calendario">
                             <div>
                                 <span class="legenda disponivel-legenda"></span>
                                 Disponível
-                            </div>
-
-                            <div>
-                                <span class="legenda indisponivel-legenda"></span>
-                                Indisponível
                             </div>
 
                             <div>
@@ -190,17 +145,114 @@
             });
         });
 
-        const diasCalendario = document.querySelectorAll('.dia-calendario');
         const inputData = document.getElementById('data_servico');
+        const calendario = document.getElementById('calendario');
+        const tituloMes = document.getElementById('mes-atual');
+        const botaoMesAnterior = document.getElementById('mes-anterior');
+        const botaoProximoMes = document.getElementById('proximo-mes');
 
-        diasCalendario.forEach(dia => {
-            dia.addEventListener('click', () => {
-                diasCalendario.forEach(d => d.classList.remove('selecionado'));
+        let dataAtual = new Date();
+        let mesAtual = dataAtual.getMonth();
+        let anoAtual = dataAtual.getFullYear();
 
-                dia.classList.add('selecionado');
-                inputData.value = dia.dataset.data;
+        const nomesMeses = [
+            'Janeiro',
+            'Fevereiro',
+            'Março',
+            'Abril',
+            'Maio',
+            'Junho',
+            'Julho',
+            'Agosto',
+            'Setembro',
+            'Outubro',
+            'Novembro',
+            'Dezembro'
+        ];
+
+        const nomesDiasSemana = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+
+        function formatarData(ano, mes, dia) {
+            const mesFormatado = String(mes + 1).padStart(2, '0');
+            const diaFormatado = String(dia).padStart(2, '0');
+
+            return `${ano}-${mesFormatado}-${diaFormatado}`;
+        }
+
+        function criarCalendario(mes, ano) {
+            calendario.innerHTML = '';
+
+            tituloMes.textContent = `${nomesMeses[mes]} ${ano}`;
+
+            nomesDiasSemana.forEach(diaSemana => {
+                const elementoDiaSemana = document.createElement('div');
+                elementoDiaSemana.classList.add('dia-semana');
+                elementoDiaSemana.textContent = diaSemana;
+                calendario.appendChild(elementoDiaSemana);
             });
+
+            const primeiroDiaMes = new Date(ano, mes, 1);
+            const ultimoDiaMes = new Date(ano, mes + 1, 0);
+            const quantidadeDias = ultimoDiaMes.getDate();
+
+            let diaSemanaInicio = primeiroDiaMes.getDay();
+
+            if (diaSemanaInicio === 0) {
+                diaSemanaInicio = 7;
+            }
+
+            const espacosVazios = diaSemanaInicio - 1;
+
+            for (let i = 0; i < espacosVazios; i++) {
+                const vazio = document.createElement('div');
+                vazio.classList.add('dia', 'vazio');
+                calendario.appendChild(vazio);
+            }
+
+            for (let dia = 1; dia <= quantidadeDias; dia++) {
+                const botaoDia = document.createElement('button');
+                botaoDia.type = 'button';
+                botaoDia.classList.add('dia', 'disponivel', 'dia-calendario');
+                botaoDia.textContent = dia;
+
+                const dataFormatada = formatarData(ano, mes, dia);
+                botaoDia.dataset.data = dataFormatada;
+
+                botaoDia.addEventListener('click', () => {
+                    const dias = document.querySelectorAll('.dia-calendario');
+                    dias.forEach(d => d.classList.remove('selecionado'));
+
+                    botaoDia.classList.add('selecionado');
+                    inputData.value = dataFormatada;
+                });
+
+                calendario.appendChild(botaoDia);
+            }
+        }
+
+        botaoMesAnterior.addEventListener('click', () => {
+            mesAtual--;
+
+            if (mesAtual < 0) {
+                mesAtual = 11;
+                anoAtual--;
+            }
+
+            criarCalendario(mesAtual, anoAtual);
         });
+
+        botaoProximoMes.addEventListener('click', () => {
+            mesAtual++;
+
+            if (mesAtual > 11) {
+                mesAtual = 0;
+                anoAtual++;
+            }
+
+            criarCalendario(mesAtual, anoAtual);
+        });
+
+        criarCalendario(mesAtual, anoAtual);
 
         const inputEndereco = document.getElementById('endereco');
         const botaoBuscarEndereco = document.getElementById('buscar-endereco');
