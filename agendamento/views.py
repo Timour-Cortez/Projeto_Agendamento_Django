@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from .models import Servico
-from .forms import AgendamentoForm, CadastroUsuarioForm, LoginUsuarioForm, CadastroForm, EsqueciSenhaForm
+from .forms import AgendamentoForm, CadastroUsuarioForm, LoginUsuarioForm
 
 
 def home(request):
@@ -16,6 +16,10 @@ def login_view(request):
         if form.is_valid():
             usuario = form.get_user()
             login(request, usuario)
+
+            if 'pedido' in request.session:
+                return redirect('pagamento')
+
             return redirect('home')
     else:
         form = LoginUsuarioForm()
@@ -29,26 +33,20 @@ def logout_view(request):
 
 def cadastro(request):
     if request.method == 'POST':
-        form = CadastroForm(request.POST)
+        form = CadastroUsuarioForm(request.POST)
 
         if form.is_valid():
-            return render(request, 'cadastro_sucesso.html')
+            usuario = form.save()
+            login(request, usuario)
+
+            if 'pedido' in request.session:
+                return redirect('pagamento')
+
+            return redirect('home')
     else:
-        form = CadastroForm()
+        form = CadastroUsuarioForm()
 
     return render(request, 'cadastro.html', {'form': form})
-
-
-def esqueci_senha(request):
-    if request.method == 'POST':
-        form = EsqueciSenhaForm(request.POST)
-
-        if form.is_valid():
-            return render(request, 'esqueci_senha_sucesso.html')
-    else:
-        form = EsqueciSenhaForm()
-
-    return render(request, 'esqueci_senha.html', {'form': form})
 
 
 def agendar(request):
@@ -80,8 +78,38 @@ def montar_pedido(request):
         }
 
         if request.user.is_authenticated:
-            return redirect('agendar')
+            return redirect('pagamento')
         else:
             return redirect('login')
 
     return redirect('home')
+
+def pagamento(request):
+    pedido = request.session.get('pedido')
+
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    if not pedido:
+        return redirect('home')
+
+    return render(request, 'pagamento.html', {'pedido': pedido})
+
+
+
+def prestador_dashboard(request):
+    from django.shortcuts import render
+    return render(request, 'agendamento/prestador_dashboard.html', {
+        'prestador': {'nome': 'Prestador'},
+        'pedidos': [],
+        'total_pedidos': 0,
+        'pedidos_pendentes': 0,
+        'pedidos_confirmados': 0,
+    })
+
+def cliente_acompanhamento(request, pedido_id):
+    from django.shortcuts import render
+    return render(request, 'agendamento/cliente_acompanhamento.html', {
+        'pedido': None,
+    })
+

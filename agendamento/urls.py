@@ -8,5 +8,7 @@ urlpatterns = [
     path('cadastro/', views.cadastro, name='cadastro'),
     path('agendar/', views.agendar, name='agendar'),
     path('montar-pedido/', views.montar_pedido, name='montar_pedido'),
-    path('esqueci-senha/', views.esqueci_senha, name='esqueci_senha'),
+    path('pagamento/', views.pagamento, name='pagamento'),
+    path('prestador/dashboard/', views.prestador_dashboard, name='prestador_dashboard'),
+    path('cliente/pedido/<int:pedido_id>/acompanhar/', views.cliente_acompanhamento, name='cliente_acompanhamento'),
 ]

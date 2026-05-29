@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agenda Fácil – Painel do Prestador</title>
+  <link rel="stylesheet" href="{% static 'css/prestador_dashboard.css' %}">
+</head>
+<body>
+
+<header style="background:#4a7c59;color:white;padding:20px 40px;display:flex;justify-content:space-between;align-items:center;">
+  <div>
+    <a href="/" style="color:white;font-size:1.3rem;font-weight:700;text-decoration:none;">Agenda Fácil</a>
+    <p style="margin:4px 0 0;opacity:.85;">Painel do Prestador</p>
+  </div>
+  <a href="/logout/" style="background:white;color:#4a7c59;padding:8px 18px;border-radius:8px;text-decoration:none;font-weight:600;">Sair</a>
+</header>
+
+<div style="padding:32px 40px;background:#f5f6f5;min-height:100vh;">
+  <h2 style="color:#1e2d24;">📋 Pedidos Recebidos</h2>
+
+  {% for pedido in pedidos %}
+  <div style="background:white;border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+    <strong>{{ pedido.cliente.nome }}</strong> — {{ pedido.pacote }}<br>
+    <span>📍 {{ pedido.endereco }}</span><br>
+    <span>🗓️ {{ pedido.horario_solicitado }}</span>
+  </div>
+  {% empty %}
+  <div style="background:white;border-radius:12px;padding:40px;text-align:center;color:#5a7163;">
+    <p style="font-size:2rem;">📭</p>
+    <p>Nenhum pedido recebido ainda. Quando clientes agendarem, aparecerão aqui.</p>
+  </div>
+  {% endfor %}
+</div>
+
+</body>
+</html>
