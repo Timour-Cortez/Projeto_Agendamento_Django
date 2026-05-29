@@ -94,3 +94,22 @@ def pagamento(request):
         return redirect('home')
 
     return render(request, 'pagamento.html', {'pedido': pedido})
+
+
+
+def prestador_dashboard(request):
+    from django.shortcuts import render
+    return render(request, 'agendamento/prestador_dashboard.html', {
+        'prestador': {'nome': 'Prestador'},
+        'pedidos': [],
+        'total_pedidos': 0,
+        'pedidos_pendentes': 0,
+        'pedidos_confirmados': 0,
+    })
+
+def cliente_acompanhamento(request, pedido_id):
+    from django.shortcuts import render
+    return render(request, 'agendamento/cliente_acompanhamento.html', {
+        'pedido': None,
+    })
+
