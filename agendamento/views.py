@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from .models import Servico
-from .forms import AgendamentoForm, CadastroUsuarioForm, LoginUsuarioForm
+from .forms import AgendamentoForm, CadastroUsuarioForm, LoginUsuarioForm, CadastroForm, EsqueciSenhaForm
 
 
 def home(request):
@@ -29,16 +29,26 @@ def logout_view(request):
 
 def cadastro(request):
     if request.method == 'POST':
-        form = CadastroUsuarioForm(request.POST)
+        form = CadastroForm(request.POST)
 
         if form.is_valid():
-            usuario = form.save()
-            login(request, usuario)
-            return redirect('home')
+            return render(request, 'cadastro_sucesso.html')
     else:
-        form = CadastroUsuarioForm()
+        form = CadastroForm()
 
     return render(request, 'cadastro.html', {'form': form})
+
+
+def esqueci_senha(request):
+    if request.method == 'POST':
+        form = EsqueciSenhaForm(request.POST)
+
+        if form.is_valid():
+            return render(request, 'esqueci_senha_sucesso.html')
+    else:
+        form = EsqueciSenhaForm()
+
+    return render(request, 'esqueci_senha.html', {'form': form})
 
 
 def agendar(request):
