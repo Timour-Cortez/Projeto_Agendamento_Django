@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>AgendaFácil — Erro no Agendamento</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: sans-serif;
+      background: #F9FAFB;
+      color: #111827;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 40px;
+      background: white;
+      border-bottom: 1px solid #E5E7EB;
+    }
+
+    .logo {
+      color: #0D9488;
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+    nav {
+      display: flex;
+      gap: 32px;
+    }
+
+    nav a {
+      color: #6B7280;
+      text-decoration: none;
+      font-size: 15px;
+    }
+
+    .btn-solicitar {
+      border: 1px solid #0D9488;
+      color: #0D9488;
+      background: white;
+      padding: 8px 20px;
+      border-radius: 999px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    /* Tab switcher */
+    .tab-switcher {
+      display: flex;
+      gap: 0;
+      background: #E5E7EB;
+      border-radius: 10px;
+      padding: 4px;
+      margin: 0 auto 40px auto;
+      width: fit-content;
+    }
+
+    .tab-btn {
+      padding: 8px 20px;
+      border-radius: 7px;
+      border: none;
+      background: transparent;
+      font-size: 13px;
+      font-weight: 600;
+      color: #6B7280;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      white-space: nowrap;
+    }
+
+    .tab-btn.active {
+      background: white;
+      color: #111827;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+    }
+
+    .page-content {
+      max-width: 680px;
+      margin: auto;
+      padding: 48px 20px 60px;
+    }
+
+    /* Variation panels */
+    .variation {
+      display: none;
+    }
+
+    .variation.active {
+      display: block;
+    }
+
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .icon-wrapper {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+
+    .ring-outer-red {
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 2px solid #DC2626;
+      opacity: 0.2;
+    }
+
+    .ring-inner-red {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 2px solid #DC2626;
+      opacity: 0.35;
+    }
+
+    .error-circle {
+      width: 80px;
+      height: 80px;
+      background: #DC2626;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-title {
+      font-size: 32px;
+      font-weight: 800;
+      color: #111827;
+      margin-bottom: 10px;
+    }
+
+    .hero-subtitle {
+      font-size: 15px;
+      color: #6B7280;
+      line-height: 1.6;
+    }
+
+    .error-banner {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      background: #FEF2F2;
+      border-left: 4px solid #DC2626;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+    }
+
+    .amber-banner {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      background: #FFFBEB;
+      border-left: 4px solid #D97706;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+    }
+
+    .banner-icon {
+      font-size: 20px;
+      margin-top: 1px;
+    }
+
+    .banner-title-red {
+      font-size: 15px;
+      font-weight: bold;
+      color: #DC2626;
+      margin-bottom: 4px;
+    }
+
+    .banner-text-red {
+      font-size: 14px;
+      color: #DC2626;
+      line-height: 1.6;
+    }
+
+    .banner-title-amber {
+      font-size: 15px;
+      font-weight: bold;
+      color: #D97706;
+      margin-bottom: 4px;
+    }
+
+    .banner-text-amber {
+      font-size: 14px;
+      color: #D97706;
+      line-height: 1.6;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid #E5E7EB;
+      border-radius: 16px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .card-header-label {
+      font-size: 13px;
+      color: #6B7280;
+    }
+
+    .badge-amber {
+      background: #FFFBEB;
+      color: #D97706;
+      border: 1px solid #FDE68A;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #E5E7EB;
+      margin: 16px 0;
+    }
+
+    .detail-row {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 10px 0;
+    }
+
+    .detail-row-error {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 10px 12px;
+      background: #FEF2F2;
+      border-left: 3px solid #DC2626;
+      border-radius: 4px;
+      margin: 4px 0;
+    }
+
+    .detail-icon {
+      font-size: 18px;
+      margin-top: 2px;
+    }
+
+    .detail-label {
+      font-size: 12px;
+      color: #6B7280;
+      margin-bottom: 3px;
+    }
+
+    .detail-label-red {
+      font-size: 12px;
+      color: #DC2626;
+      margin-bottom: 3px;
+    }
+
+    .detail-value {
+      font-size: 15px;
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .detail-value-teal {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0D9488;
+    }
+
+    .detail-value-red {
+      font-size: 15px;
+      font-weight: 700;
+      color: #DC2626;
+    }
+
+    .detail-error-note {
+      font-size: 12px;
+      color: #DC2626;
+      margin-top: 4px;
+    }
+
+    .card-footer-note {
+      font-size: 13px;
+      color: #6B7280;
+      text-align: center;
+    }
+
+    .slots-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .slots-title {
+      font-size: 16px;
+      font-weight: bold;
+      color: #111827;
+    }
+
+    .slots-link {
+      font-size: 13px;
+      color: #0D9488;
+      text-decoration: none;
+    }
+
+    .slots-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .slot {
+      border: 1px solid #D1D5DB;
+      color: #111827;
+      background: white;
+      padding: 10px 20px;
+      border-radius: 999px;
+      font-size: 14px;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .slot-unavailable {
+      border: 1px solid #DC2626;
+      color: #DC2626;
+      background: #FEF2F2;
+      padding: 10px 20px;
+      border-radius: 999px;
+      font-size: 14px;
+      cursor: default;
+      text-align: center;
+      text-decoration: line-through;
+    }
+
+    .slot-unavailable-label {
+      font-size: 10px;
+      color: #DC2626;
+      text-align: center;
+      margin-top: 4px;
+    }
+
+    .slot-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .slots-note {
+      font-size: 13px;
+      color: #6B7280;
+      line-height: 1.6;
+    }
+
+    .btn-primary {
+      background: #0D9488;
+      color: white;
+      border: none;
+      width: 100%;
+      padding: 16px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 12px;
+    }
+
+    .btn-secondary {
+      background: white;
+      color: #0D9488;
+      border: 1px solid #0D9488;
+      width: 100%;
+      padding: 16px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 16px;
+    }
+
+    .or-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .or-divider hr {
+      flex: 1;
+      border: none;
+      border-top: 1px solid #E5E7EB;
+    }
+
+    .or-divider span {
+      font-size: 13px;
+      color: #6B7280;
+    }
+
+    .help-text {
+      font-size: 13px;
+      color: #6B7280;
+      text-align: center;
+    }
+
+    .help-text a {
+      color: #0D9488;
+      text-decoration: none;
+    }
+
+    .wait-card {
+      background: white;
+      border: 1px solid #E5E7EB;
+      border-radius: 16px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+      padding: 36px 24px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 10px;
+    }
+
+    .wait-icon {
+      font-size: 36px;
+      color: #D97706;
+    }
+
+    .wait-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .wait-subtitle {
+      font-size: 13px;
+      color: #6B7280;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">AgendaFácil</div>
+  <nav>
+    <a href="#">Início</a>
+    <a href="#">Sobre</a>
+  </nav>
+  <button class="btn-solicitar">Solicitar Organização</button>
+</header>
+
+<div class="page-content">
+
+  <!-- Tab switcher -->
+  <div class="tab-switcher">
+    <button class="tab-btn active" onclick="switchTab('horario')">Horário indisponível</button>
+    <button class="tab-btn" onclick="switchTab('sistema')">Erro de sistema</button>
+  </div>
+
+  <!-- Variação 1: Horário indisponível -->
+  <div class="variation active" id="tab-horario">
+
+    <div class="hero">
+      <div class="icon-wrapper">
+        <div class="ring-outer-red"></div>
+        <div class="ring-inner-red"></div>
+        <div class="error-circle">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+            <line x1="10" y1="10" x2="26" y2="26" stroke="white" stroke-width="4" stroke-linecap="round"/>
+            <line x1="26" y1="10" x2="10" y2="26" stroke="white" stroke-width="4" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+      <p class="hero-title">Não foi possível confirmar</p>
+      <p class="hero-subtitle">Algo deu errado durante a confirmação do seu agendamento. Não se preocupe — seus dados foram salvos e você pode tentar novamente.</p>
+    </div>
+
+    <div class="error-banner">
+      <span class="banner-icon">⚠️</span>
+      <div>
+        <p class="banner-title-red">Horário indisponível</p>
+        <p class="banner-text-red">O horário das 10h00 do dia 20 de maio foi reservado por outro usuário enquanto você finalizava o cadastro.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-header-label">Dados salvos do agendamento</span>
+        <span class="badge-amber">⚠ Horário indisponível</span>
+      </div>
+      <hr class="divider">
+      <div class="detail-row">
+        <span class="detail-icon">🧹</span>
+        <div>
+          <p class="detail-label">Serviço</p>
+          <p class="detail-value">Pacote Prata</p>
+        </div>
+      </div>
+      <div class="detail-row">
+        <span class="detail-icon">🏷️</span>
+        <div>
+          <p class="detail-label">Valor</p>
+          <p class="detail-value-teal">R$ 300</p>
+        </div>
+      </div>
+      <div class="detail-row">
+        <span class="detail-icon">📍</span>
+        <div>
+          <p class="detail-label">Local</p>
+          <p class="detail-value">Rua das Flores, 123 – São Paulo</p>
+        </div>
+      </div>
+      <div class="detail-row-error">
+        <span class="detail-icon">📅</span>
+        <div>
+          <p class="detail-label-red">Data e horário</p>
+          <p class="detail-value-red">20 de maio de 2025 · 10h00</p>
+          <p class="detail-error-note">Este horário não está mais disponível</p>
+        </div>
+      </div>
+      <div class="detail-row">
+        <span class="detail-icon">⏱</span>
+        <div>
+          <p class="detail-label">Duração estimada</p>
+          <p class="detail-value">2h30</p>
+        </div>
+      </div>
+      <hr class="divider">
+      <p class="card-footer-note">Seus dados pessoais foram salvos. Escolha um novo horário para continuar.</p>
+    </div>
+
+    <div class="card">
+      <div class="slots-header">
+        <p class="slots-title">Horários disponíveis para o dia 20</p>
+        <a href="#" class="slots-link">Ver outros dias →</a>
+      </div>
+      <hr class="divider">
+      <div class="slots-row">
+        <div class="slot">08h00</div>
+        <div class="slot-wrapper">
+          <div class="slot-unavailable">10h00</div>
+          <span class="slot-unavailable-label">Indisponível</span>
+        </div>
+        <div class="slot">14h00</div>
+        <div class="slot">16h00</div>
+      </div>
+      <p class="slots-note">Selecione um horário disponível para continuar com o mesmo serviço e localização.</p>
+    </div>
+
+    <button class="btn-primary">Escolher novo horário</button>
+    <div class="or-divider"><hr><span>ou</span><hr></div>
+    <button class="btn-secondary">Voltar ao início</button>
+    <p class="help-text">Problema persistindo? <a href="#">Entre em contato com o suporte</a></p>
+
+  </div>
+
+  <!-- Variação 2: Erro de sistema -->
+  <div class="variation" id="tab-sistema">
+
+    <div class="hero">
+      <div class="icon-wrapper">
+        <div class="ring-outer-red"></div>
+        <div class="ring-inner-red"></div>
+        <div class="error-circle">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+            <line x1="10" y1="10" x2="26" y2="26" stroke="white" stroke-width="4" stroke-linecap="round"/>
+            <line x1="26" y1="10" x2="10" y2="26" stroke="white" stroke-width="4" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+      <p class="hero-title">Não foi possível confirmar</p>
+      <p class="hero-subtitle">Algo deu errado durante a confirmação do seu agendamento. Não se preocupe — seus dados foram salvos e você pode tentar novamente.</p>
+    </div>
+
+    <div class="amber-banner">
+      <span class="banner-icon">⚠️</span>
+      <div>
+        <p class="banner-title-amber">Erro temporário no sistema</p>
+        <p class="banner-text-amber">Nossos servidores estão instáveis no momento. Seus dados foram salvos. Tente novamente em alguns minutos.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-header-label">Dados salvos do agendamento</span>
+        <span class="badge-amber">⚠ Erro de sistema</span>
+      </div>
+      <hr class="divider">
+      <div class="detail-row">
+        <span class="detail-icon">🧹</span>
+        <div>
+          <p class="detail-label">Serviço</p>
+          <p class="detail-value">Pacote Prata</p>
+        </div>
+      </div>
+      <div class="detail-row">
+        <span class="detail-icon">🏷️</span>
+        <div>
+          <p class="detail-label">Valor</p>
+          <p class="detail-value-teal">R$ 300</p>
+        </div>
+      </div>
+      <div class="detail-row">
+        <span class="detail-icon">📍</span>
+        <div>
+          <p class="detail-label">Local</p>
+          <p class="detail-value">Rua das Flores, 123 – São Paulo</p>
+        </div>
+      </div>
+      <div class="detail-row">
+        <span class="detail-icon">📅</span>
+        <div>
+          <p class="detail-label">Data e horário</p>
+          <p class="detail-value">20 de maio de 2025 · 10h00</p>
+        </div>
+      </div>
+      <div class="detail-row">
+        <span class="detail-icon">⏱</span>
+        <div>
+          <p class="detail-label">Duração estimada</p>
+          <p class="detail-value">2h30</p>
+        </div>
+      </div>
+      <hr class="divider">
+      <p class="card-footer-note">Seus dados pessoais foram salvos. Tente confirmar novamente em alguns minutos.</p>
+    </div>
+
+    <div class="wait-card">
+      <span class="wait-icon">🕐</span>
+      <p class="wait-title">Aguarde alguns minutos e tente novamente.</p>
+      <p class="wait-subtitle">Seus dados não serão perdidos.</p>
+    </div>
+
+    <button class="btn-primary">Tentar novamente</button>
+    <div class="or-divider"><hr><span>ou</span><hr></div>
+    <button class="btn-secondary">Voltar ao início</button>
+    <p class="help-text">Problema persistindo? <a href="#">Entre em contato com o suporte</a></p>
+
+  </div>
+
+</div>
+
+<script>
+  function switchTab(id) {
+    document.querySelectorAll('.variation').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+    document.getElementById('tab-' + id).classList.add('active');
+    event.currentTarget.classList.add('active');
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>AgendaFácil — Carlos Menezes</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: sans-serif;
+      background: #F9FAFB;
+      color: #111827;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 40px;
+      background: white;
+      border-bottom: 1px solid #E5E7EB;
+    }
+
+    .logo {
+      color: #0D9488;
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+    nav {
+      display: flex;
+      gap: 32px;
+    }
+
+    nav a {
+      color: #6B7280;
+      text-decoration: none;
+      font-size: 15px;
+    }
+
+    .btn-solicitar {
+      border: 1px solid #0D9488;
+      color: #0D9488;
+      background: white;
+      padding: 8px 20px;
+      border-radius: 999px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .breadcrumb {
+      padding: 14px 40px;
+      font-size: 13px;
+      color: #6B7280;
+    }
+
+    .breadcrumb a {
+      color: #6B7280;
+      text-decoration: none;
+    }
+
+    .breadcrumb span {
+      color: #0D9488;
+    }
+
+    .page-columns {
+      display: flex;
+      gap: 24px;
+      padding: 0 40px 60px 40px;
+      align-items: flex-start;
+    }
+
+    .col-left {
+      flex: 65;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .col-right {
+      flex: 35;
+      position: sticky;
+      top: 24px;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid #E5E7EB;
+      border-radius: 16px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+      padding: 24px;
+    }
+
+    .card-elevated {
+      background: white;
+      border: 1px solid #E5E7EB;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      padding: 24px;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: bold;
+      color: #111827;
+      margin-bottom: 14px;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #E5E7EB;
+      margin: 16px 0;
+    }
+
+    .hero-inner {
+      display: flex;
+      gap: 20px;
+    }
+
+    .hero-photo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .provider-photo {
+      width: 120px;
+      height: 120px;
+      border-radius: 12px;
+      background: #D1D5DB;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+    }
+
+    .badge-available {
+      background: #F0FDFA;
+      color: #0D9488;
+      border: 1px solid #99F6E4;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .hero-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .provider-name {
+      font-size: 26px;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .provider-role {
+      font-size: 15px;
+      color: #6B7280;
+    }
+
+    .stars-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+    }
+
+    .stars {
+      color: #F59E0B;
+      font-size: 16px;
+    }
+
+    .rating-number {
+      font-weight: bold;
+      color: #111827;
+    }
+
+    .rating-count {
+      color: #6B7280;
+      font-size: 13px;
+    }
+
+    .pills-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .pill-gray {
+      background: #F3F4F6;
+      color: #6B7280;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+    }
+
+    .pill-teal {
+      background: #F0FDFA;
+      color: #0D9488;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-primary {
+      background: #0D9488;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .btn-secondary {
+      background: white;
+      color: #0D9488;
+      border: 1px solid #0D9488;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .about-text {
+      font-size: 14px;
+      color: #6B7280;
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+
+    .info-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: #6B7280;
+      margin-bottom: 10px;
+    }
+
+    .info-icon {
+      color: #0D9488;
+      font-size: 16px;
+    }
+
+    .service-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 1px solid #F3F4F6;
+    }
+
+    .service-row:last-child {
+      border-bottom: none;
+    }
+
+    .service-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .service-desc {
+      font-size: 12px;
+      color: #6B7280;
+      margin-top: 3px;
+    }
+
+    .service-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .service-price {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0D9488;
+    }
+
+    .btn-agendar-small {
+      background: white;
+      color: #0D9488;
+      border: 1px solid #0D9488;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .reviews-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .ver-todas {
+      font-size: 13px;
+      color: #6B7280;
+      text-decoration: none;
+    }
+
+    .rating-summary {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .big-rating {
+      font-size: 52px;
+      font-weight: 800;
+      color: #111827;
+      line-height: 1;
+    }
+
+    .bars-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: #6B7280;
+    }
+
+    .bar-track {
+      flex: 1;
+      height: 6px;
+      background: #E5E7EB;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar-fill-teal {
+      height: 100%;
+      background: #0D9488;
+      border-radius: 999px;
+    }
+
+    .bar-fill-gray {
+      height: 100%;
+      background: #D1D5DB;
+      border-radius: 999px;
+    }
+
+    .bar-pct {
+      width: 30px;
+      text-align: right;
+    }
+
+    .review-item {
+      padding: 16px 0;
+      border-bottom: 1px solid #F3F4F6;
+    }
+
+    .review-item:last-child {
+      border-bottom: none;
+    }
+
+    .review-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #0D9488;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .reviewer-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .reviewer-date {
+      font-size: 12px;
+      color: #6B7280;
+    }
+
+    .review-stars {
+      margin-left: auto;
+      color: #F59E0B;
+      font-size: 14px;
+    }
+
+    .review-text {
+      font-size: 13px;
+      color: #6B7280;
+      line-height: 1.6;
+    }
+
+    .sticky-label {
+      font-size: 12px;
+      font-weight: bold;
+      color: #0D9488;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+
+    .sticky-name {
+      font-size: 17px;
+      font-weight: bold;
+      color: #111827;
+      margin-bottom: 14px;
+    }
+
+    .field-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 10px;
+    }
+
+    .service-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid #E5E7EB;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #6B7280;
+    }
+
+    .service-option-selected {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid #0D9488;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      background: #F0FDFA;
+      cursor: pointer;
+      font-size: 14px;
+      color: #0D9488;
+      font-weight: 600;
+    }
+
+    .radio-empty {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid #D1D5DB;
+      flex-shrink: 0;
+    }
+
+    .radio-filled {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid #0D9488;
+      background: #0D9488;
+      flex-shrink: 0;
+    }
+
+    .dates-row {
+      display: flex;
+      gap: 8px;
+      margin: 10px 0 8px 0;
+    }
+
+    .date-pill {
+      background: white;
+      border: 1px solid #D1D5DB;
+      color: #111827;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .date-pill-selected {
+      background: #0D9488;
+      border: 1px solid #0D9488;
+      color: white;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .ver-calendario {
+      font-size: 12px;
+      color: #6B7280;
+      text-decoration: none;
+    }
+
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    .price-row-label {
+      color: #6B7280;
+    }
+
+    .price-row-value {
+      color: #111827;
+      font-weight: 600;
+    }
+
+    .btn-primary-full {
+      background: #0D9488;
+      color: white;
+      border: none;
+      width: 100%;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 16px;
+      margin-bottom: 10px;
+    }
+
+    .no-charge-note {
+      font-size: 12px;
+      color: #6B7280;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">AgendaFácil</div>
+  <nav>
+    <a href="#">Início</a>
+    <a href="#">Sobre</a>
+  </nav>
+  <button class="btn-solicitar">Solicitar Organização</button>
+</header>
+
+<div class="breadcrumb">
+  <a href="#">← Início</a> › <a href="#">Mapa</a> › <span>Carlos Menezes</span>
+</div>
+
+<div class="page-columns">
+
+  <div class="col-left">
+
+    <div class="card">
+      <div class="hero-inner">
+        <div class="hero-photo">
+          <div class="provider-photo">👷</div>
+          <div class="badge-available">● Disponível hoje</div>
+        </div>
+        <div class="hero-info">
+          <p class="provider-name">Carlos Menezes</p>
+          <p class="provider-role">Eletricista Residencial e Comercial</p>
+          <div class="stars-row">
+            <span class="stars">★★★★★</span>
+            <span class="rating-number">4.8</span>
+            <span class="rating-count">(127 avaliações)</span>
+          </div>
+          <div class="pills-row">
+            <span class="pill-gray">📍 São Paulo, SP</span>
+            <span class="pill-teal">✅ 127 serviços realizados</span>
+          </div>
+          <div class="hero-buttons">
+            <button class="btn-primary">Agendar serviço</button>
+            <button class="btn-secondary">Enviar mensagem</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="card-title">Sobre o prestador</p>
+      <hr class="divider">
+      <p class="about-text">Eletricista com mais de 10 anos de experiência em instalações residenciais e comerciais. Atendo toda a região de São Paulo com pontualidade e qualidade garantida. Trabalho com nota fiscal e ofereço garantia de 90 dias em todos os serviços.</p>
+      <div class="info-row">
+        <span class="info-icon">🕐</span>
+        <span>Tempo médio de resposta: menos de 1 hora</span>
+      </div>
+      <div class="info-row">
+        <span class="info-icon">📋</span>
+        <span>Membro desde: janeiro de 2023</span>
+      </div>
+      <div class="info-row">
+        <span class="info-icon">🔒</span>
+        <span>Documentação verificada pelo AgendaFácil</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="card-title">Serviços oferecidos</p>
+      <hr class="divider">
+      <div class="service-row">
+        <div>
+          <p class="service-name">Pacote Bronze</p>
+          <p class="service-desc">Instalações simples · 1h30</p>
+        </div>
+        <div class="service-right">
+          <span class="service-price">R$ 150</span>
+          <button class="btn-agendar-small">Agendar</button>
+        </div>
+      </div>
+      <div class="service-row">
+        <div>
+          <p class="service-name">Pacote Prata</p>
+          <p class="service-desc">Instalações completas · 2h30</p>
+        </div>
+        <div class="service-right">
+          <span class="service-price">R$ 300</span>
+          <button class="btn-agendar-small">Agendar</button>
+        </div>
+      </div>
+      <div class="service-row">
+        <div>
+          <p class="service-name">Pacote Ouro</p>
+          <p class="service-desc">Projeto completo · 4h</p>
+        </div>
+        <div class="service-right">
+          <span class="service-price">R$ 500</span>
+          <button class="btn-agendar-small">Agendar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="reviews-header">
+        <p class="card-title" style="margin-bottom: 0;">Avaliações</p>
+        <a href="#" class="ver-todas">Ver todas (127)</a>
+      </div>
+
+      <div class="rating-summary">
+        <p class="big-rating">4.8</p>
+        <div class="bars-col">
+          <div class="bar-row">
+            <span>5★</span>
+            <div class="bar-track"><div class="bar-fill-teal" style="width: 80%;"></div></div>
+            <span class="bar-pct">80%</span>
+          </div>
+          <div class="bar-row">
+            <span>4★</span>
+            <div class="bar-track"><div class="bar-fill-teal" style="width: 15%;"></div></div>
+            <span class="bar-pct">15%</span>
+          </div>
+          <div class="bar-row">
+            <span>3★</span>
+            <div class="bar-track"><div class="bar-fill-gray" style="width: 3%;"></div></div>
+            <span class="bar-pct">3%</span>
+          </div>
+          <div class="bar-row">
+            <span>2★</span>
+            <div class="bar-track"><div class="bar-fill-gray" style="width: 1%;"></div></div>
+            <span class="bar-pct">1%</span>
+          </div>
+          <div class="bar-row">
+            <span>1★</span>
+            <div class="bar-track"><div class="bar-fill-gray" style="width: 1%;"></div></div>
+            <span class="bar-pct">1%</span>
+          </div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="review-item">
+        <div class="review-top">
+          <div class="avatar">MA</div>
+          <div>
+            <p class="reviewer-name">Maria Aparecida</p>
+            <p class="reviewer-date">há 3 dias</p>
+          </div>
+          <span class="review-stars">★★★★★</span>
+        </div>
+        <p class="review-text">Serviço excelente! Carlos chegou no horário, resolveu tudo rapidamente e ainda explicou o que foi feito. Super recomendo.</p>
+      </div>
+
+      <div class="review-item">
+        <div class="review-top">
+          <div class="avatar">JS</div>
+          <div>
+            <p class="reviewer-name">João Silva</p>
+            <p class="reviewer-date">há 1 semana</p>
+          </div>
+          <span class="review-stars">★★★★★</span>
+        </div>
+        <p class="review-text">Muito profissional e caprichoso. Preço justo e serviço de qualidade. Com certeza vou chamar novamente.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="col-right">
+    <div class="card-elevated">
+      <p class="sticky-label">Agende agora</p>
+      <p class="sticky-name">Carlos Menezes</p>
+      <hr class="divider">
+
+      <p class="field-label">Escolha o serviço</p>
+      <div class="service-option">
+        <div class="radio-empty"></div>
+        Pacote Bronze — R$ 150 — 1h30
+      </div>
+      <div class="service-option-selected">
+        <div class="radio-filled"></div>
+        Pacote Prata — R$ 300 — 2h30
+      </div>
+      <div class="service-option">
+        <div class="radio-empty"></div>
+        Pacote Ouro — R$ 500 — 4h
+      </div>
+
+      <hr class="divider">
+
+      <p class="field-label">Próximas datas disponíveis</p>
+      <div class="dates-row">
+        <span class="date-pill">Seg 19</span>
+        <span class="date-pill-selected">Ter 20</span>
+        <span class="date-pill">Qua 21</span>
+      </div>
+      <a href="#" class="ver-calendario">Ver calendário completo →</a>
+
+      <hr class="divider">
+
+      <div class="price-row">
+        <span class="price-row-label">Pacote Prata</span>
+        <span class="price-row-value">R$ 300</span>
+      </div>
+      <div class="price-row">
+        <span class="price-row-label">Duração estimada</span>
+        <span class="price-row-label">2h30</span>
+      </div>
+
+      <button class="btn-primary-full">Agendar com Carlos</button>
+      <p class="no-charge-note">Sem cobrança agora · Confirme no próximo passo</p>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
