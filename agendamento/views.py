@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from .models import Servico
-from .forms import AgendamentoForm, CadastroUsuarioForm, LoginUsuarioForm
+from .forms import AgendamentoForm, CadastroUsuarioForm, LoginUsuarioForm, ReclamacaoForm
 
 
 def home(request):
@@ -112,4 +112,16 @@ def cliente_acompanhamento(request, pedido_id):
     return render(request, 'agendamento/cliente_acompanhamento.html', {
         'pedido': None,
     })
+
+
+def reclame_aqui(request):
+    if request.method == 'POST':
+        form = ReclamacaoForm(request.POST)
+
+        if form.is_valid():
+            return render(request, 'reclame_aqui_sucesso.html')
+    else:
+        form = ReclamacaoForm()
+
+    return render(request, 'reclame_aqui.html', {'form': form})
 

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reclame Aqui - Agenda Fácil</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 40px 16px;
+        }
+
+        .caixa {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 560px;
+        }
+
+        h1 {
+            font-size: 1.6rem;
+            color: #c0392b;
+            margin-bottom: 6px;
+        }
+
+        .subtitulo {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 28px;
+        }
+
+        .campo {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #333;
+            margin-bottom: 6px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            color: #333;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #c0392b;
+        }
+
+        textarea { resize: vertical; min-height: 110px; }
+
+        .erros { color: #c0392b; font-size: 0.85rem; margin-top: 4px; }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 12px;
+            background: #c0392b;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background 0.2s;
+        }
+
+        button[type="submit"]:hover { background: #a93226; }
+
+        .rodape {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        .rodape a { color: #c0392b; text-decoration: none; }
+        .rodape a:hover { text-decoration: underline; }
+    </style>
+</head>
+
+<body>
+    <div class="caixa">
+        <h1>Reclame Aqui</h1>
+        <p class="subtitulo">Teve algum problema com um serviço? Conte-nos o que aconteceu.</p>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="campo">
+                <label for="{{ form.nome.id_for_label }}">{{ form.nome.label }}</label>
+                {{ form.nome }}
+                {% if form.nome.errors %}
+                    <div class="erros">{{ form.nome.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="campo">
+                <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <div class="erros">{{ form.email.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="campo">
+                <label for="{{ form.servico_contratado.id_for_label }}">{{ form.servico_contratado.label }}</label>
+                {{ form.servico_contratado }}
+                {% if form.servico_contratado.errors %}
+                    <div class="erros">{{ form.servico_contratado.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="campo">
+                <label for="{{ form.descricao.id_for_label }}">{{ form.descricao.label }}</label>
+                {{ form.descricao }}
+                {% if form.descricao.errors %}
+                    <div class="erros">{{ form.descricao.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="campo">
+                <label for="{{ form.nota.id_for_label }}">{{ form.nota.label }}</label>
+                {{ form.nota }}
+                {% if form.nota.errors %}
+                    <div class="erros">{{ form.nota.errors }}</div>
+                {% endif %}
+            </div>
+
+            {% if form.non_field_errors %}
+                <div class="erros">{{ form.non_field_errors }}</div>
+            {% endif %}
+
+            <button type="submit">Enviar reclamação</button>
+        </form>
+
+        <div class="rodape">
+            <a href="/">Voltar para a página inicial</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -53,20 +53,18 @@ class LoginUsuarioForm(AuthenticationForm):
     )
 
 
-class CadastroForm(forms.Form):
-    nome = forms.CharField(label='Nome completo', max_length=150)
+NOTA_CHOICES = [
+    ('1', '1 estrela'),
+    ('2', '2 estrelas'),
+    ('3', '3 estrelas'),
+    ('4', '4 estrelas'),
+    ('5', '5 estrelas'),
+]
+
+
+class ReclamacaoForm(forms.Form):
+    nome = forms.CharField(label='Nome', max_length=100)
     email = forms.EmailField(label='E-mail')
-    senha = forms.CharField(label='Senha', widget=forms.PasswordInput)
-    confirmar_senha = forms.CharField(label='Confirmar senha', widget=forms.PasswordInput)
-
-    def clean(self):
-        cleaned_data = super().clean()
-        senha = cleaned_data.get('senha')
-        confirmar_senha = cleaned_data.get('confirmar_senha')
-        if senha and confirmar_senha and senha != confirmar_senha:
-            raise forms.ValidationError('As senhas não coincidem.')
-        return cleaned_data
-
-
-class EsqueciSenhaForm(forms.Form):
-    email = forms.EmailField(label='E-mail')
+    servico_contratado = forms.CharField(label='Serviço contratado', max_length=200)
+    descricao = forms.CharField(label='Descrição da reclamação', widget=forms.Textarea)
+    nota = forms.ChoiceField(label='Avaliação', choices=NOTA_CHOICES)
