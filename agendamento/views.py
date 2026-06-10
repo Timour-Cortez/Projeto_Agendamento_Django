@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
-from .models import Servico
+from datetime import time
+from .models import Servico, Cliente, LocalAtendimento, Agendamento
 from .forms import AgendamentoForm, CadastroUsuarioForm, LoginUsuarioForm
+
 
 
 def home(request):
@@ -94,3 +96,55 @@ def pagamento(request):
         return redirect('home')
 
     return render(request, 'pagamento.html', {'pedido': pedido})
+
+
+def confirmar_pedido(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    pedido = request.session.get('pedido')
+
+    if not pedido:
+        return redirect('home')
+
+    servico = Servico.objects.get(id=pedido['servico_id'])
+
+    cliente, criado = Cliente.objects.get_or_create(
+        email=request.user.email,
+        defaults={
+            'nome': request.user.username,
+            'telefone': ''
+        }
+    )
+
+    local = LocalAtendimento.objects.create(
+        endereco=pedido['endereco'],
+        bairro='Não informado',
+        cidade='Rio de Janeiro',
+        referencia=f"Latitude: {pedido['latitude']} | Longitude: {pedido['longitude']}"
+    )
+
+    agendamento = Agendamento.objects.create(
+        usuario=request.user,
+        cliente=cliente,
+        servico=servico,
+        local=local,
+        data=pedido['data_servico'],
+        horario=time(9, 0),
+        status='pendente',
+        observacoes='Pedido criado pela página inicial.'
+    )
+
+    del request.session['pedido']
+
+    return redirect('meus_agendamentos')
+
+def meus_agendamentos(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    agendamentos = Agendamento.objects.filter(usuario=request.user)
+
+    return render(request, 'meus_agendamentos.html', {
+        'agendamentos': agendamentos
+    })
