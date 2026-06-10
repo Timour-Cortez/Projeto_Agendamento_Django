@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from datetime import time
-from .models import Servico, Cliente, LocalAtendimento, Agendamento
-from .forms import AgendamentoForm, CadastroUsuarioForm, LoginUsuarioForm
 
+from .models import Servico, Cliente, LocalAtendimento, Agendamento
+from .forms import AgendamentoForm, CadastroUsuarioForm, LoginUsuarioForm, ReclamacaoForm
 
 
 def home(request):
@@ -27,6 +27,7 @@ def login_view(request):
         form = LoginUsuarioForm()
 
     return render(request, 'login.html', {'form': form})
+
 
 def logout_view(request):
     logout(request)
@@ -63,6 +64,7 @@ def agendar(request):
 
     return render(request, 'agendar.html', {'form': form})
 
+
 def montar_pedido(request):
     if request.method == 'POST':
         servico_id = request.POST.get('servico_id')
@@ -85,6 +87,7 @@ def montar_pedido(request):
             return redirect('login')
 
     return redirect('home')
+
 
 def pagamento(request):
     pedido = request.session.get('pedido')
@@ -124,7 +127,7 @@ def confirmar_pedido(request):
         referencia=f"Latitude: {pedido['latitude']} | Longitude: {pedido['longitude']}"
     )
 
-    agendamento = Agendamento.objects.create(
+    Agendamento.objects.create(
         usuario=request.user,
         cliente=cliente,
         servico=servico,
@@ -139,6 +142,7 @@ def confirmar_pedido(request):
 
     return redirect('meus_agendamentos')
 
+
 def meus_agendamentos(request):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -148,3 +152,31 @@ def meus_agendamentos(request):
     return render(request, 'meus_agendamentos.html', {
         'agendamentos': agendamentos
     })
+
+
+def prestador_dashboard(request):
+    return render(request, 'agendamento/prestador_dashboard.html', {
+        'prestador': {'nome': 'Prestador'},
+        'pedidos': [],
+        'total_pedidos': 0,
+        'pedidos_pendentes': 0,
+        'pedidos_confirmados': 0,
+    })
+
+
+def cliente_acompanhamento(request, pedido_id):
+    return render(request, 'agendamento/cliente_acompanhamento.html', {
+        'pedido': None,
+    })
+
+
+def reclame_aqui(request):
+    if request.method == 'POST':
+        form = ReclamacaoForm(request.POST)
+
+        if form.is_valid():
+            return render(request, 'reclame_aqui_sucesso.html')
+    else:
+        form = ReclamacaoForm()
+
+    return render(request, 'reclame_aqui.html', {'form': form})

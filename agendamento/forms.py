@@ -51,3 +51,20 @@ class LoginUsuarioForm(AuthenticationForm):
         label='Senha',
         widget=forms.PasswordInput
     )
+
+
+NOTA_CHOICES = [
+    ('1', '1 estrela'),
+    ('2', '2 estrelas'),
+    ('3', '3 estrelas'),
+    ('4', '4 estrelas'),
+    ('5', '5 estrelas'),
+]
+
+
+class ReclamacaoForm(forms.Form):
+    nome = forms.CharField(label='Nome', max_length=100)
+    email = forms.EmailField(label='E-mail')
+    servico_contratado = forms.CharField(label='Serviço contratado', max_length=200)
+    descricao = forms.CharField(label='Descrição da reclamação', widget=forms.Textarea)
+    nota = forms.ChoiceField(label='Avaliação', choices=NOTA_CHOICES)
