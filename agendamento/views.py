@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
+from django.contrib.auth.decorators import login_required
 from datetime import time
 
 from .models import Servico, Cliente, LocalAtendimento, Agendamento
-from .forms import AgendamentoForm, CadastroUsuarioForm, LoginUsuarioForm, ReclamacaoForm
+from .forms import AgendamentoForm, CadastroUsuarioForm, LoginUsuarioForm, ReclamacaoForm, EditarAgendamentoForm
 
 
 def home(request):
@@ -29,6 +30,7 @@ def login_view(request):
     return render(request, 'login.html', {'form': form})
 
 
+@login_required
 def logout_view(request):
     logout(request)
     return redirect('home')
@@ -89,11 +91,9 @@ def montar_pedido(request):
     return redirect('home')
 
 
+@login_required
 def pagamento(request):
     pedido = request.session.get('pedido')
-
-    if not request.user.is_authenticated:
-        return redirect('login')
 
     if not pedido:
         return redirect('home')
@@ -101,10 +101,8 @@ def pagamento(request):
     return render(request, 'pagamento.html', {'pedido': pedido})
 
 
+@login_required
 def confirmar_pedido(request):
-    if not request.user.is_authenticated:
-        return redirect('login')
-
     pedido = request.session.get('pedido')
 
     if not pedido:
@@ -143,10 +141,8 @@ def confirmar_pedido(request):
     return redirect('meus_agendamentos')
 
 
+@login_required
 def meus_agendamentos(request):
-    if not request.user.is_authenticated:
-        return redirect('login')
-
     agendamentos = Agendamento.objects.filter(usuario=request.user)
 
     return render(request, 'meus_agendamentos.html', {
@@ -180,3 +176,36 @@ def reclame_aqui(request):
         form = ReclamacaoForm()
 
     return render(request, 'reclame_aqui.html', {'form': form})
+
+
+@login_required
+def editar_agendamento(request, agendamento_id):
+    agendamento = Agendamento.objects.get(id=agendamento_id, usuario=request.user)
+
+    if request.method == 'POST':
+        form = EditarAgendamentoForm(request.POST, instance=agendamento)
+
+        if form.is_valid():
+            form.save()
+            return redirect('meus_agendamentos')
+    else:
+        form = EditarAgendamentoForm(instance=agendamento)
+
+    return render(request, 'editar_agendamento.html', {
+        'form': form,
+        'agendamento': agendamento
+    })
+
+
+@login_required
+def cancelar_agendamento(request, agendamento_id):
+    agendamento = Agendamento.objects.get(id=agendamento_id, usuario=request.user)
+
+    if request.method == 'POST':
+        agendamento.status = 'cancelado'
+        agendamento.save()
+        return redirect('meus_agendamentos')
+
+    return render(request, 'cancelar_agendamento.html', {
+        'agendamento': agendamento
+    })

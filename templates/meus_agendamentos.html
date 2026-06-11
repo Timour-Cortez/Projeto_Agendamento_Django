@@ -25,7 +25,18 @@
                         <p><strong>Data:</strong> {{ agendamento.data }}</p>
                         <p><strong>Horário:</strong> {{ agendamento.horario }}</p>
                         <p><strong>Status:</strong> {{ agendamento.status }}</p>
+
+                        <a class="voltar" href="/agendamento/{{ agendamento.id }}/editar/">
+                            Editar agendamento
+                        </a>
+
+                        <br>
+
+                        <a class="voltar" href="/agendamento/{{ agendamento.id }}/cancelar/">
+                            Cancelar agendamento
+                        </a>
                     </div>
+
                     <hr>
                 {% endfor %}
             {% else %}

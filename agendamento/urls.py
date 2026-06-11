@@ -13,6 +13,9 @@ urlpatterns = [
     path('confirmar-pedido/', views.confirmar_pedido, name='confirmar_pedido'),
     path('meus-agendamentos/', views.meus_agendamentos, name='meus_agendamentos'),
 
+    path('agendamento/<int:agendamento_id>/editar/', views.editar_agendamento, name='editar_agendamento'),
+    path('agendamento/<int:agendamento_id>/cancelar/', views.cancelar_agendamento, name='cancelar_agendamento'),
+
     path('prestador/dashboard/', views.prestador_dashboard, name='prestador_dashboard'),
     path('cliente/pedido/<int:pedido_id>/acompanhar/', views.cliente_acompanhamento, name='cliente_acompanhamento'),
     path('reclame-aqui/', views.reclame_aqui, name='reclame_aqui'),

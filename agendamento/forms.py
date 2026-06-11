@@ -68,3 +68,14 @@ class ReclamacaoForm(forms.Form):
     servico_contratado = forms.CharField(label='Serviço contratado', max_length=200)
     descricao = forms.CharField(label='Descrição da reclamação', widget=forms.Textarea)
     nota = forms.ChoiceField(label='Avaliação', choices=NOTA_CHOICES)
+
+
+class EditarAgendamentoForm(forms.ModelForm):
+    class Meta:
+        model = Agendamento
+        fields = ['data', 'horario', 'observacoes']
+        widgets = {
+            'data': forms.DateInput(attrs={'type': 'date'}),
+            'horario': forms.TimeInput(attrs={'type': 'time'}),
+            'observacoes': forms.Textarea(attrs={'rows': 4}),
+        }
