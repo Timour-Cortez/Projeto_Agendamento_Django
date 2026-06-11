@@ -19,11 +19,14 @@
 <body>
 
     <header>
-        {% if user.is_authenticated %}
-            <a class="botao-login" href="/logout/">Sair</a>
-        {% else %}
-            <a class="botao-login" href="/login/">Login</a>
-        {% endif %}
+        <div class="botoes-usuario">
+            {% if user.is_authenticated %}
+                <a class="botao-login" href="/logout/">Sair</a>
+                <a class="botao-meus-pedidos" href="/meus-agendamentos/">Meus pedidos</a>
+            {% else %}
+                <a class="botao-login" href="/login/">Login</a>
+            {% endif %}
+        </div>
 
         <h1>Agenda Fácil</h1>
         <p>Agende serviços de forma simples, rápida e organizada.</p>

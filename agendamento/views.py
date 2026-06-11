@@ -143,10 +143,25 @@ def confirmar_pedido(request):
 
 @login_required
 def meus_agendamentos(request):
-    agendamentos = Agendamento.objects.filter(usuario=request.user)
+    agendamentos_pendentes = Agendamento.objects.filter(
+        usuario=request.user,
+        status='pendente'
+    )
+
+    agendamentos_confirmados = Agendamento.objects.filter(
+        usuario=request.user,
+        status='confirmado'
+    )
+
+    agendamentos_concluidos = Agendamento.objects.filter(
+        usuario=request.user,
+        status='concluido'
+    )
 
     return render(request, 'meus_agendamentos.html', {
-        'agendamentos': agendamentos
+        'agendamentos_pendentes': agendamentos_pendentes,
+        'agendamentos_confirmados': agendamentos_confirmados,
+        'agendamentos_concluidos': agendamentos_concluidos,
     })
 
 

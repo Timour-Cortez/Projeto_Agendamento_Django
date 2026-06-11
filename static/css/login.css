@@ -86,3 +86,100 @@ button:hover {
     text-decoration: none;
     font-weight: bold;
 }
+
+
+/* Página Meus Agendamentos */
+
+.painel-agendamentos {
+    max-width: 900px;
+    width: 90%;
+}
+
+.abas-agendamentos {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 25px 0;
+    flex-wrap: wrap;
+}
+
+.aba {
+    padding: 10px 18px;
+    border: 1px solid #6b7b4b;
+    background-color: white;
+    color: #6b7b4b;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.aba:hover {
+    background-color: #f5f1e8;
+}
+
+.aba.ativa {
+    background-color: #6b7b4b;
+    color: white;
+}
+
+.conteudo-aba {
+    display: none;
+}
+
+.conteudo-aba.ativo {
+    display: block;
+}
+
+.card-agendamento {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 14px;
+    padding: 20px;
+    margin: 18px 0;
+    text-align: left;
+    box-shadow: 0 0 12px rgba(0,0,0,0.08);
+}
+
+.info-agendamento h3 {
+    margin-top: 0;
+    color: #6b7b4b;
+}
+
+.info-agendamento p {
+    margin: 8px 0;
+}
+
+.acoes-agendamento {
+    display: flex;
+    gap: 12px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+}
+
+.botao-acao {
+    display: inline-block;
+    padding: 10px 16px;
+    background-color: #6b7b4b;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.botao-acao:hover {
+    background-color: #55633b;
+}
+
+.botao-cancelar {
+    background-color: #9b3d3d;
+}
+
+.botao-cancelar:hover {
+    background-color: #7d2f2f;
+}
+
+.mensagem-vazia {
+    margin: 25px 0;
+    color: #666;
+}

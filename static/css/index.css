@@ -290,3 +290,29 @@ section {
 .botao-continuar:hover {
     background-color: #55633b;
 }
+
+.botoes-usuario {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.botoes-usuario .botao-login {
+    position: static;
+}
+
+.botao-meus-pedidos {
+    padding: 10px 18px;
+    background-color: white;
+    color: #6b7b4b;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.botao-meus-pedidos:hover {
+    background-color: #f5f1e8;
+}
