@@ -49,3 +49,26 @@ class Agendamento(models.Model):
 
     def __str__(self):
         return f"{self.cliente.nome} - {self.servico.nome} - {self.data} {self.horario}"
+
+class PlanoAssinatura(models.Model):
+    PLANO_CHOICES = [
+        ('basico', 'Básico'),
+        ('premium', 'Premium'),
+    ]
+
+    nome = models.CharField(max_length=20, choices=PLANO_CHOICES, unique=True)
+    preco_mensal = models.DecimalField(max_digits=6, decimal_places=2)
+    percentual_desconto = models.PositiveIntegerField(help_text="Desconto em %")
+
+    def __str__(self):
+        return self.get_nome_display()
+
+
+class Assinatura(models.Model):
+    usuario = models.OneToOneField(User, on_delete=models.CASCADE, related_name='assinatura')
+    plano = models.ForeignKey(PlanoAssinatura, on_delete=models.PROTECT)
+    data_inicio = models.DateField(auto_now_add=True)
+    ativa = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.usuario.username} - {self.plano}"
