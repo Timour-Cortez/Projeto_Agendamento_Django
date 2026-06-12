@@ -1,0 +1,137 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus Agendamentos - Agenda Fácil</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}?v=2">
+</head>
+
+<body>
+
+    <main class="container-login">
+        <section class="caixa-login painel-agendamentos">
+            <h1>Meus Agendamentos</h1>
+            <p>Acompanhe seus pedidos e serviços agendados.</p>
+
+            <div class="abas-agendamentos">
+                <button type="button" class="aba ativa" data-aba="pendentes">
+                    Pendentes
+                </button>
+
+                <button type="button" class="aba" data-aba="confirmados">
+                    Confirmados
+                </button>
+
+                <button type="button" class="aba" data-aba="concluidos">
+                    Concluídos
+                </button>
+            </div>
+
+            <div id="pendentes" class="conteudo-aba ativo">
+                {% if agendamentos_pendentes %}
+                    {% for agendamento in agendamentos_pendentes %}
+                        <div class="card-agendamento">
+                            <div class="info-agendamento">
+                                <h3>{{ agendamento.servico.nome }}</h3>
+                                <p><strong>Endereço:</strong> {{ agendamento.local.endereco }}</p>
+                                <p><strong>Data:</strong> {{ agendamento.data }}</p>
+                                <p><strong>Horário:</strong> {{ agendamento.horario }}</p>
+                                <p><strong>Status:</strong> {{ agendamento.status }}</p>
+                            </div>
+
+                            <div class="acoes-agendamento">
+                                <a class="botao-acao" href="/agendamento/{{ agendamento.id }}/editar/">
+                                    Editar
+                                </a>
+
+                                <a class="botao-acao botao-cancelar" href="/agendamento/{{ agendamento.id }}/cancelar/">
+                                    Cancelar
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="mensagem-vazia">Você não possui agendamentos pendentes.</p>
+                {% endif %}
+            </div>
+
+            <div id="confirmados" class="conteudo-aba">
+                {% if agendamentos_confirmados %}
+                    {% for agendamento in agendamentos_confirmados %}
+                        <div class="card-agendamento">
+                            <div class="info-agendamento">
+                                <h3>{{ agendamento.servico.nome }}</h3>
+                                <p><strong>Endereço:</strong> {{ agendamento.local.endereco }}</p>
+                                <p><strong>Data:</strong> {{ agendamento.data }}</p>
+                                <p><strong>Horário:</strong> {{ agendamento.horario }}</p>
+                                <p><strong>Status:</strong> {{ agendamento.status }}</p>
+                            </div>
+
+                            <div class="acoes-agendamento">
+                                <a class="botao-acao" href="/agendamento/{{ agendamento.id }}/editar/">
+                                    Editar
+                                </a>
+
+                                <a class="botao-acao botao-cancelar" href="/agendamento/{{ agendamento.id }}/cancelar/">
+                                    Cancelar
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="mensagem-vazia">Você não possui agendamentos confirmados.</p>
+                {% endif %}
+            </div>
+
+            <div id="concluidos" class="conteudo-aba">
+                {% if agendamentos_concluidos %}
+                    {% for agendamento in agendamentos_concluidos %}
+                        <div class="card-agendamento">
+                            <div class="info-agendamento">
+                                <h3>{{ agendamento.servico.nome }}</h3>
+                                <p><strong>Endereço:</strong> {{ agendamento.local.endereco }}</p>
+                                <p><strong>Data:</strong> {{ agendamento.data }}</p>
+                                <p><strong>Horário:</strong> {{ agendamento.horario }}</p>
+                                <p><strong>Status:</strong> {{ agendamento.status }}</p>
+                            </div>
+
+                            <div class="acoes-agendamento">
+                                <a class="botao-acao" href="#">
+                                    Adicionar review
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="mensagem-vazia">Você ainda não possui serviços concluídos.</p>
+                {% endif %}
+            </div>
+
+            <a class="voltar" href="/">Voltar para a página inicial</a>
+        </section>
+    </main>
+
+    <script>
+        const abas = document.querySelectorAll('.aba');
+        const conteudos = document.querySelectorAll('.conteudo-aba');
+
+        abas.forEach(aba => {
+            aba.addEventListener('click', () => {
+                abas.forEach(a => a.classList.remove('ativa'));
+                conteudos.forEach(c => c.classList.remove('ativo'));
+
+                aba.classList.add('ativa');
+
+                const idAba = aba.dataset.aba;
+                document.getElementById(idAba).classList.add('ativo');
+            });
+        });
+    </script>
+
+</body>
+
+</html>

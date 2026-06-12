@@ -1,0 +1,42 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Agendamento - Agenda Fácil</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+</head>
+
+<body>
+
+    <main class="container-login">
+        <section class="caixa-login">
+            <h1>Editar agendamento</h1>
+            <p>Altere as informações do seu pedido.</p>
+
+            <div class="resumo-pedido">
+                <p><strong>Serviço:</strong> {{ agendamento.servico.nome }}</p>
+                <p><strong>Endereço:</strong> {{ agendamento.local.endereco }}</p>
+                <p><strong>Status:</strong> {{ agendamento.status }}</p>
+            </div>
+
+            <form method="POST">
+                {% csrf_token %}
+
+                {{ form.as_p }}
+
+                <button type="submit">
+                    Salvar alterações
+                </button>
+            </form>
+
+            <a class="voltar" href="/meus-agendamentos/">Voltar para meus agendamentos</a>
+        </section>
+    </main>
+
+</body>
+
+</html>

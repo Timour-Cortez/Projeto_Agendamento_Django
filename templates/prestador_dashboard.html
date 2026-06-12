@@ -1,0 +1,176 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agenda Fácil – Painel do Prestador</title>
+  <link rel="stylesheet" href="{% static 'css/prestador_dashboard.css' %}">
+</head>
+<body>
+
+<header class="dashboard-header">
+  <a href="/" class="logo">AgendaFácil</a>
+  <a href="{% url 'logout' %}" class="btn-sair">Sair</a>
+</header>
+
+<div class="page-title">
+  <h2>Painel do Prestador</h2>
+  <p>Acompanhe e gerencie seus agendamentos</p>
+</div>
+
+<section id="historico-secao" class="aba-secao">
+
+  <nav class="tabs">
+    <a href="#a-fazer-secao" class="tab">A Fazer</a>
+    <a href="#historico-secao" class="tab tab-ativa">Histórico</a>
+  </nav>
+
+  <div class="page-columns">
+    <div class="col-left">
+      {% for pedido in pedidos %}
+        {% if pedido.status == 'cancelado' %}
+        <div class="card">
+          <p class="cliente-nome">{{ pedido.cliente.nome }}</p>
+          <p class="servico-nome">{{ pedido.servico.nome }}</p>
+          <span class="status-badge">{{ pedido.get_status_display }}</span>
+          <p class="data-horario">{{ pedido.data }} às {{ pedido.horario }}</p>
+        </div>
+        {% endif %}
+      {% empty %}
+        <div class="empty-state">
+          <p>Nenhum pedido no histórico ainda</p>
+          <p>Pedidos cancelados ou concluídos aparecerão aqui</p>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="col-right">
+      <div class="card-detalhes">
+        <p class="card-titulo">Detalhes do Pedido</p>
+        <hr class="divider">
+        <div class="detalhe-linha">
+          <span class="detalhe-label">Cliente</span>
+          <span class="detalhe-valor">{{ pedidos.0.cliente.nome|default:"Selecione um pedido" }}</span>
+        </div>
+        <div class="detalhe-linha">
+          <span class="detalhe-label">Serviço</span>
+          <span class="detalhe-valor">{{ pedidos.0.servico.nome|default:"Sem informação" }}</span>
+        </div>
+        <div class="detalhe-linha">
+          <span class="detalhe-label">Endereço</span>
+          <span class="detalhe-valor">{{ pedidos.0.local.endereco|default:"Sem informação" }}</span>
+        </div>
+        <div class="detalhe-linha">
+          <span class="detalhe-label">Data</span>
+          <span class="detalhe-valor">{{ pedidos.0.data|default:"Sem informação" }}</span>
+        </div>
+        <div class="detalhe-linha">
+          <span class="detalhe-label">Horário</span>
+          <span class="detalhe-valor">{{ pedidos.0.horario|default:"Sem informação" }}</span>
+        </div>
+        <div class="detalhe-linha">
+          <span class="detalhe-label">Status</span>
+          <span class="detalhe-valor">{{ pedidos.0.get_status_display|default:"Sem informação" }}</span>
+        </div>
+        <button class="btn-confirmar-pedido">Confirmar Pedido</button>
+        <button class="btn-concluir-pedido">Marcar como Concluído</button>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<section id="a-fazer-secao" class="aba-secao">
+
+  <nav class="tabs">
+    <a href="#a-fazer-secao" class="tab tab-ativa">A Fazer</a>
+    <a href="#historico-secao" class="tab">Histórico</a>
+  </nav>
+
+  <div class="page-columns">
+    <div class="col-left">
+      {% for pedido in pedidos %}
+        {% if pedido.status == 'pendente' or pedido.status == 'confirmado' %}
+        <div class="card">
+          <p class="cliente-nome">{{ pedido.cliente.nome }}</p>
+          <p class="servico-nome">{{ pedido.servico.nome }}</p>
+          <span class="status-badge">{{ pedido.get_status_display }}</span>
+          <p class="data-horario">{{ pedido.data }} às {{ pedido.horario }}</p>
+        </div>
+        {% endif %}
+      {% empty %}
+        <div class="empty-state">
+          <p>Nenhum pedido recebido ainda</p>
+          <p>Quando clientes agendarem, os pedidos aparecerão aqui</p>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="col-right">
+      <div class="card-detalhes">
+        <p class="card-titulo">Detalhes do Pedido</p>
+        <hr class="divider">
+        <div class="detalhe-linha">
+          <span class="detalhe-label">Cliente</span>
+          <span class="detalhe-valor">{{ pedidos.0.cliente.nome|default:"Selecione um pedido" }}</span>
+        </div>
+        <div class="detalhe-linha">
+          <span class="detalhe-label">Serviço</span>
+          <span class="detalhe-valor">{{ pedidos.0.servico.nome|default:"Sem informação" }}</span>
+        </div>
+        <div class="detalhe-linha">
+          <span class="detalhe-label">Endereço</span>
+          <span class="detalhe-valor">{{ pedidos.0.local.endereco|default:"Sem informação" }}</span>
+        </div>
+        <div class="detalhe-linha">
+          <span class="detalhe-label">Data</span>
+          <span class="detalhe-valor">{{ pedidos.0.data|default:"Sem informação" }}</span>
+        </div>
+        <div class="detalhe-linha">
+          <span class="detalhe-label">Horário</span>
+          <span class="detalhe-valor">{{ pedidos.0.horario|default:"Sem informação" }}</span>
+        </div>
+        <div class="detalhe-linha">
+          <span class="detalhe-label">Status</span>
+          <span class="detalhe-valor">{{ pedidos.0.get_status_display|default:"Sem informação" }}</span>
+        </div>
+        <button class="btn-confirmar-pedido">Confirmar Pedido</button>
+        <button class="btn-concluir-pedido">Marcar como Concluído</button>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<div class="calendario-secao">
+  <h3>Calendário Operacional</h3>
+  <div class="calendario-grid">
+    <div class="dia-semana">Dom</div>
+    <div class="dia-semana">Seg</div>
+    <div class="dia-semana">Ter</div>
+    <div class="dia-semana">Qua</div>
+    <div class="dia-semana">Qui</div>
+    <div class="dia-semana">Sex</div>
+    <div class="dia-semana">Sáb</div>
+
+    <div class="dia-celula">1</div>
+    <div class="dia-celula">2<span class="ponto-agendamento"></span></div>
+    <div class="dia-celula">3</div>
+    <div class="dia-celula">4<span class="ponto-agendamento"></span></div>
+    <div class="dia-celula">5</div>
+    <div class="dia-celula">6</div>
+    <div class="dia-celula">7<span class="ponto-agendamento"></span></div>
+
+    <div class="dia-celula">8</div>
+    <div class="dia-celula">9</div>
+    <div class="dia-celula">10<span class="ponto-agendamento"></span></div>
+    <div class="dia-celula">11</div>
+    <div class="dia-celula">12</div>
+    <div class="dia-celula">13<span class="ponto-agendamento"></span></div>
+    <div class="dia-celula">14</div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -26,9 +26,13 @@
                 <p><strong>Longitude:</strong> {{ pedido.longitude }}</p>
             </div>
 
-            <button type="button">
-                Ir para pagamento
-            </button>
+            <form method="POST" action="/confirmar-pedido/">
+                {% csrf_token %}
+
+                <button type="submit">
+                    Confirmar pedido
+                </button>
+            </form>
 
             <a class="voltar" href="/">Voltar para a página inicial</a>
         </section>

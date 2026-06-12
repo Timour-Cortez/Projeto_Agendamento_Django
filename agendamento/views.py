@@ -1,7 +1,10 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
-from .models import Servico
-from .forms import AgendamentoForm, CadastroUsuarioForm, LoginUsuarioForm
+from django.contrib.auth.decorators import login_required
+from datetime import time
+
+from .models import Servico, Cliente, LocalAtendimento, Agendamento
+from .forms import AgendamentoForm, CadastroUsuarioForm, LoginUsuarioForm, ReclamacaoForm, EditarAgendamentoForm
 
 
 def home(request):
@@ -26,6 +29,8 @@ def login_view(request):
 
     return render(request, 'login.html', {'form': form})
 
+
+@login_required
 def logout_view(request):
     logout(request)
     return redirect('home')
@@ -61,6 +66,7 @@ def agendar(request):
 
     return render(request, 'agendar.html', {'form': form})
 
+
 def montar_pedido(request):
     if request.method == 'POST':
         servico_id = request.POST.get('servico_id')
@@ -84,11 +90,10 @@ def montar_pedido(request):
 
     return redirect('home')
 
+
+@login_required
 def pagamento(request):
     pedido = request.session.get('pedido')
-
-    if not request.user.is_authenticated:
-        return redirect('login')
 
     if not pedido:
         return redirect('home')
@@ -96,9 +101,71 @@ def pagamento(request):
     return render(request, 'pagamento.html', {'pedido': pedido})
 
 
+@login_required
+def confirmar_pedido(request):
+    pedido = request.session.get('pedido')
+
+    if not pedido:
+        return redirect('home')
+
+    servico = Servico.objects.get(id=pedido['servico_id'])
+
+    cliente, criado = Cliente.objects.get_or_create(
+        email=request.user.email,
+        defaults={
+            'nome': request.user.username,
+            'telefone': ''
+        }
+    )
+
+    local = LocalAtendimento.objects.create(
+        endereco=pedido['endereco'],
+        bairro='Não informado',
+        cidade='Rio de Janeiro',
+        referencia=f"Latitude: {pedido['latitude']} | Longitude: {pedido['longitude']}"
+    )
+
+    Agendamento.objects.create(
+        usuario=request.user,
+        cliente=cliente,
+        servico=servico,
+        local=local,
+        data=pedido['data_servico'],
+        horario=time(9, 0),
+        status='pendente',
+        observacoes='Pedido criado pela página inicial.'
+    )
+
+    del request.session['pedido']
+
+    return redirect('meus_agendamentos')
+
+
+@login_required
+def meus_agendamentos(request):
+    agendamentos_pendentes = Agendamento.objects.filter(
+        usuario=request.user,
+        status='pendente'
+    )
+
+    agendamentos_confirmados = Agendamento.objects.filter(
+        usuario=request.user,
+        status='confirmado'
+    )
+
+    agendamentos_concluidos = Agendamento.objects.filter(
+        usuario=request.user,
+        status='concluido'
+    )
+
+    return render(request, 'meus_agendamentos.html', {
+        'agendamentos_pendentes': agendamentos_pendentes,
+        'agendamentos_confirmados': agendamentos_confirmados,
+        'agendamentos_concluidos': agendamentos_concluidos,
+    })
+
 
 def prestador_dashboard(request):
-    from django.shortcuts import render
     return render(request, 'agendamento/prestador_dashboard.html', {
         'prestador': {'nome': 'Prestador'},
         'pedidos': [],
@@ -107,9 +174,61 @@ def prestador_dashboard(request):
         'pedidos_confirmados': 0,
     })
 
+
 def cliente_acompanhamento(request, pedido_id):
-    from django.shortcuts import render
     return render(request, 'agendamento/cliente_acompanhamento.html', {
         'pedido': None,
     })
 
+
+def reclame_aqui(request):
+    if request.method == 'POST':
+        form = ReclamacaoForm(request.POST)
+
+        if form.is_valid():
+            return render(request, 'reclame_aqui_sucesso.html')
+    else:
+        form = ReclamacaoForm()
+
+    return render(request, 'reclame_aqui.html', {'form': form})
+
+
+@login_required
+def editar_agendamento(request, agendamento_id):
+    agendamento = Agendamento.objects.get(id=agendamento_id, usuario=request.user)
+
+    if request.method == 'POST':
+        form = EditarAgendamentoForm(request.POST, instance=agendamento)
+
+        if form.is_valid():
+            form.save()
+            return redirect('meus_agendamentos')
+    else:
+        form = EditarAgendamentoForm(instance=agendamento)
+
+    return render(request, 'editar_agendamento.html', {
+        'form': form,
+        'agendamento': agendamento
+    })
+
+
+@login_required
+def cancelar_agendamento(request, agendamento_id):
+    agendamento = Agendamento.objects.get(id=agendamento_id, usuario=request.user)
+
+    if request.method == 'POST':
+        agendamento.status = 'cancelado'
+        agendamento.save()
+        return redirect('meus_agendamentos')
+
+    return render(request, 'cancelar_agendamento.html', {
+        'agendamento': agendamento
+    })
+
+@login_required
+def prestador_dashboard(request):
+    pedidos = Agendamento.objects.all().order_by('data', 'horario')
+
+    return render(request, 'agendamento/prestador_dashboard.html', {
+        'pedidos': pedidos,
+    })
