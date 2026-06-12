@@ -54,6 +54,7 @@ def cadastro(request):
     return render(request, 'cadastro.html', {'form': form})
 
 
+@login_required
 def agendar(request):
     if request.method == 'POST':
         form = AgendamentoForm(request.POST)
@@ -165,16 +166,16 @@ def meus_agendamentos(request):
     })
 
 
+@login_required
 def prestador_dashboard(request):
+    pedidos = Agendamento.objects.all().order_by('data', 'horario')
+
     return render(request, 'agendamento/prestador_dashboard.html', {
-        'prestador': {'nome': 'Prestador'},
-        'pedidos': [],
-        'total_pedidos': 0,
-        'pedidos_pendentes': 0,
-        'pedidos_confirmados': 0,
+        'pedidos': pedidos,
     })
 
 
+@login_required
 def cliente_acompanhamento(request, pedido_id):
     return render(request, 'agendamento/cliente_acompanhamento.html', {
         'pedido': None,
@@ -223,12 +224,4 @@ def cancelar_agendamento(request, agendamento_id):
 
     return render(request, 'cancelar_agendamento.html', {
         'agendamento': agendamento
-    })
-
-@login_required
-def prestador_dashboard(request):
-    pedidos = Agendamento.objects.all().order_by('data', 'horario')
-
-    return render(request, 'agendamento/prestador_dashboard.html', {
-        'pedidos': pedidos,
     })
