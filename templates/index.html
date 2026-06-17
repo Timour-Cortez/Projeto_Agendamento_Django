@@ -111,6 +111,11 @@
                                 <span class="legenda selecionado-legenda"></span>
                                 Selecionado
                             </div>
+
+                            <div>
+                                <span class="legenda indisponivel-legenda"></span>
+                                Indisponível
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -125,6 +130,8 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <script>
+        const datasIndisponiveis = {{ datas_indisponiveis|safe }};
+
         const cardsServico = document.querySelectorAll('.card-servico');
         const inputServico = document.getElementById('servico_id');
 
@@ -215,19 +222,27 @@
             for (let dia = 1; dia <= quantidadeDias; dia++) {
                 const botaoDia = document.createElement('button');
                 botaoDia.type = 'button';
-                botaoDia.classList.add('dia', 'disponivel', 'dia-calendario');
+                botaoDia.classList.add('dia', 'dia-calendario');
                 botaoDia.textContent = dia;
 
                 const dataFormatada = formatarData(ano, mes, dia);
                 botaoDia.dataset.data = dataFormatada;
 
-                botaoDia.addEventListener('click', () => {
-                    const dias = document.querySelectorAll('.dia-calendario');
-                    dias.forEach(d => d.classList.remove('selecionado'));
+                if (datasIndisponiveis.includes(dataFormatada)) {
+                    botaoDia.classList.add('indisponivel');
+                    botaoDia.disabled = true;
+                    botaoDia.title = 'Data indisponível';
+                } else {
+                    botaoDia.classList.add('disponivel');
 
-                    botaoDia.classList.add('selecionado');
-                    inputData.value = dataFormatada;
-                });
+                    botaoDia.addEventListener('click', () => {
+                        const dias = document.querySelectorAll('.dia-calendario');
+                        dias.forEach(d => d.classList.remove('selecionado'));
+
+                        botaoDia.classList.add('selecionado');
+                        inputData.value = dataFormatada;
+                    });
+                }
 
                 calendario.appendChild(botaoDia);
             }

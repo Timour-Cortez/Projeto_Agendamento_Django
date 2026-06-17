@@ -49,3 +49,11 @@ class Agendamento(models.Model):
 
     def __str__(self):
         return f"{self.cliente.nome} - {self.servico.nome} - {self.data} {self.horario}"
+
+
+class DiaBloqueado(models.Model):
+    data = models.DateField(unique=True)
+    motivo = models.CharField(max_length=200, blank=True)
+
+    def __str__(self):
+        return f"{self.data} - {self.motivo}"

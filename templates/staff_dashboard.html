@@ -1,0 +1,325 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Staff - Agenda Fácil</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}?v=5">
+</head>
+
+<body>
+
+    <main class="container-login">
+        <section class="caixa-login painel-agendamentos">
+
+            <h1>Dashboard do Prestador</h1>
+            <p>Área interna para gerenciar serviços, agenda e personalização do site.</p>
+
+            <!-- Abas principais do dashboard -->
+            <div class="abas-agendamentos">
+                <button type="button" class="aba ativa" data-aba="gestao-servicos">
+                    Gestão de Serviços
+                </button>
+
+                <button type="button" class="aba" data-aba="personalizacao-site">
+                    Personalização do Site
+                </button>
+            </div>
+
+            <!-- ABA 1: GESTÃO DE SERVIÇOS -->
+            <div id="gestao-servicos" class="conteudo-aba ativo">
+
+                <h2>Agenda do Prestador</h2>
+                <p>Calendário para acompanhar serviços agendados e bloquear dias indisponíveis.</p>
+
+                <div class="area-dashboard-staff">
+
+                    <!-- Calendário visual inicial -->
+                    <div class="calendario-staff">
+                        <h3>Calendário</h3>
+
+                        <div class="calendario-grade">
+                            <div class="dia-semana">Dom</div>
+                            <div class="dia-semana">Seg</div>
+                            <div class="dia-semana">Ter</div>
+                            <div class="dia-semana">Qua</div>
+                            <div class="dia-semana">Qui</div>
+                            <div class="dia-semana">Sex</div>
+                            <div class="dia-semana">Sáb</div>
+
+                            <div class="dia-calendario vazio"></div>
+                            <div class="dia-calendario">1</div>
+                            <div class="dia-calendario">2</div>
+                            <div class="dia-calendario com-servico">3</div>
+                            <div class="dia-calendario">4</div>
+                            <div class="dia-calendario bloqueado">5</div>
+                            <div class="dia-calendario">6</div>
+
+                            <div class="dia-calendario">7</div>
+                            <div class="dia-calendario com-servico">8</div>
+                            <div class="dia-calendario">9</div>
+                            <div class="dia-calendario">10</div>
+                            <div class="dia-calendario bloqueado">11</div>
+                            <div class="dia-calendario">12</div>
+                            <div class="dia-calendario">13</div>
+
+                            <div class="dia-calendario">14</div>
+                            <div class="dia-calendario">15</div>
+                            <div class="dia-calendario com-servico">16</div>
+                            <div class="dia-calendario">17</div>
+                            <div class="dia-calendario">18</div>
+                            <div class="dia-calendario">19</div>
+                            <div class="dia-calendario bloqueado">20</div>
+
+                            <div class="dia-calendario">21</div>
+                            <div class="dia-calendario">22</div>
+                            <div class="dia-calendario">23</div>
+                            <div class="dia-calendario com-servico">24</div>
+                            <div class="dia-calendario">25</div>
+                            <div class="dia-calendario">26</div>
+                            <div class="dia-calendario">27</div>
+
+                            <div class="dia-calendario">28</div>
+                            <div class="dia-calendario">29</div>
+                            <div class="dia-calendario">30</div>
+                        </div>
+
+                        <div class="legenda-calendario">
+                            <span><strong class="legenda-servico"></strong> Dia com serviço</span>
+                            <span><strong class="legenda-bloqueado"></strong> Dia bloqueado</span>
+                        </div>
+
+                        <form method="POST" class="form-bloquear-dia">
+                            {% csrf_token %}
+
+                            <label for="data_bloqueio">Bloquear dia</label>
+                            <input type="date" id="data_bloqueio" name="data_bloqueio" required>
+
+                            <label for="motivo_bloqueio">Motivo</label>
+                            <input type="text" id="motivo_bloqueio" name="motivo_bloqueio" placeholder="Ex: indisponível, viagem, manutenção">
+
+                            <button type="submit" class="botao-acao botao-bloquear-dia">
+                                Bloquear dia
+                            </button>
+                        </form>
+                        
+                       <div class="dias-bloqueados-lista">
+                            <h4>Dias bloqueados</h4>
+
+                            {% if dias_bloqueados %}
+                                {% for dia in dias_bloqueados %}
+                                    <div class="item-dia-bloqueado">
+                                        <strong>{{ dia.data }}</strong>
+                                        <span>{{ dia.motivo }}</span>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <p class="mensagem-vazia">Nenhum dia bloqueado ainda.</p>
+                            {% endif %}
+                        </div> 
+                        
+                    </div>
+
+                    <!-- Resumo lateral -->
+                    <div class="resumo-staff">
+                        <h3>Resumo</h3>
+
+                        <div class="card-resumo-staff">
+                            <strong>{{ total_a_fazer }}</strong>
+                            <span>Serviços a fazer</span>
+                        </div>
+
+                        <div class="card-resumo-staff">
+                            <strong>{{ total_pendentes }}</strong>
+                            <span>Pendentes</span>
+                        </div>
+
+                        <div class="card-resumo-staff">
+                            <strong>{{ total_confirmados }}</strong>
+                            <span>Confirmados</span>
+                        </div>
+
+                        <div class="card-resumo-staff">
+                            <strong>{{ total_historico }}</strong>
+                            <span>Histórico</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Abas internas dos pedidos -->
+                <h2>Pedidos</h2>
+
+                <div class="abas-agendamentos abas-menores">
+                    <button type="button" class="aba-pedido ativa" data-pedido="pedidos-a-fazer">
+                        A fazer
+                    </button>
+
+                    <button type="button" class="aba-pedido" data-pedido="pedidos-confirmados">
+                        Confirmados
+                    </button>
+
+                    <button type="button" class="aba-pedido" data-pedido="pedidos-historico">
+                        Histórico
+                    </button>
+                </div>
+
+                <div id="pedidos-a-fazer" class="conteudo-pedido ativo">
+                    {% if agendamentos_a_fazer %}
+                        {% for agendamento in agendamentos_a_fazer %}
+                            <details class="card-pedido-pequeno">
+                                <summary>
+                                    <strong>{{ agendamento.servico.nome }}</strong>
+                                    <span>{{ agendamento.data }} - {{ agendamento.status }}</span>
+                                </summary>
+
+                                <div class="detalhes-pedido">
+                                    <p><strong>Cliente:</strong> {{ agendamento.cliente.nome }}</p>
+                                    <p><strong>E-mail:</strong> {{ agendamento.cliente.email }}</p>
+                                    <p><strong>Endereço:</strong> {{ agendamento.local.endereco }}</p>
+                                    <p><strong>Horário:</strong> {{ agendamento.horario }}</p>
+                                    <p><strong>Observações:</strong> {{ agendamento.observacoes }}</p>
+                                </div>
+                            </details>
+                        {% endfor %}
+                    {% else %}
+                        <p class="mensagem-vazia">Não existem serviços pendentes ou confirmados no momento.</p>
+                    {% endif %}
+                </div>
+
+                <div id="pedidos-confirmados" class="conteudo-pedido">
+                    {% if agendamentos_a_fazer %}
+                        {% for agendamento in agendamentos_a_fazer %}
+                            {% if agendamento.status == 'confirmado' %}
+                                <details class="card-pedido-pequeno">
+                                    <summary>
+                                        <strong>{{ agendamento.servico.nome }}</strong>
+                                        <span>{{ agendamento.data }} - confirmado</span>
+                                    </summary>
+
+                                    <div class="detalhes-pedido">
+                                        <p><strong>Cliente:</strong> {{ agendamento.cliente.nome }}</p>
+                                        <p><strong>Endereço:</strong> {{ agendamento.local.endereco }}</p>
+                                        <p><strong>Horário:</strong> {{ agendamento.horario }}</p>
+                                    </div>
+                                </details>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <p class="mensagem-vazia">Não existem serviços confirmados.</p>
+                    {% endif %}
+                </div>
+
+                <div id="pedidos-historico" class="conteudo-pedido">
+                    {% if agendamentos_historico %}
+                        {% for agendamento in agendamentos_historico %}
+                            <details class="card-pedido-pequeno">
+                                <summary>
+                                    <strong>{{ agendamento.servico.nome }}</strong>
+                                    <span>{{ agendamento.data }} - {{ agendamento.status }}</span>
+                                </summary>
+
+                                <div class="detalhes-pedido">
+                                    <p><strong>Cliente:</strong> {{ agendamento.cliente.nome }}</p>
+                                    <p><strong>Endereço:</strong> {{ agendamento.local.endereco }}</p>
+                                    <p><strong>Horário:</strong> {{ agendamento.horario }}</p>
+                                    <p><strong>Status:</strong> {{ agendamento.status }}</p>
+                                </div>
+                            </details>
+                        {% endfor %}
+                    {% else %}
+                        <p class="mensagem-vazia">Ainda não existem serviços concluídos ou cancelados.</p>
+                    {% endif %}
+                </div>
+
+            </div>
+
+            <!-- ABA 2: PERSONALIZAÇÃO DO SITE -->
+            <div id="personalizacao-site" class="conteudo-aba">
+
+                <h2>Personalização do Site</h2>
+                <p>Área para futuramente alterar nome, logo, cores, serviços e valores exibidos na tela inicial.</p>
+
+                <div class="card-agendamento">
+                    <h3>Identidade visual</h3>
+
+                    <form>
+                        <p>
+                            <label>Nome exibido na tela inicial</label>
+                            <input type="text" value="Agenda Fácil" disabled>
+                        </p>
+
+                        <p>
+                            <label>Logo do site</label>
+                            <input type="file" disabled>
+                        </p>
+
+                        <p>
+                            <label>Cor principal</label>
+                            <select disabled>
+                                <option>Verde institucional</option>
+                                <option>Azul profissional</option>
+                                <option>Areia minimalista</option>
+                            </select>
+                        </p>
+
+                        <button type="button" disabled>
+                            Salvar personalização
+                        </button>
+                    </form>
+                </div>
+
+                <div class="card-agendamento">
+                    <h3>Serviços e valores</h3>
+                    <p>Futuramente o prestador poderá editar os serviços disponíveis e os valores exibidos na home.</p>
+
+                    <button type="button" disabled>
+                        Editar serviços
+                    </button>
+                </div>
+
+            </div>
+
+            <a class="voltar" href="/">Voltar para a página inicial</a>
+
+        </section>
+    </main>
+
+    <script>
+        const abasPrincipais = document.querySelectorAll('.aba');
+        const conteudosPrincipais = document.querySelectorAll('.conteudo-aba');
+
+        abasPrincipais.forEach(aba => {
+            aba.addEventListener('click', () => {
+                abasPrincipais.forEach(a => a.classList.remove('ativa'));
+                conteudosPrincipais.forEach(c => c.classList.remove('ativo'));
+
+                aba.classList.add('ativa');
+
+                const idAba = aba.dataset.aba;
+                document.getElementById(idAba).classList.add('ativo');
+            });
+        });
+
+        const abasPedidos = document.querySelectorAll('.aba-pedido');
+        const conteudosPedidos = document.querySelectorAll('.conteudo-pedido');
+
+        abasPedidos.forEach(aba => {
+            aba.addEventListener('click', () => {
+                abasPedidos.forEach(a => a.classList.remove('ativa'));
+                conteudosPedidos.forEach(c => c.classList.remove('ativo'));
+
+                aba.classList.add('ativa');
+
+                const idPedido = aba.dataset.pedido;
+                document.getElementById(idPedido).classList.add('ativo');
+            });
+        });
+    </script>
+
+</body>
+
+</html>

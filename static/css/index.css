@@ -316,3 +316,24 @@ section {
 .botao-meus-pedidos:hover {
     background-color: #f5f1e8;
 }
+
+
+.dia.indisponivel,
+.dia-calendario.indisponivel {
+    background-color: #f1d1d1 !important;
+    color: #7d2f2f !important;
+    border: 2px solid #9b3d3d !important;
+    cursor: not-allowed !important;
+    opacity: 0.75;
+}
+
+.dia.indisponivel:hover,
+.dia-calendario.indisponivel:hover {
+    background-color: #f1d1d1 !important;
+    transform: none !important;
+}
+
+.indisponivel-legenda {
+    background-color: #f1d1d1;
+    border: 2px solid #9b3d3d;
+}

@@ -3,13 +3,31 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from datetime import time
 
-from .models import Servico, Cliente, LocalAtendimento, Agendamento
+from .models import Servico, Cliente, LocalAtendimento, Agendamento, DiaBloqueado
 from .forms import AgendamentoForm, CadastroUsuarioForm, LoginUsuarioForm, ReclamacaoForm, EditarAgendamentoForm
 
 
 def home(request):
     servicos = Servico.objects.all()
-    return render(request, 'index.html', {'servicos': servicos})
+
+    agendamentos_confirmados = Agendamento.objects.filter(
+        status='confirmado'
+    ).values_list('data', flat=True).distinct()
+
+    dias_bloqueados = DiaBloqueado.objects.values_list('data', flat=True)
+
+    datas_indisponiveis = []
+
+    for data in agendamentos_confirmados:
+        datas_indisponiveis.append(data.strftime('%Y-%m-%d'))
+
+    for data in dias_bloqueados:
+        datas_indisponiveis.append(data.strftime('%Y-%m-%d'))
+
+    return render(request, 'index.html', {
+        'servicos': servicos,
+        'datas_indisponiveis': datas_indisponiveis,
+    })
 
 
 def login_view(request):
@@ -165,13 +183,48 @@ def meus_agendamentos(request):
     })
 
 
+@login_required
 def prestador_dashboard(request):
-    return render(request, 'agendamento/prestador_dashboard.html', {
-        'prestador': {'nome': 'Prestador'},
-        'pedidos': [],
-        'total_pedidos': 0,
-        'pedidos_pendentes': 0,
-        'pedidos_confirmados': 0,
+    if not request.user.is_staff:
+        return redirect('home')
+
+    if request.method == 'POST':
+        data_bloqueio = request.POST.get('data_bloqueio')
+        motivo_bloqueio = request.POST.get('motivo_bloqueio')
+
+        if data_bloqueio:
+            DiaBloqueado.objects.get_or_create(
+                data=data_bloqueio,
+                defaults={
+                    'motivo': motivo_bloqueio
+                }
+            )
+
+        return redirect('prestador_dashboard')
+
+    agendamentos_a_fazer = Agendamento.objects.filter(
+        status__in=['pendente', 'confirmado']
+    ).order_by('data', 'horario')
+
+    agendamentos_historico = Agendamento.objects.filter(
+        status__in=['concluido', 'cancelado']
+    ).order_by('-data', '-horario')
+
+    dias_bloqueados = DiaBloqueado.objects.all().order_by('data')
+
+    total_a_fazer = agendamentos_a_fazer.count()
+    total_historico = agendamentos_historico.count()
+    total_pendentes = Agendamento.objects.filter(status='pendente').count()
+    total_confirmados = Agendamento.objects.filter(status='confirmado').count()
+
+    return render(request, 'staff_dashboard.html', {
+        'agendamentos_a_fazer': agendamentos_a_fazer,
+        'agendamentos_historico': agendamentos_historico,
+        'dias_bloqueados': dias_bloqueados,
+        'total_a_fazer': total_a_fazer,
+        'total_historico': total_historico,
+        'total_pendentes': total_pendentes,
+        'total_confirmados': total_confirmados,
     })
 
 
