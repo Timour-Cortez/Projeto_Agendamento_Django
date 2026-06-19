@@ -1,0 +1,248 @@
+/* ==========================================
+   RESET E CONFIGURAÇÕES GERAIS
+   ========================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #0f1117;
+    color: #f3f4f6;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+
+/* Container Principal (Largura estendida para acomodar melhor os cards) */
+.container-login {
+    width: 100%;
+    max-width: 680px;
+}
+
+.caixa-login.painel-agendamentos {
+    background-color: #ffffff;
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+.caixa-login h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #111827;
+    text-align: center;
+    margin-bottom: 0.35rem;
+}
+
+.caixa-login > p {
+    font-size: 0.95rem;
+    color: #6b7280;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+/* ==========================================
+   SISTEMA DE ABAS (NAVEGAÇÃO)
+   ========================================== */
+.abas-agendamentos {
+    display: flex;
+    background-color: #f3f4f6;
+    padding: 0.35rem;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+    gap: 0.25rem;
+}
+
+.aba {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 0.75rem 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #4b5563;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.aba:hover {
+    color: #111827;
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.aba.ativa {
+    background-color: #ffffff;
+    color: #111827;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+/* Controle de visibilidade das abas pelo JavaScript */
+.conteudo-aba {
+    display: none;
+}
+
+.conteudo-aba.ativo {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================
+   CARDS DE AGENDAMENTO
+   ========================================== */
+.card-agendamento {
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-agendamento:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+/* Informações do Bloco Esquerdo */
+.info-agendamento {
+    flex-grow: 1;
+}
+
+.info-agendamento h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 0.6rem;
+}
+
+.info-agendamento p {
+    font-size: 0.875rem;
+    color: #4b5563;
+    margin-bottom: 0.35rem;
+    line-height: 1.4;
+}
+
+.info-agendamento p strong {
+    color: #111827;
+    font-weight: 500;
+}
+
+/* ==========================================
+   BOTÕES E AÇÕES DO CARD
+   ========================================== */
+.acoes-agendamento {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    min-width: 130px;
+}
+
+.botao-acao {
+    display: block;
+    text-align: center;
+    padding: 0.55rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 8px;
+    background-color: #e5e7eb;
+    color: #374151;
+    transition: all 0.2s ease;
+}
+
+.botao-acao:hover {
+    background-color: #d1d5db;
+    color: #111827;
+}
+
+/* Botão Cancelar (Tom sutil de Vermelho/Laranja) */
+.botao-acao.botao-cancelar {
+    background-color: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fee2e2;
+}
+
+.botao-acao.botao-cancelar:hover {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+/* Se for o botão de Review (Destaque Verde amigável) */
+.acoes-agendamento a[href="#"] {
+    background-color: #ecfdf5;
+    color: #059669;
+    border: 1px solid #d1fae5;
+}
+
+.acoes-agendamento a[href="#"]:hover {
+    background-color: #d1fae5;
+    color: #047857;
+}
+
+/* ==========================================
+   ESTADOS VAZIOS E FOOTER
+   ========================================== */
+.mensagem-vazia {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    color: #9ca3af;
+    font-size: 0.95rem;
+    background-color: #f9fafb;
+    border: 1px dashed #d1d5db;
+    border-radius: 12px;
+}
+
+.voltar {
+    display: block;
+    text-align: center;
+    margin-top: 2rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.voltar:hover {
+    color: #111827;
+}
+
+/* ==========================================
+   RESPONSIVIDADE (MOBILE)
+   ========================================== */
+@media (max-width: 580px) {
+    .caixa-login.painel-agendamentos {
+        padding: 1.75rem 1.25rem;
+    }
+
+    .card-agendamento {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1.25rem;
+        padding: 1.25rem;
+    }
+
+    .acoes-agendamento {
+        flex-direction: row;
+        min-width: auto;
+    }
+
+    .botao-acao {
+        flex: 1;
+    }
+}
