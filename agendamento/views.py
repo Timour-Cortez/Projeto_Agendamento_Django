@@ -78,7 +78,7 @@ def montar_pedido(request):
 
         request.session['pedido'] = {
             'servico_id': servico_id,
-            'servico_nome': Servico.objects.get(id=servico_id).nome
+            'servico_nome': Servico.objects.get(id=servico_id).nome,
             'endereco': endereco,
             'latitude': latitude,
             'longitude': longitude,
