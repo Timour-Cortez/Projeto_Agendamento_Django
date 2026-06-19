@@ -225,3 +225,7 @@ def cancelar_agendamento(request, agendamento_id):
     return render(request, 'cancelar_agendamento.html', {
         'agendamento': agendamento
     })
+
+@login_required
+def cliente_acompanhamento(request):
+    return render(request, 'AgendaFacilapp/cliente_acompanhamento.html')
