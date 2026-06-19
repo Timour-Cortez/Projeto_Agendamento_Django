@@ -1,0 +1,154 @@
+/* ==========================================
+   RESET E ESTRUTURA BASE (Identidade Escura)
+   ========================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #0f1117; /* Fundo padrão do Agenda Fácil */
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+
+.container-reclame {
+    width: 100%;
+    max-width: 560px;
+}
+
+.caixa-reclame {
+    background-color: #ffffff;
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+}
+
+/* ==========================================
+   TEXTOS DO CABEÇALHO
+   ========================================== */
+.caixa-reclame h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #e63946; /* Vermelho marcante integrado ao tema */
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.caixa-reclame .subtitulo {
+    font-size: 0.95rem;
+    color: #6b7280;
+    text-align: center;
+    margin-bottom: 2rem;
+    line-height: 1.4;
+}
+
+/* ==========================================
+   ESTILIZAÇÃO DO FORMULÁRIO E INPUTS
+   ========================================== */
+.campo {
+    margin-bottom: 1.25rem;
+}
+
+.campo label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #374151;
+    margin-bottom: 0.4rem;
+}
+
+/* Alvo para os inputs injetados pelo Django Form */
+.campo input[type="text"],
+.campo input[type="email"],
+.campo textarea,
+.campo select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: #111827;
+    background-color: #f9fafb;
+    transition: all 0.2s ease;
+}
+
+/* Efeito ao clicar nas caixas de texto */
+.campo input:focus, 
+.campo textarea:focus, 
+.campo select:focus {
+    outline: none;
+    border-color: #e63946;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.15);
+}
+
+.campo textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+/* Mensagens de erro do Django */
+.erros {
+    color: #dc2626;
+    font-size: 0.85rem;
+    margin-top: 0.4rem;
+    font-weight: 500;
+}
+
+/* ==========================================
+   BOTÃO DE ENVIO E RODAPÉ
+   ========================================== */
+.btn-enviar {
+    width: 100%;
+    padding: 0.9rem;
+    background-color: #e63946;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    letter-spacing: 0.02em;
+}
+
+.btn-enviar:hover {
+    background-color: #cbd5e1;
+    background-color: #cb2d3a;
+}
+
+.btn-enviar:active {
+    transform: scale(0.98);
+}
+
+.rodape {
+    text-align: center;
+    margin-top: 1.75rem;
+}
+
+.rodape .voltar {
+    font-size: 0.875rem;
+    color: #6b7280;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.rodape .voltar:hover {
+    color: #111827;
+}
+
+/* ==========================================
+   RESPONSIVIDADE (MOBILE)
+   ========================================== */
+@media (max-width: 480px) {
+    .caixa-reclame {
+        padding: 1.75rem 1.25rem;
+    }
+}
