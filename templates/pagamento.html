@@ -12,24 +12,84 @@
 
 <body>
 
-    <main class="container-login">
-        <section class="caixa-login">
-            <h1>Resumo do pedido</h1>
-            <p>Confira as informações antes de seguir para o pagamento.</p>
+    <main class="container-pagamento">
+        <section class="caixa-pagamento">
+            
+            <header class="pagamento-header">
+                <div class="icone-pagamento">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                </div>
+                <h1>Resumo do pedido</h1>
+                <p>Confira as informações antes de seguir para o pagamento.</p>
+            </header>
 
             <div class="resumo-pedido">
-                <p><strong>Usuário:</strong> {{ user.username }}</p>
-                <p><strong>Serviço escolhido:</strong> {{ pedido.servico_nome }}</p>
-                <p><strong>Endereço:</strong> {{ pedido.endereco }}</p>
-                <p><strong>Data escolhida:</strong> {{ pedido.data_servico }}</p>
-                <p><strong>Latitude:</strong> {{ pedido.latitude }}</p>
-                <p><strong>Longitude:</strong> {{ pedido.longitude }}</p>
+                <h2 class="resumo-titulo">Detalhes do Agendamento</h2>
+                
+                <div class="resumo-item">
+                    <span class="label">Usuário:</span>
+                    <span class="valor">{{ user.username }}</span>
+                </div>
+                <div class="resumo-item">
+                    <span class="label">Serviço escolhido:</span>
+                    <span class="valor">{{ pedido.servico_id }}</span>
+                </div>
+                <div class="resumo-item">
+                    <span class="label">Endereço:</span>
+                    <span class="valor">{{ pedido.endereco }}</span>
+                </div>
+                <div class="resumo-item">
+                    <span class="label">Data escolhida:</span>
+                    <span class="valor">{{ pedido.data_servico }}</span>
+                </div>
+                <div class="resumo-item">
+                    <span class="label">Latitude:</span>
+                    <span class="valor">{{ pedido.latitude }}</span>
+                </div>
+                <div class="resumo-item">
+                    <span class="label">Longitude:</span>
+                    <span class="valor">{{ pedido.longitude }}</span>
+                </div>
             </div>
 
             <form method="POST" action="/confirmar-pedido/">
                 {% csrf_token %}
 
-                <button type="submit">
+                <div class="resumo-pedido" style="margin-top: 1.5rem;">
+                    <h2 class="resumo-titulo">Forma de Pagamento</h2>
+                    
+                    <div class="resumo-item" style="border: none; padding: 0.4rem 0;">
+                        <label for="pix" class="label" style="cursor: pointer; width: 100%; display: flex; justify-content: space-between; align-items: center;">
+                            <span>Pix</span>
+                            <input type="radio" id="pix" name="forma_pagamento" value="pix" checked required>
+                        </label>
+                    </div>
+                    
+                    <div class="resumo-item" style="border: none; padding: 0.4rem 0;">
+                        <label for="credito" class="label" style="cursor: pointer; width: 100%; display: flex; justify-content: space-between; align-items: center;">
+                            <span>Cartão de Crédito</span>
+                            <input type="radio" id="credito" name="forma_pagamento" value="credito">
+                        </label>
+                    </div>
+
+                    <div class="resumo-item" style="border: none; padding: 0.4rem 0;">
+                        <label for="debito" class="label" style="cursor: pointer; width: 100%; display: flex; justify-content: space-between; align-items: center;">
+                            <span>Cartão de Débito</span>
+                            <input type="radio" id="debito" name="forma_pagamento" value="debito">
+                        </label>
+                    </div>
+                </div>
+
+                <div class="faixa-seguranca">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                    <span>Ambiente 100% seguro</span>
+                </div>
+
+                <button type="submit" class="btn-confirmar">
                     Confirmar pedido
                 </button>
             </form>
