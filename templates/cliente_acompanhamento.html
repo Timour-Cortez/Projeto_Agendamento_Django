@@ -1,0 +1,135 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>AgendaFácil — Acompanhamento</title>
+  <link rel="stylesheet" href="{% static 'AgendaFacilapp/cliente_acompanhamento.css' %}">
+</head>
+<body>
+
+<header>
+  <div class="logo">AgendaFácil</div>
+  <nav>
+    <a href="#">Início</a>
+    <a href="#">Sobre</a>
+    <a href="#" class="nav-active">Meus Agendamentos</a>
+  </nav>
+  <button class="btn-solicitar">Solicitar Organização</button>
+</header>
+
+<div class="page-content">
+
+  <p class="page-title">Acompanhe seu agendamento</p>
+  <p class="page-subtitle">Veja o status atual do seu pedido em tempo real</p>
+
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <p class="pedido-label">Pedido</p>
+        <p class="pedido-number">#AF-2025-0420</p>
+      </div>
+      <span class="status-badge-confirmado">CONFIRMADO</span>
+    </div>
+
+    <hr class="divider">
+
+    <div class="stepper">
+      <div class="step">
+        <div class="step-circle-done">✓</div>
+        <p class="step-label-done">Pedido recebido</p>
+        <p class="step-time">18 de maio, 14h32</p>
+      </div>
+      <div class="step-line"></div>
+      <div class="step">
+        <div class="step-circle-done">✓</div>
+        <p class="step-label-done">Confirmado pelo prestador</p>
+        <p class="step-time">19 de maio, 09h10</p>
+      </div>
+      <div class="step-line"></div>
+      <div class="step">
+        <div class="step-circle-pending">📅</div>
+        <p class="step-label-pending">Serviço agendado</p>
+        <p class="step-time">Previsto para 20/05</p>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <p class="section-title">Detalhes do pedido</p>
+    <div class="details-grid">
+      <div class="detail-row">
+        <span class="detail-icon">🧹</span>
+        <div>
+          <p class="detail-label">Serviço</p>
+          <p class="detail-value">Pacote Prata</p>
+        </div>
+      </div>
+      <div class="detail-row">
+        <span class="detail-icon">🏷️</span>
+        <div>
+          <p class="detail-label">Valor</p>
+          <p class="detail-value-teal">R$ 300</p>
+        </div>
+      </div>
+      <div class="detail-row">
+        <span class="detail-icon">📍</span>
+        <div>
+          <p class="detail-label">Endereço</p>
+          <p class="detail-value">Rua das Flores, 123 – São Paulo</p>
+        </div>
+      </div>
+      <div class="detail-row">
+        <span class="detail-icon">📅</span>
+        <div>
+          <p class="detail-label">Data e horário</p>
+          <p class="detail-value">20 de maio de 2025 · 10h00</p>
+        </div>
+      </div>
+      <div class="detail-row">
+        <span class="detail-icon">⏱</span>
+        <div>
+          <p class="detail-label">Duração estimada</p>
+          <p class="detail-value">2h30</p>
+        </div>
+      </div>
+      <div class="detail-row">
+        <span class="detail-icon">👤</span>
+        <div>
+          <p class="detail-label">Prestador</p>
+          <p class="detail-value">Carlos Menezes</p>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="actions-row">
+      <button class="btn-primary">Ver localização no mapa</button>
+      <button class="btn-secondary">Reagendar</button>
+      <button class="btn-outline-red">Cancelar pedido</button>
+    </div>
+  </div>
+
+
+  <hr class="state-separator">
+  <p class="section-label">Estado vazio — sem pedido ativo</p>
+
+  <div class="empty-state">
+    <div class="empty-icon">
+      <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
+        <rect x="10" y="14" width="52" height="48" rx="6" stroke="#D1D5DB" stroke-width="3" fill="none"/>
+        <line x1="10" y1="28" x2="62" y2="28" stroke="#D1D5DB" stroke-width="3"/>
+        <line x1="22" y1="8" x2="22" y2="20" stroke="#D1D5DB" stroke-width="3" stroke-linecap="round"/>
+        <line x1="50" y1="8" x2="50" y2="20" stroke="#D1D5DB" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <p class="empty-title">Nenhum agendamento ativo</p>
+    <p class="empty-subtitle">Você ainda não tem nenhum serviço agendado.</p>
+    <button class="btn-primary" style="flex: none; padding: 12px 28px;">Agendar um serviço</button>
+  </div>
+
+</div>
+
+</body>
+</html>
