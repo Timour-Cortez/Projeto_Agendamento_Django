@@ -1,0 +1,132 @@
+/* ==========================================
+   RESET E CONFIGURAÇÕES GERAIS
+   ========================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #0f1117; /* Fundo escuro padrão */
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+/* Container Centralizado */
+.container-login {
+    width: 100%;
+    max-width: 420px; /* Caixinha um pouco mais compacta por ser só um campo */
+}
+
+.caixa-login {
+    background-color: #ffffff;
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+}
+
+/* ==========================================
+   ELEMENTOS DE TEXTO
+   ========================================== */
+.caixa-login h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.caixa-login p {
+    font-size: 0.9rem;
+    color: #6b7280;
+    text-align: center;
+    margin-bottom: 1.75rem;
+    line-height: 1.4;
+}
+
+/* ==========================================
+   ESTILIZAÇÃO DOS CAMPOS GERADOS PELO DJANGO (form.as_p)
+   ========================================== */
+/* O Django joga o label e o input dentro de tags <p> */
+.caixa-login form p {
+    text-align: left; /* Alinha os campos para a esquerda */
+    margin-bottom: 1.25rem;
+}
+
+.caixa-login form label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #374151;
+    margin-bottom: 0.4rem;
+}
+
+/* Estiliza o input de e-mail injetado pelo Django */
+.caixa-login form input[type="email"],
+.caixa-login form input[type="text"] {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: #111827;
+    background-color: #f9fafb;
+    transition: all 0.2s ease;
+}
+
+/* Efeito de foco ao clicar no campo */
+.caixa-login form input:focus {
+    outline: none;
+    border-color: #3b82f6; /* Azul focado em segurança */
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* Erros de validação do formulário */
+.caixa-login .errorlist {
+    list-style: none;
+    color: #dc2626;
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+    padding: 0;
+}
+
+/* ==========================================
+   BOTÃO E LINK DE RETORNO
+   ========================================== */
+button[type="submit"] {
+    width: 100%;
+    padding: 0.85rem;
+    background-color: #3b82f6; /* Azul moderno */
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: background-color 0.2s ease;
+}
+
+button[type="submit"]:hover {
+    background-color: #2563eb; /* Azul um pouco mais escuro no hover */
+}
+
+.voltar {
+    display: block;
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.voltar:hover {
+    color: #111827;
+}
