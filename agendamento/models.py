@@ -36,6 +36,7 @@ class Agendamento(models.Model):
         ('pendente', 'Pendente'),
         ('confirmado', 'Confirmado'),
         ('cancelado', 'Cancelado'),
+        ('concluido', 'Concluído'),
     ]
 
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
