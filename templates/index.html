@@ -126,12 +126,15 @@
             </form>
         </section>
     </main>
-
+    {{ datas_indisponiveis|json_script:"datas-indisponiveis-json" }}
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <script>
-        const datasIndisponiveis = {{ datas_indisponiveis|safe }};
+        const datasIndisponiveis = JSON.parse(
+            document.getElementById('datas-indisponiveis-json').textContent
+        );
 
+        
         const cardsServico = document.querySelectorAll('.card-servico');
         const inputServico = document.getElementById('servico_id');
 

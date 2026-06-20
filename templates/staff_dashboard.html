@@ -1,18 +1,16 @@
+{% extends 'base.html' %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="pt-BR">
+{% block title %}
+Dashboard Staff - Agenda Fácil
+{% endblock %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Staff - Agenda Fácil</title>
-    <link rel="stylesheet" href="{% static 'css/login.css' %}?v=5">
-</head>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/login.css' %}?v=7">
+{% endblock %}
 
-<body>
-
-    <main class="container-login">
+{% block content %}
+<div class="container-login">
         <section class="caixa-login painel-agendamentos">
 
             <h1>Dashboard do Prestador</h1>
@@ -37,59 +35,38 @@
 
                 <div class="area-dashboard-staff">
 
-                    <!-- Calendário visual inicial -->
+                    <!-- Calendário conectado ao banco -->
                     <div class="calendario-staff">
-                        <h3>Calendário</h3>
+                        <h3>Calendário Operacional</h3>
 
-                        <div class="calendario-grade">
-                            <div class="dia-semana">Dom</div>
-                            <div class="dia-semana">Seg</div>
-                            <div class="dia-semana">Ter</div>
-                            <div class="dia-semana">Qua</div>
-                            <div class="dia-semana">Qui</div>
-                            <div class="dia-semana">Sex</div>
-                            <div class="dia-semana">Sáb</div>
+                        <div class="cabecalho-calendario-staff" style="display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 18px; margin: 20px 0 25px 0;">
+                            <button type="button" id="mes-anterior-staff" class="botao-mes-staff" style="margin: 0;">
+                                ◀
+                            </button>
 
-                            <div class="dia-calendario vazio"></div>
-                            <div class="dia-calendario">1</div>
-                            <div class="dia-calendario">2</div>
-                            <div class="dia-calendario com-servico">3</div>
-                            <div class="dia-calendario">4</div>
-                            <div class="dia-calendario bloqueado">5</div>
-                            <div class="dia-calendario">6</div>
+                            <h3 id="mes-atual-staff" style="margin: 0; min-width: 160px; text-align: center;">
+                                 Mês Ano
+                            </h3>
 
-                            <div class="dia-calendario">7</div>
-                            <div class="dia-calendario com-servico">8</div>
-                            <div class="dia-calendario">9</div>
-                            <div class="dia-calendario">10</div>
-                            <div class="dia-calendario bloqueado">11</div>
-                            <div class="dia-calendario">12</div>
-                            <div class="dia-calendario">13</div>
+                            <button type="button" id="proximo-mes-staff" class="botao-mes-staff" style="margin: 0;">
+                                ▶
+                            </button>
+                        </div>
 
-                            <div class="dia-calendario">14</div>
-                            <div class="dia-calendario">15</div>
-                            <div class="dia-calendario com-servico">16</div>
-                            <div class="dia-calendario">17</div>
-                            <div class="dia-calendario">18</div>
-                            <div class="dia-calendario">19</div>
-                            <div class="dia-calendario bloqueado">20</div>
-
-                            <div class="dia-calendario">21</div>
-                            <div class="dia-calendario">22</div>
-                            <div class="dia-calendario">23</div>
-                            <div class="dia-calendario com-servico">24</div>
-                            <div class="dia-calendario">25</div>
-                            <div class="dia-calendario">26</div>
-                            <div class="dia-calendario">27</div>
-
-                            <div class="dia-calendario">28</div>
-                            <div class="dia-calendario">29</div>
-                            <div class="dia-calendario">30</div>
+                        <div class="calendario-grade" id="calendario-staff">
+                            <!-- O JavaScript cria os dias aqui -->
                         </div>
 
                         <div class="legenda-calendario">
-                            <span><strong class="legenda-servico"></strong> Dia com serviço</span>
-                            <span><strong class="legenda-bloqueado"></strong> Dia bloqueado</span>
+                            <span>
+                                <strong class="legenda-servico"></strong>
+                                Dia com serviço
+                            </span>
+
+                            <span>
+                                <strong class="legenda-bloqueado"></strong>
+                                Dia bloqueado
+                            </span>
                         </div>
 
                         <form method="POST" class="form-bloquear-dia">
@@ -99,28 +76,17 @@
                             <input type="date" id="data_bloqueio" name="data_bloqueio" required>
 
                             <label for="motivo_bloqueio">Motivo</label>
-                            <input type="text" id="motivo_bloqueio" name="motivo_bloqueio" placeholder="Ex: indisponível, viagem, manutenção">
+                            <input
+                                type="text"
+                                id="motivo_bloqueio"
+                                name="motivo_bloqueio"
+                                placeholder="Ex: indisponível, viagem, manutenção"
+                            >
 
                             <button type="submit" class="botao-acao botao-bloquear-dia">
                                 Bloquear dia
                             </button>
                         </form>
-                        
-                       <div class="dias-bloqueados-lista">
-                            <h4>Dias bloqueados</h4>
-
-                            {% if dias_bloqueados %}
-                                {% for dia in dias_bloqueados %}
-                                    <div class="item-dia-bloqueado">
-                                        <strong>{{ dia.data }}</strong>
-                                        <span>{{ dia.motivo }}</span>
-                                    </div>
-                                {% endfor %}
-                            {% else %}
-                                <p class="mensagem-vazia">Nenhum dia bloqueado ainda.</p>
-                            {% endif %}
-                        </div> 
-                        
                     </div>
 
                     <!-- Resumo lateral -->
@@ -167,6 +133,7 @@
                     </button>
                 </div>
 
+                <!-- Pedidos a fazer -->
                 <div id="pedidos-a-fazer" class="conteudo-pedido ativo">
                     {% if agendamentos_a_fazer %}
                         {% for agendamento in agendamentos_a_fazer %}
@@ -181,6 +148,7 @@
                                     <p><strong>E-mail:</strong> {{ agendamento.cliente.email }}</p>
                                     <p><strong>Endereço:</strong> {{ agendamento.local.endereco }}</p>
                                     <p><strong>Horário:</strong> {{ agendamento.horario }}</p>
+                                    <p><strong>Status:</strong> {{ agendamento.status }}</p>
                                     <p><strong>Observações:</strong> {{ agendamento.observacoes }}</p>
                                 </div>
                             </details>
@@ -190,6 +158,7 @@
                     {% endif %}
                 </div>
 
+                <!-- Pedidos confirmados -->
                 <div id="pedidos-confirmados" class="conteudo-pedido">
                     {% if agendamentos_a_fazer %}
                         {% for agendamento in agendamentos_a_fazer %}
@@ -202,8 +171,10 @@
 
                                     <div class="detalhes-pedido">
                                         <p><strong>Cliente:</strong> {{ agendamento.cliente.nome }}</p>
+                                        <p><strong>E-mail:</strong> {{ agendamento.cliente.email }}</p>
                                         <p><strong>Endereço:</strong> {{ agendamento.local.endereco }}</p>
                                         <p><strong>Horário:</strong> {{ agendamento.horario }}</p>
+                                        <p><strong>Observações:</strong> {{ agendamento.observacoes }}</p>
                                     </div>
                                 </details>
                             {% endif %}
@@ -213,6 +184,7 @@
                     {% endif %}
                 </div>
 
+                <!-- Histórico -->
                 <div id="pedidos-historico" class="conteudo-pedido">
                     {% if agendamentos_historico %}
                         {% for agendamento in agendamentos_historico %}
@@ -224,9 +196,11 @@
 
                                 <div class="detalhes-pedido">
                                     <p><strong>Cliente:</strong> {{ agendamento.cliente.nome }}</p>
+                                    <p><strong>E-mail:</strong> {{ agendamento.cliente.email }}</p>
                                     <p><strong>Endereço:</strong> {{ agendamento.local.endereco }}</p>
                                     <p><strong>Horário:</strong> {{ agendamento.horario }}</p>
                                     <p><strong>Status:</strong> {{ agendamento.status }}</p>
+                                    <p><strong>Observações:</strong> {{ agendamento.observacoes }}</p>
                                 </div>
                             </details>
                         {% endfor %}
@@ -286,9 +260,23 @@
             <a class="voltar" href="/">Voltar para a página inicial</a>
 
         </section>
-    </main>
+    </div>
+    {% endblock %}
+
+    {% block extra_js %}
+    {{ datas_bloqueadas|json_script:"datas-bloqueadas-json" }}
+    {{ datas_com_servico|json_script:"datas-servico-json" }}
 
     <script>
+
+        const datasBloqueadas = JSON.parse(
+            document.getElementById('datas-bloqueadas-json').textContent
+        );
+
+        const datasComServico = JSON.parse(
+            document.getElementById('datas-servico-json').textContent
+        );
+
         const abasPrincipais = document.querySelectorAll('.aba');
         const conteudosPrincipais = document.querySelectorAll('.conteudo-aba');
 
@@ -318,8 +306,107 @@
                 document.getElementById(idPedido).classList.add('ativo');
             });
         });
+
+        const calendarioStaff = document.getElementById('calendario-staff');
+        const tituloMesStaff = document.getElementById('mes-atual-staff');
+        const botaoMesAnteriorStaff = document.getElementById('mes-anterior-staff');
+        const botaoProximoMesStaff = document.getElementById('proximo-mes-staff');
+
+        let dataAtualStaff = new Date();
+        let mesAtualStaff = dataAtualStaff.getMonth();
+        let anoAtualStaff = dataAtualStaff.getFullYear();
+
+        const nomesMesesStaff = [
+            'Janeiro',
+            'Fevereiro',
+            'Março',
+            'Abril',
+            'Maio',
+            'Junho',
+            'Julho',
+            'Agosto',
+            'Setembro',
+            'Outubro',
+            'Novembro',
+            'Dezembro'
+        ];
+
+        const nomesDiasSemanaStaff = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+
+        function formatarDataStaff(ano, mes, dia) {
+            const mesFormatado = String(mes + 1).padStart(2, '0');
+            const diaFormatado = String(dia).padStart(2, '0');
+
+            return `${ano}-${mesFormatado}-${diaFormatado}`;
+        }
+
+        function criarCalendarioStaff(mes, ano) {
+            calendarioStaff.innerHTML = '';
+
+            tituloMesStaff.textContent = `${nomesMesesStaff[mes]} ${ano}`;
+
+            nomesDiasSemanaStaff.forEach(diaSemana => {
+                const elementoDiaSemana = document.createElement('div');
+                elementoDiaSemana.classList.add('dia-semana');
+                elementoDiaSemana.textContent = diaSemana;
+                calendarioStaff.appendChild(elementoDiaSemana);
+            });
+
+            const primeiroDiaMes = new Date(ano, mes, 1);
+            const ultimoDiaMes = new Date(ano, mes + 1, 0);
+            const quantidadeDias = ultimoDiaMes.getDate();
+
+            const espacosVazios = primeiroDiaMes.getDay();
+
+            for (let i = 0; i < espacosVazios; i++) {
+                const vazio = document.createElement('div');
+                vazio.classList.add('dia-calendario', 'vazio');
+                calendarioStaff.appendChild(vazio);
+            }
+
+            for (let dia = 1; dia <= quantidadeDias; dia++) {
+                const celulaDia = document.createElement('div');
+                celulaDia.classList.add('dia-calendario');
+
+                const dataFormatada = formatarDataStaff(ano, mes, dia);
+
+                celulaDia.textContent = dia;
+                celulaDia.dataset.data = dataFormatada;
+
+                if (datasBloqueadas.includes(dataFormatada)) {
+                    celulaDia.classList.add('bloqueado');
+                    celulaDia.title = 'Dia bloqueado pelo prestador';
+                } else if (datasComServico.includes(dataFormatada)) {
+                    celulaDia.classList.add('com-servico');
+                    celulaDia.title = 'Dia com serviço agendado';
+                }
+
+                calendarioStaff.appendChild(celulaDia);
+            }
+        }
+
+        botaoMesAnteriorStaff.addEventListener('click', () => {
+            mesAtualStaff--;
+
+            if (mesAtualStaff < 0) {
+                mesAtualStaff = 11;
+                anoAtualStaff--;
+            }
+
+            criarCalendarioStaff(mesAtualStaff, anoAtualStaff);
+        });
+
+        botaoProximoMesStaff.addEventListener('click', () => {
+            mesAtualStaff++;
+
+            if (mesAtualStaff > 11) {
+                mesAtualStaff = 0;
+                anoAtualStaff++;
+            }
+
+            criarCalendarioStaff(mesAtualStaff, anoAtualStaff);
+        });
+
+        criarCalendarioStaff(mesAtualStaff, anoAtualStaff);
     </script>
-
-</body>
-
-</html>
+    {% endblock %}

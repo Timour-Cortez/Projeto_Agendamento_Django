@@ -202,6 +202,8 @@ def prestador_dashboard(request):
 
         return redirect('prestador_dashboard')
 
+    pedidos = Agendamento.objects.all().order_by('data', 'horario')
+
     agendamentos_a_fazer = Agendamento.objects.filter(
         status__in=['pendente', 'confirmado']
     ).order_by('data', 'horario')
@@ -212,15 +214,28 @@ def prestador_dashboard(request):
 
     dias_bloqueados = DiaBloqueado.objects.all().order_by('data')
 
+    datas_bloqueadas = []
+
+    for dia in dias_bloqueados:
+        datas_bloqueadas.append(dia.data.strftime('%Y-%m-%d'))
+
+    datas_com_servico = []
+
+    for agendamento in agendamentos_a_fazer:
+        datas_com_servico.append(agendamento.data.strftime('%Y-%m-%d'))
+
     total_a_fazer = agendamentos_a_fazer.count()
     total_historico = agendamentos_historico.count()
     total_pendentes = Agendamento.objects.filter(status='pendente').count()
     total_confirmados = Agendamento.objects.filter(status='confirmado').count()
 
     return render(request, 'staff_dashboard.html', {
+        'pedidos': pedidos,
         'agendamentos_a_fazer': agendamentos_a_fazer,
         'agendamentos_historico': agendamentos_historico,
         'dias_bloqueados': dias_bloqueados,
+        'datas_bloqueadas': datas_bloqueadas,
+        'datas_com_servico': datas_com_servico,
         'total_a_fazer': total_a_fazer,
         'total_historico': total_historico,
         'total_pendentes': total_pendentes,

@@ -377,3 +377,38 @@ button:hover {
         font-size: 14px;
     }
 }
+.cabecalho-calendario-staff {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    margin: 20px 0 25px 0;
+}
+
+
+.cabecalho-calendario-staff h3 {
+    margin: 0;
+    min-width: 160px;
+    text-align: center;
+}
+
+.botao-mes-staff {
+    width: 45px;
+    height: 45px;
+    border: none;
+    border-radius: 8px;
+    background-color: #6b7b4b;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.botao-mes-staff:hover {
+    background-color: #55633b;
+}
+
+.cabecalho-calendario-staff .botao-mes-staff {
+    margin-top: 0;
+}
