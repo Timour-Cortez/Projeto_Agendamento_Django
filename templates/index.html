@@ -1,344 +1,371 @@
+{% extends 'base.html' %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="pt-BR">
+{% block title %}
+Agenda Fácil
+{% endblock %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agenda Fácil</title>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/index.css' %}?v=8">
 
-    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+<link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
 
-    <link
-        rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    />
-</head>
+<style>
+    .site-header {
+        width: 100%;
+        background-color: #ffffff;
+        border-bottom: 1px solid #ddd;
+        padding: 18px 40px;
+        box-sizing: border-box;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-<body>
+    .site-logo {
+        color: #6b7b4b;
+        font-size: 24px;
+        font-weight: bold;
+        text-decoration: none;
+    }
 
-    <header>
-        <div class="botoes-usuario">
-            {% if user.is_authenticated %}
-                <a class="botao-login" href="/logout/">Sair</a>
-                <a class="botao-meus-pedidos" href="/meus-agendamentos/">Meus pedidos</a>
-            {% else %}
-                <a class="botao-login" href="/login/">Login</a>
-            {% endif %}
+    .site-nav {
+        display: flex;
+        gap: 18px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .site-nav a {
+        color: #6b7b4b;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .site-nav a:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<header>
+    <h1>Agenda Fácil</h1>
+    <p>Agende serviços de forma simples, rápida e organizada.</p>
+</header>
+
+<section>
+    <form method="POST" action="/montar-pedido/" class="form-pedido">
+        {% csrf_token %}
+
+        <h2>Escolha seu pacote</h2>
+
+        <input type="hidden" name="servico_id" id="servico_id">
+        <input type="hidden" name="data_servico" id="data_servico">
+        <input type="hidden" name="latitude" id="latitude">
+        <input type="hidden" name="longitude" id="longitude">
+
+        <div class="servicos">
+            {% for servico in servicos %}
+                <button
+                    type="button"
+                    class="card card-servico"
+                    data-servico-id="{{ servico.id }}"
+                >
+                    <h3>{{ servico.nome }}</h3>
+                    <p>{{ servico.descricao }}</p>
+                    <strong>R$ {{ servico.preco }}</strong>
+                </button>
+            {% endfor %}
         </div>
 
-        <h1>Agenda Fácil</h1>
-        <p>Agende serviços de forma simples, rápida e organizada.</p>
-    </header>
+        <section class="secao-mapa">
+            <h2>Escolha região</h2>
 
-    <main>
-        <section>
-            <form method="POST" action="/montar-pedido/" class="form-pedido">
-                {% csrf_token %}
+            <div class="campo-endereco">
+                <label for="endereco">Endereço do serviço:</label>
 
-                <h2>Escolha seu pacote</h2>
+                <div class="linha-endereco">
+                    <input
+                        type="text"
+                        id="endereco"
+                        name="endereco"
+                        placeholder="Digite o endereço do serviço"
+                    >
 
-                <input type="hidden" name="servico_id" id="servico_id">
-                <input type="hidden" name="data_servico" id="data_servico">
-                <input type="hidden" name="latitude" id="latitude">
-                <input type="hidden" name="longitude" id="longitude">
+                    <button type="button" id="buscar-endereco" class="botao-buscar">
+                        Buscar
+                    </button>
+                </div>
+            </div>
 
-                <div class="servicos">
-                    {% for servico in servicos %}
-                        <button
-                            type="button"
-                            class="card card-servico"
-                            data-servico-id="{{ servico.id }}"
-                        >
-                            <h3>{{ servico.nome }}</h3>
-                            <p>{{ servico.descricao }}</p>
-                            <strong>R$ {{ servico.preco }}</strong>
-                        </button>
-                    {% endfor %}
+            <div id="mapa-interativo" class="caixa-mapa"></div>
+        </section>
+
+        <section class="secao-calendario">
+            <h2>Disponibilidade</h2>
+
+            <div class="calendario-container">
+                <div class="cabecalho-calendario">
+                    <button type="button" id="mes-anterior" class="botao-mes">
+                        ◀
+                    </button>
+
+                    <h3 id="mes-atual">Mês Ano</h3>
+
+                    <button type="button" id="proximo-mes" class="botao-mes">
+                        ▶
+                    </button>
                 </div>
 
-                <section class="secao-mapa">
-                    <h2>Escolha região</h2>
+                <div class="calendario" id="calendario">
+                    <!-- O JavaScript cria os dias aqui -->
+                </div>
 
-                    <div class="campo-endereco">
-                        <label for="endereco">Endereço do serviço:</label>
-
-                        <div class="linha-endereco">
-                            <input
-                                type="text"
-                                id="endereco"
-                                name="endereco"
-                                placeholder="Digite o endereço do serviço"
-                            >
-
-                            <button type="button" id="buscar-endereco" class="botao-buscar">
-                                Buscar
-                            </button>
-                        </div>
+                <div class="legenda-calendario">
+                    <div>
+                        <span class="legenda disponivel-legenda"></span>
+                        Disponível
                     </div>
 
-                    <div id="mapa-interativo" class="caixa-mapa"></div>
-                </section>
-
-                <section class="secao-calendario">
-                    <h2>Disponibilidade</h2>
-
-                    <div class="calendario-container">
-                        <div class="cabecalho-calendario">
-                            <button type="button" id="mes-anterior" class="botao-mes">
-                                ◀
-                            </button>
-
-                            <h3 id="mes-atual">Mês Ano</h3>
-
-                            <button type="button" id="proximo-mes" class="botao-mes">
-                                ▶
-                            </button>
-                        </div>
-
-                        <div class="calendario" id="calendario">
-                            <!-- O JavaScript cria os dias aqui -->
-                        </div>
-
-                        <div class="legenda-calendario">
-                            <div>
-                                <span class="legenda disponivel-legenda"></span>
-                                Disponível
-                            </div>
-
-                            <div>
-                                <span class="legenda selecionado-legenda"></span>
-                                Selecionado
-                            </div>
-
-                            <div>
-                                <span class="legenda indisponivel-legenda"></span>
-                                Indisponível
-                            </div>
-                        </div>
+                    <div>
+                        <span class="legenda selecionado-legenda"></span>
+                        Selecionado
                     </div>
-                </section>
 
-                <button type="submit" class="botao-continuar">
-                    Continuar agendamento
-                </button>
-            </form>
+                    <div>
+                        <span class="legenda indisponivel-legenda"></span>
+                        Indisponível
+                    </div>
+                </div>
+            </div>
         </section>
-    </main>
-    {{ datas_indisponiveis|json_script:"datas-indisponiveis-json" }}
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <script>
-        const datasIndisponiveis = JSON.parse(
-            document.getElementById('datas-indisponiveis-json').textContent
-        );
+        <button type="submit" class="botao-continuar">
+            Continuar agendamento
+        </button>
+    </form>
+</section>
 
-        
-        const cardsServico = document.querySelectorAll('.card-servico');
-        const inputServico = document.getElementById('servico_id');
+{% endblock %}
 
-        cardsServico.forEach(card => {
-            card.addEventListener('click', () => {
-                cardsServico.forEach(c => {
-                    c.classList.remove('selecionado-servico');
-                    c.style.border = '3px solid transparent';
-                    c.style.backgroundColor = 'white';
-                    c.style.boxShadow = '0 0 10px rgba(0,0,0,0.1)';
-                    c.style.transform = 'none';
+{% block extra_js %}
+
+{{ datas_indisponiveis|json_script:"datas-indisponiveis-json" }}
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+    const datasIndisponiveis = JSON.parse(
+        document.getElementById('datas-indisponiveis-json').textContent
+    );
+
+    const cardsServico = document.querySelectorAll('.card-servico');
+    const inputServico = document.getElementById('servico_id');
+
+    cardsServico.forEach(card => {
+        card.addEventListener('click', () => {
+            cardsServico.forEach(c => {
+                c.classList.remove('selecionado-servico');
+                c.style.border = '3px solid transparent';
+                c.style.backgroundColor = 'white';
+                c.style.boxShadow = '0 0 10px rgba(0,0,0,0.1)';
+                c.style.transform = 'none';
+            });
+
+            card.classList.add('selecionado-servico');
+            card.style.border = '5px solid #6b7b4b';
+            card.style.backgroundColor = '#eef3e4';
+            card.style.boxShadow = '0 0 25px rgba(107, 123, 75, 0.7)';
+            card.style.transform = 'translateY(-5px)';
+
+            inputServico.value = card.dataset.servicoId;
+        });
+    });
+
+    const inputData = document.getElementById('data_servico');
+    const calendario = document.getElementById('calendario');
+    const tituloMes = document.getElementById('mes-atual');
+    const botaoMesAnterior = document.getElementById('mes-anterior');
+    const botaoProximoMes = document.getElementById('proximo-mes');
+
+    let dataAtual = new Date();
+    let mesAtual = dataAtual.getMonth();
+    let anoAtual = dataAtual.getFullYear();
+
+    const nomesMeses = [
+        'Janeiro',
+        'Fevereiro',
+        'Março',
+        'Abril',
+        'Maio',
+        'Junho',
+        'Julho',
+        'Agosto',
+        'Setembro',
+        'Outubro',
+        'Novembro',
+        'Dezembro'
+    ];
+
+    const nomesDiasSemana = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+
+    function formatarData(ano, mes, dia) {
+        const mesFormatado = String(mes + 1).padStart(2, '0');
+        const diaFormatado = String(dia).padStart(2, '0');
+
+        return `${ano}-${mesFormatado}-${diaFormatado}`;
+    }
+
+    function criarCalendario(mes, ano) {
+        calendario.innerHTML = '';
+
+        tituloMes.textContent = `${nomesMeses[mes]} ${ano}`;
+
+        nomesDiasSemana.forEach(diaSemana => {
+            const elementoDiaSemana = document.createElement('div');
+            elementoDiaSemana.classList.add('dia-semana');
+            elementoDiaSemana.textContent = diaSemana;
+            calendario.appendChild(elementoDiaSemana);
+        });
+
+        const primeiroDiaMes = new Date(ano, mes, 1);
+        const ultimoDiaMes = new Date(ano, mes + 1, 0);
+        const quantidadeDias = ultimoDiaMes.getDate();
+
+        let diaSemanaInicio = primeiroDiaMes.getDay();
+
+        if (diaSemanaInicio === 0) {
+            diaSemanaInicio = 7;
+        }
+
+        const espacosVazios = diaSemanaInicio - 1;
+
+        for (let i = 0; i < espacosVazios; i++) {
+            const vazio = document.createElement('div');
+            vazio.classList.add('dia', 'vazio');
+            calendario.appendChild(vazio);
+        }
+
+        for (let dia = 1; dia <= quantidadeDias; dia++) {
+            const botaoDia = document.createElement('button');
+            botaoDia.type = 'button';
+            botaoDia.classList.add('dia', 'dia-calendario');
+            botaoDia.textContent = dia;
+
+            const dataFormatada = formatarData(ano, mes, dia);
+            botaoDia.dataset.data = dataFormatada;
+
+            if (datasIndisponiveis.includes(dataFormatada)) {
+                botaoDia.classList.add('indisponivel');
+                botaoDia.disabled = true;
+                botaoDia.title = 'Data indisponível';
+            } else {
+                botaoDia.classList.add('disponivel');
+
+                botaoDia.addEventListener('click', () => {
+                    const dias = document.querySelectorAll('.dia-calendario');
+                    dias.forEach(d => d.classList.remove('selecionado'));
+
+                    botaoDia.classList.add('selecionado');
+                    inputData.value = dataFormatada;
                 });
+            }
 
-                card.classList.add('selecionado-servico');
-                card.style.border = '5px solid #6b7b4b';
-                card.style.backgroundColor = '#eef3e4';
-                card.style.boxShadow = '0 0 25px rgba(107, 123, 75, 0.7)';
-                card.style.transform = 'translateY(-5px)';
-
-                inputServico.value = card.dataset.servicoId;
-            });
-        });
-
-        const inputData = document.getElementById('data_servico');
-        const calendario = document.getElementById('calendario');
-        const tituloMes = document.getElementById('mes-atual');
-        const botaoMesAnterior = document.getElementById('mes-anterior');
-        const botaoProximoMes = document.getElementById('proximo-mes');
-
-        let dataAtual = new Date();
-        let mesAtual = dataAtual.getMonth();
-        let anoAtual = dataAtual.getFullYear();
-
-        const nomesMeses = [
-            'Janeiro',
-            'Fevereiro',
-            'Março',
-            'Abril',
-            'Maio',
-            'Junho',
-            'Julho',
-            'Agosto',
-            'Setembro',
-            'Outubro',
-            'Novembro',
-            'Dezembro'
-        ];
-
-        const nomesDiasSemana = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
-
-        function formatarData(ano, mes, dia) {
-            const mesFormatado = String(mes + 1).padStart(2, '0');
-            const diaFormatado = String(dia).padStart(2, '0');
-
-            return `${ano}-${mesFormatado}-${diaFormatado}`;
+            calendario.appendChild(botaoDia);
         }
+    }
 
-        function criarCalendario(mes, ano) {
-            calendario.innerHTML = '';
+    botaoMesAnterior.addEventListener('click', () => {
+        mesAtual--;
 
-            tituloMes.textContent = `${nomesMeses[mes]} ${ano}`;
-
-            nomesDiasSemana.forEach(diaSemana => {
-                const elementoDiaSemana = document.createElement('div');
-                elementoDiaSemana.classList.add('dia-semana');
-                elementoDiaSemana.textContent = diaSemana;
-                calendario.appendChild(elementoDiaSemana);
-            });
-
-            const primeiroDiaMes = new Date(ano, mes, 1);
-            const ultimoDiaMes = new Date(ano, mes + 1, 0);
-            const quantidadeDias = ultimoDiaMes.getDate();
-
-            let diaSemanaInicio = primeiroDiaMes.getDay();
-
-            if (diaSemanaInicio === 0) {
-                diaSemanaInicio = 7;
-            }
-
-            const espacosVazios = diaSemanaInicio - 1;
-
-            for (let i = 0; i < espacosVazios; i++) {
-                const vazio = document.createElement('div');
-                vazio.classList.add('dia', 'vazio');
-                calendario.appendChild(vazio);
-            }
-
-            for (let dia = 1; dia <= quantidadeDias; dia++) {
-                const botaoDia = document.createElement('button');
-                botaoDia.type = 'button';
-                botaoDia.classList.add('dia', 'dia-calendario');
-                botaoDia.textContent = dia;
-
-                const dataFormatada = formatarData(ano, mes, dia);
-                botaoDia.dataset.data = dataFormatada;
-
-                if (datasIndisponiveis.includes(dataFormatada)) {
-                    botaoDia.classList.add('indisponivel');
-                    botaoDia.disabled = true;
-                    botaoDia.title = 'Data indisponível';
-                } else {
-                    botaoDia.classList.add('disponivel');
-
-                    botaoDia.addEventListener('click', () => {
-                        const dias = document.querySelectorAll('.dia-calendario');
-                        dias.forEach(d => d.classList.remove('selecionado'));
-
-                        botaoDia.classList.add('selecionado');
-                        inputData.value = dataFormatada;
-                    });
-                }
-
-                calendario.appendChild(botaoDia);
-            }
+        if (mesAtual < 0) {
+            mesAtual = 11;
+            anoAtual--;
         }
-
-        botaoMesAnterior.addEventListener('click', () => {
-            mesAtual--;
-
-            if (mesAtual < 0) {
-                mesAtual = 11;
-                anoAtual--;
-            }
-
-            criarCalendario(mesAtual, anoAtual);
-        });
-
-        botaoProximoMes.addEventListener('click', () => {
-            mesAtual++;
-
-            if (mesAtual > 11) {
-                mesAtual = 0;
-                anoAtual++;
-            }
-
-            criarCalendario(mesAtual, anoAtual);
-        });
 
         criarCalendario(mesAtual, anoAtual);
+    });
 
-        const inputEndereco = document.getElementById('endereco');
-        const botaoBuscarEndereco = document.getElementById('buscar-endereco');
-        const inputLatitude = document.getElementById('latitude');
-        const inputLongitude = document.getElementById('longitude');
+    botaoProximoMes.addEventListener('click', () => {
+        mesAtual++;
 
-        const mapa = L.map('mapa-interativo').setView([-22.9068, -43.1729], 12);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap'
-        }).addTo(mapa);
-
-        let marcador = null;
-
-        function marcarLocal(latitude, longitude, texto) {
-            if (marcador) {
-                mapa.removeLayer(marcador);
-            }
-
-            marcador = L.marker([latitude, longitude]).addTo(mapa);
-            marcador.bindPopup(texto).openPopup();
-
-            inputLatitude.value = latitude;
-            inputLongitude.value = longitude;
+        if (mesAtual > 11) {
+            mesAtual = 0;
+            anoAtual++;
         }
 
-        mapa.on('click', function(evento) {
-            const latitude = evento.latlng.lat;
-            const longitude = evento.latlng.lng;
+        criarCalendario(mesAtual, anoAtual);
+    });
 
-            marcarLocal(latitude, longitude, 'Local selecionado no mapa');
-        });
+    criarCalendario(mesAtual, anoAtual);
 
-        botaoBuscarEndereco.addEventListener('click', function() {
-            const endereco = inputEndereco.value;
+    const inputEndereco = document.getElementById('endereco');
+    const botaoBuscarEndereco = document.getElementById('buscar-endereco');
+    const inputLatitude = document.getElementById('latitude');
+    const inputLongitude = document.getElementById('longitude');
 
-            if (endereco.trim() === '') {
-                alert('Digite um endereço antes de buscar.');
-                return;
-            }
+    const mapa = L.map('mapa-interativo').setView([-22.9068, -43.1729], 12);
 
-            const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(endereco)}`;
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+    }).addTo(mapa);
 
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.length === 0) {
-                        alert('Endereço não encontrado. Tente escrever de outra forma.');
-                        return;
-                    }
+    let marcador = null;
 
-                    const resultado = data[0];
-                    const latitude = resultado.lat;
-                    const longitude = resultado.lon;
+    function marcarLocal(latitude, longitude, texto) {
+        if (marcador) {
+            mapa.removeLayer(marcador);
+        }
 
-                    mapa.setView([latitude, longitude], 15);
-                    marcarLocal(latitude, longitude, endereco);
-                })
-                .catch(error => {
-                    alert('Erro ao buscar o endereço.');
-                    console.log(error);
-                });
-        });
-    </script>
+        marcador = L.marker([latitude, longitude]).addTo(mapa);
+        marcador.bindPopup(texto).openPopup();
 
-</body>
+        inputLatitude.value = latitude;
+        inputLongitude.value = longitude;
+    }
 
-</html>
+    mapa.on('click', function(evento) {
+        const latitude = evento.latlng.lat;
+        const longitude = evento.latlng.lng;
+
+        marcarLocal(latitude, longitude, 'Local selecionado no mapa');
+    });
+
+    botaoBuscarEndereco.addEventListener('click', function() {
+        const endereco = inputEndereco.value;
+
+        if (endereco.trim() === '') {
+            alert('Digite um endereço antes de buscar.');
+            return;
+        }
+
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(endereco)}`;
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data.length === 0) {
+                    alert('Endereço não encontrado. Tente escrever de outra forma.');
+                    return;
+                }
+
+                const resultado = data[0];
+                const latitude = resultado.lat;
+                const longitude = resultado.lon;
+
+                mapa.setView([latitude, longitude], 15);
+                marcarLocal(latitude, longitude, endereco);
+            })
+            .catch(error => {
+                alert('Erro ao buscar o endereço.');
+                console.log(error);
+            });
+    });
+</script>
+
+{% endblock %}
