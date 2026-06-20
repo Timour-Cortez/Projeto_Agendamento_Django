@@ -1,37 +1,36 @@
+{% extends 'base.html' %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro - Agenda Fácil</title>
-    <link rel="stylesheet" href="{% static 'css/login.css' %}">
-</head>
+{% block title %}
+Cadastro - Agenda Fácil
+{% endblock %}
 
-<body>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/login.css' %}?v=8">
+{% endblock %}
 
-    <main class="container-login">
-        <section class="caixa-login">
-            <h1>Criar conta</h1>
-            <p>Cadastre-se para agendar seus serviços.</p>
+{% block content %}
 
-            <form method="POST">
-                {% csrf_token %}
+<div class="container-login">
+    <section class="caixa-login">
+        <h1>Criar conta</h1>
+        <p>Cadastre-se para continuar seu agendamento.</p>
 
-                {{ form.as_p }}
+        <form method="POST">
+            {% csrf_token %}
 
-                <button type="submit">Criar conta</button>
-            </form>
+            {{ form.as_p }}
 
-            <p class="texto-cadastro">
-                Já tem uma conta?
-                <a href="/login/">Entrar</a>
-            </p>
+            <button type="submit">Criar conta</button>
+        </form>
 
-            <a class="voltar" href="/">Voltar para a página inicial</a>
-        </section>
-    </main>
+        <p class="texto-cadastro">
+            Já tem uma conta?
+            <a href="/login/">Fazer login</a>
+        </p>
 
-</body>
-</html>
+        <a class="voltar" href="/">Voltar para a página inicial</a>
+    </section>
+</div>
+
+{% endblock %}
