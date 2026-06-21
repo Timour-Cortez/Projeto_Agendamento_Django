@@ -6,7 +6,7 @@ Agenda Fácil
 {% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/index.css' %}?v=9">
+<link rel="stylesheet" href="{% static 'css/index.css' %}?v=10">
 
 <link
     rel="stylesheet"
@@ -86,6 +86,18 @@ Agenda Fácil
         background-color: #6b7b4b;
         color: white;
         box-shadow: 0 0 18px rgba(107, 123, 75, 0.5);
+    }
+
+    .botao-horario.horario-indisponivel {
+        background-color: #f1d1d1;
+        border-color: #9b3d3d;
+        color: #7d2f2f;
+        cursor: not-allowed;
+        opacity: 0.75;
+    }
+
+    .botao-horario.horario-indisponivel:hover {
+        transform: none;
     }
 </style>
 {% endblock %}
@@ -185,22 +197,28 @@ Agenda Fácil
             </div>
         </section>
 
-        <div class="horarios-container">
-            {% for horario in horarios_disponiveis %}
-                <button
-                    type="button"
-                    class="botao-horario"
-                    data-horario="{{ horario.horario|time:'H:i' }}"
-                >
-                    {{ horario.horario|time:'H:i' }}
-                </button>
-            {% empty %}
-                <p class="texto-horario">
-                    Nenhum horário disponível no momento.
-                </p>
-            {% endfor %}
-        </div>
-        
+        <section class="secao-horarios">
+            <h2>Escolha o horário</h2>
+
+            <p class="texto-horario">
+                Selecione uma data para ver quais horários estão disponíveis.
+            </p>
+
+            <div class="horarios-container">
+                {% for horario in horarios_disponiveis %}
+                    <button
+                        type="button"
+                        class="botao-horario"
+                        data-horario="{{ horario.horario|time:'H:i' }}"
+                    >
+                        {{ horario.horario|time:'H:i' }}
+                    </button>
+                {% empty %}
+                    <p class="texto-horario">
+                        Nenhum horário disponível no momento.
+                    </p>
+                {% endfor %}
+            </div>
         </section>
 
         <button type="submit" class="botao-continuar">
@@ -214,12 +232,17 @@ Agenda Fácil
 {% block extra_js %}
 
 {{ datas_indisponiveis|json_script:"datas-indisponiveis-json" }}
+{{ horarios_ocupados_por_data|json_script:"horarios-ocupados-json" }}
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
     const datasIndisponiveis = JSON.parse(
         document.getElementById('datas-indisponiveis-json').textContent
+    );
+
+    const horariosOcupadosPorData = JSON.parse(
+        document.getElementById('horarios-ocupados-json').textContent
     );
 
     const cardsServico = document.querySelectorAll('.card-servico');
@@ -248,8 +271,45 @@ Agenda Fácil
     const botoesHorario = document.querySelectorAll('.botao-horario');
     const inputHorario = document.getElementById('horario_servico');
 
+    function limparSelecaoHorario() {
+        inputHorario.value = '';
+
+        botoesHorario.forEach(botao => {
+            botao.classList.remove('horario-selecionado');
+        });
+    }
+
+    function atualizarHorariosDisponiveis(dataSelecionada) {
+        const horariosOcupados = horariosOcupadosPorData[dataSelecionada] || [];
+
+        limparSelecaoHorario();
+
+        botoesHorario.forEach(botao => {
+            const horario = botao.dataset.horario;
+
+            botao.disabled = false;
+            botao.classList.remove('horario-indisponivel');
+            botao.title = '';
+
+            if (horariosOcupados.includes(horario)) {
+                botao.disabled = true;
+                botao.classList.add('horario-indisponivel');
+                botao.title = 'Horário indisponível nesta data';
+            }
+        });
+    }
+
     botoesHorario.forEach(botao => {
         botao.addEventListener('click', () => {
+            if (botao.disabled) {
+                return;
+            }
+
+            if (inputData.value === '') {
+                alert('Escolha uma data antes de escolher o horário.');
+                return;
+            }
+
             botoesHorario.forEach(b => {
                 b.classList.remove('horario-selecionado');
             });
@@ -345,6 +405,8 @@ Agenda Fácil
 
                     botaoDia.classList.add('selecionado');
                     inputData.value = dataFormatada;
+
+                    atualizarHorariosDisponiveis(dataFormatada);
                 });
             }
 
@@ -361,6 +423,7 @@ Agenda Fácil
         }
 
         criarCalendario(mesAtual, anoAtual);
+        limparSelecaoHorario();
     });
 
     botaoProximoMes.addEventListener('click', () => {
@@ -372,6 +435,7 @@ Agenda Fácil
         }
 
         criarCalendario(mesAtual, anoAtual);
+        limparSelecaoHorario();
     });
 
     criarCalendario(mesAtual, anoAtual);

@@ -14,24 +14,33 @@ def home(request):
         ativo=True
     ).order_by('horario')
 
-    agendamentos_confirmados = Agendamento.objects.filter(
-        status='confirmado'
-    ).values_list('data', flat=True).distinct()
-
     dias_bloqueados = DiaBloqueado.objects.values_list('data', flat=True)
 
     datas_indisponiveis = []
 
-    for data in agendamentos_confirmados:
-        datas_indisponiveis.append(data.strftime('%Y-%m-%d'))
-
     for data in dias_bloqueados:
         datas_indisponiveis.append(data.strftime('%Y-%m-%d'))
+
+    agendamentos_confirmados = Agendamento.objects.filter(
+        status='confirmado'
+    ).order_by('data', 'horario')
+
+    horarios_ocupados_por_data = {}
+
+    for agendamento in agendamentos_confirmados:
+        data_formatada = agendamento.data.strftime('%Y-%m-%d')
+        horario_formatado = agendamento.horario.strftime('%H:%M')
+
+        if data_formatada not in horarios_ocupados_por_data:
+            horarios_ocupados_por_data[data_formatada] = []
+
+        horarios_ocupados_por_data[data_formatada].append(horario_formatado)
 
     return render(request, 'index.html', {
         'servicos': servicos,
         'horarios_disponiveis': horarios_disponiveis,
         'datas_indisponiveis': datas_indisponiveis,
+        'horarios_ocupados_por_data': horarios_ocupados_por_data,
     })
 
 
@@ -203,6 +212,7 @@ def prestador_dashboard(request):
     if request.method == 'POST':
         acao_pedido = request.POST.get('acao_pedido')
         agendamento_id = request.POST.get('agendamento_id')
+        acao_horario = request.POST.get('acao_horario')
 
         if acao_pedido and agendamento_id:
             agendamento = Agendamento.objects.filter(id=agendamento_id).first()
@@ -218,6 +228,39 @@ def prestador_dashboard(request):
                     agendamento.status = 'cancelado'
 
                 agendamento.save()
+
+            return redirect('prestador_dashboard')
+
+        if acao_horario:
+            if acao_horario == 'adicionar':
+                novo_horario = request.POST.get('novo_horario')
+
+                if novo_horario:
+                    horario_convertido = datetime.strptime(novo_horario, '%H:%M').time()
+
+                    horario_obj, criado = HorarioDisponivel.objects.get_or_create(
+                        horario=horario_convertido,
+                        defaults={
+                            'ativo': True
+                        }
+                    )
+
+                    if not criado:
+                        horario_obj.ativo = True
+                        horario_obj.save()
+
+            elif acao_horario in ['ativar', 'desativar']:
+                horario_id = request.POST.get('horario_id')
+                horario_obj = HorarioDisponivel.objects.filter(id=horario_id).first()
+
+                if horario_obj:
+                    if acao_horario == 'ativar':
+                        horario_obj.ativo = True
+
+                    elif acao_horario == 'desativar':
+                        horario_obj.ativo = False
+
+                    horario_obj.save()
 
             return redirect('prestador_dashboard')
 
@@ -271,6 +314,8 @@ def prestador_dashboard(request):
             'observacoes': agendamento.observacoes or '',
         })
 
+    horarios_dashboard = HorarioDisponivel.objects.all().order_by('horario')
+
     total_a_fazer = agendamentos_a_fazer.count()
     total_historico = agendamentos_historico.count()
     total_pendentes = Agendamento.objects.filter(status='pendente').count()
@@ -284,6 +329,7 @@ def prestador_dashboard(request):
         'datas_bloqueadas': datas_bloqueadas,
         'datas_com_servico': datas_com_servico,
         'eventos_calendario': eventos_calendario,
+        'horarios_dashboard': horarios_dashboard,
         'total_a_fazer': total_a_fazer,
         'total_historico': total_historico,
         'total_pendentes': total_pendentes,

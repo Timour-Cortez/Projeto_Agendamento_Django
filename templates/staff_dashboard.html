@@ -6,7 +6,7 @@ Dashboard Staff - Agenda Fácil
 {% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/login.css' %}?v=13">
+<link rel="stylesheet" href="{% static 'css/login.css' %}?v=14">
 
 <style>
     .calendario-staff .dia-calendario:not(.vazio) {
@@ -94,6 +94,62 @@ Dashboard Staff - Agenda Fácil
     }
 
     .acoes-status-staff form {
+        margin: 0;
+    }
+
+    .form-horario-dashboard {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-top: 15px;
+    }
+
+    .form-horario-dashboard input[type="time"] {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+    }
+
+    .lista-horarios-dashboard {
+        margin-top: 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .item-horario-dashboard {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        border-radius: 10px;
+        background-color: #f7f7f2;
+        border: 1px solid #ddd;
+    }
+
+    .info-horario-dashboard {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .status-horario {
+        font-size: 13px;
+        font-weight: bold;
+    }
+
+    .status-horario.ativo {
+        color: #4f6b2f;
+    }
+
+    .status-horario.inativo {
+        color: #9b3d3d;
+    }
+
+    .item-horario-dashboard form {
         margin: 0;
     }
 </style>
@@ -289,7 +345,7 @@ Dashboard Staff - Agenda Fácil
         <div id="personalizacao-site" class="conteudo-aba">
 
             <h2>Personalização do Site</h2>
-            <p>Área para futuramente alterar nome, logo, cores, serviços e valores exibidos na tela inicial.</p>
+            <p>Área para alterar informações visuais e configurar o funcionamento da tela inicial.</p>
 
             <div class="card-agendamento">
                 <h3>Identidade visual</h3>
@@ -318,6 +374,67 @@ Dashboard Staff - Agenda Fácil
                         Salvar personalização
                     </button>
                 </form>
+            </div>
+
+            <div class="card-agendamento">
+                <h3>Horários disponíveis</h3>
+                <p>Defina os horários que aparecem para o cliente na tela inicial.</p>
+
+                <form method="POST" class="form-horario-dashboard">
+                    {% csrf_token %}
+                    <input type="hidden" name="acao_horario" value="adicionar">
+
+                    <label for="novo_horario">Novo horário</label>
+                    <input type="time" id="novo_horario" name="novo_horario" required>
+
+                    <button type="submit" class="botao-acao">
+                        Adicionar horário
+                    </button>
+                </form>
+
+                <div class="lista-horarios-dashboard">
+                    {% if horarios_dashboard %}
+                        {% for horario in horarios_dashboard %}
+                            <div class="item-horario-dashboard">
+                                <div class="info-horario-dashboard">
+                                    <strong>{{ horario.horario|time:'H:i' }}</strong>
+
+                                    {% if horario.ativo %}
+                                        <span class="status-horario ativo">Ativo na tela inicial</span>
+                                    {% else %}
+                                        <span class="status-horario inativo">Inativo</span>
+                                    {% endif %}
+                                </div>
+
+                                {% if horario.ativo %}
+                                    <form method="POST">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="acao_horario" value="desativar">
+                                        <input type="hidden" name="horario_id" value="{{ horario.id }}">
+
+                                        <button type="submit" class="botao-acao botao-cancelar">
+                                            Desativar
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <form method="POST">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="acao_horario" value="ativar">
+                                        <input type="hidden" name="horario_id" value="{{ horario.id }}">
+
+                                        <button type="submit" class="botao-acao">
+                                            Ativar
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="mensagem-vazia">
+                            Nenhum horário cadastrado ainda.
+                        </p>
+                    {% endif %}
+                </div>
             </div>
 
             <div class="card-agendamento">
