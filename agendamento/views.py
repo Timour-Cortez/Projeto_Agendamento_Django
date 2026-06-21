@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from datetime import time, datetime
@@ -146,6 +147,46 @@ def confirmar_pedido(request):
         return redirect('home')
 
     servico = Servico.objects.get(id=pedido['servico_id'])
+    horario_escolhido = datetime.strptime(pedido['horario_servico'], '%H:%M').time()
+
+    dia_bloqueado = DiaBloqueado.objects.filter(
+        data=pedido['data_servico']
+    ).exists()
+
+    if dia_bloqueado:
+        del request.session['pedido']
+        messages.error(
+            request,
+            'Essa data foi bloqueada pelo prestador. Escolha outra data para continuar.'
+        )
+        return redirect('home')
+
+    horario_ocupado = Agendamento.objects.filter(
+        data=pedido['data_servico'],
+        horario=horario_escolhido,
+        status='confirmado'
+    ).exists()
+
+    if horario_ocupado:
+        del request.session['pedido']
+        messages.error(
+            request,
+            'Esse horário acabou de ficar indisponível. Escolha outro horário para continuar.'
+        )
+        return redirect('home')
+
+    horario_ativo = HorarioDisponivel.objects.filter(
+        horario=horario_escolhido,
+        ativo=True
+    ).exists()
+
+    if not horario_ativo:
+        del request.session['pedido']
+        messages.error(
+            request,
+            'Esse horário não está mais disponível. Escolha outro horário para continuar.'
+        )
+        return redirect('home')
 
     cliente, criado = Cliente.objects.get_or_create(
         email=request.user.email,
@@ -162,8 +203,6 @@ def confirmar_pedido(request):
         referencia=f"Latitude: {pedido['latitude']} | Longitude: {pedido['longitude']}"
     )
 
-    horario_escolhido = datetime.strptime(pedido['horario_servico'], '%H:%M').time()
-
     Agendamento.objects.create(
         usuario=request.user,
         cliente=cliente,
@@ -177,7 +216,13 @@ def confirmar_pedido(request):
 
     del request.session['pedido']
 
+    messages.success(
+        request,
+        'Pedido confirmado com sucesso.'
+    )
+
     return redirect('meus_agendamentos')
+
 
 
 @login_required
