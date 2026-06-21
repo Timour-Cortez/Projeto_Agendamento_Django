@@ -231,6 +231,21 @@ def prestador_dashboard(request):
     for agendamento in agendamentos_a_fazer:
         datas_com_servico.append(agendamento.data.strftime('%Y-%m-%d'))
 
+    eventos_calendario = []
+
+    for agendamento in agendamentos_a_fazer:
+        eventos_calendario.append({
+            'id': agendamento.id,
+            'data': agendamento.data.strftime('%Y-%m-%d'),
+            'servico': agendamento.servico.nome,
+            'cliente': agendamento.cliente.nome,
+            'email': agendamento.cliente.email,
+            'endereco': agendamento.local.endereco,
+            'horario': agendamento.horario.strftime('%H:%M'),
+            'status': agendamento.status,
+            'observacoes': agendamento.observacoes or '',
+        })
+
     total_a_fazer = agendamentos_a_fazer.count()
     total_historico = agendamentos_historico.count()
     total_pendentes = Agendamento.objects.filter(status='pendente').count()
@@ -243,6 +258,7 @@ def prestador_dashboard(request):
         'dias_bloqueados': dias_bloqueados,
         'datas_bloqueadas': datas_bloqueadas,
         'datas_com_servico': datas_com_servico,
+        'eventos_calendario': eventos_calendario,
         'total_a_fazer': total_a_fazer,
         'total_historico': total_historico,
         'total_pendentes': total_pendentes,

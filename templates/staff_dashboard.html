@@ -6,407 +6,563 @@ Dashboard Staff - Agenda Fácil
 {% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/login.css' %}?v=7">
+<link rel="stylesheet" href="{% static 'css/login.css' %}?v=12">
+
+<style>
+    .calendario-staff .dia-calendario:not(.vazio) {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+        padding: 8px;
+        box-sizing: border-box;
+        min-height: 95px;
+        text-align: left;
+    }
+
+    .dia-numero-staff {
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .evento-calendario-staff {
+        width: 100%;
+        margin-top: 4px;
+        padding: 4px 5px;
+        border-radius: 6px;
+        background-color: rgba(107, 123, 75, 0.18);
+        color: #3f4b2b;
+        font-size: 11px;
+        line-height: 1.2;
+        font-weight: bold;
+        box-sizing: border-box;
+    }
+
+    .evento-calendario-staff span {
+        display: block;
+        font-size: 10px;
+        font-weight: normal;
+        margin-top: 2px;
+    }
+
+    .dia-calendario.com-servico {
+        cursor: pointer;
+    }
+
+    .dia-calendario.com-servico:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 12px rgba(107, 123, 75, 0.35);
+    }
+
+    .detalhes-dia-staff {
+        margin-top: 20px;
+        padding: 18px;
+        border-radius: 12px;
+        background-color: #ffffff;
+        border: 1px solid #ddd;
+        text-align: left;
+    }
+
+    .detalhes-dia-staff h3 {
+        margin-top: 0;
+        color: #6b7b4b;
+    }
+
+    .card-detalhe-evento {
+        margin-top: 15px;
+        padding: 14px;
+        border-radius: 10px;
+        background-color: #f7f7f2;
+        border-left: 5px solid #6b7b4b;
+    }
+
+    .card-detalhe-evento p {
+        margin: 6px 0;
+        font-size: 14px;
+    }
+
+    .mensagem-detalhes-vazia {
+        color: #666;
+        font-size: 14px;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
+
 <div class="container-login">
-        <section class="caixa-login painel-agendamentos">
+    <section class="caixa-login painel-agendamentos">
 
-            <h1>Dashboard do Prestador</h1>
-            <p>Área interna para gerenciar serviços, agenda e personalização do site.</p>
+        <h1>Dashboard do Prestador</h1>
+        <p>Área interna para gerenciar serviços, agenda e personalização do site.</p>
 
-            <!-- Abas principais do dashboard -->
-            <div class="abas-agendamentos">
-                <button type="button" class="aba ativa" data-aba="gestao-servicos">
-                    Gestão de Serviços
-                </button>
+        <div class="abas-agendamentos">
+            <button type="button" class="aba ativa" data-aba="gestao-servicos">
+                Gestão de Serviços
+            </button>
 
-                <button type="button" class="aba" data-aba="personalizacao-site">
-                    Personalização do Site
-                </button>
-            </div>
+            <button type="button" class="aba" data-aba="personalizacao-site">
+                Personalização do Site
+            </button>
+        </div>
 
-            <!-- ABA 1: GESTÃO DE SERVIÇOS -->
-            <div id="gestao-servicos" class="conteudo-aba ativo">
+        <div id="gestao-servicos" class="conteudo-aba ativo">
 
-                <h2>Agenda do Prestador</h2>
-                <p>Calendário para acompanhar serviços agendados e bloquear dias indisponíveis.</p>
+            <h2>Agenda do Prestador</h2>
+            <p>Calendário para acompanhar serviços agendados e bloquear dias indisponíveis.</p>
 
-                <div class="area-dashboard-staff">
+            <div class="area-dashboard-staff">
 
-                    <!-- Calendário conectado ao banco -->
-                    <div class="calendario-staff">
-                        <h3>Calendário Operacional</h3>
+                <div class="calendario-staff">
+                    <h3>Calendário Operacional</h3>
 
-                        <div class="cabecalho-calendario-staff" style="display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 18px; margin: 20px 0 25px 0;">
-                            <button type="button" id="mes-anterior-staff" class="botao-mes-staff" style="margin: 0;">
-                                ◀
-                            </button>
+                    <div class="cabecalho-calendario-staff" style="display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 18px; margin: 20px 0 25px 0;">
+                        <button type="button" id="mes-anterior-staff" class="botao-mes-staff" style="margin: 0;">
+                            ◀
+                        </button>
 
-                            <h3 id="mes-atual-staff" style="margin: 0; min-width: 160px; text-align: center;">
-                                 Mês Ano
-                            </h3>
+                        <h3 id="mes-atual-staff" style="margin: 0; min-width: 160px; text-align: center;">
+                            Mês Ano
+                        </h3>
 
-                            <button type="button" id="proximo-mes-staff" class="botao-mes-staff" style="margin: 0;">
-                                ▶
-                            </button>
-                        </div>
-
-                        <div class="calendario-grade" id="calendario-staff">
-                            <!-- O JavaScript cria os dias aqui -->
-                        </div>
-
-                        <div class="legenda-calendario">
-                            <span>
-                                <strong class="legenda-servico"></strong>
-                                Dia com serviço
-                            </span>
-
-                            <span>
-                                <strong class="legenda-bloqueado"></strong>
-                                Dia bloqueado
-                            </span>
-                        </div>
-
-                        <form method="POST" class="form-bloquear-dia">
-                            {% csrf_token %}
-
-                            <label for="data_bloqueio">Bloquear dia</label>
-                            <input type="date" id="data_bloqueio" name="data_bloqueio" required>
-
-                            <label for="motivo_bloqueio">Motivo</label>
-                            <input
-                                type="text"
-                                id="motivo_bloqueio"
-                                name="motivo_bloqueio"
-                                placeholder="Ex: indisponível, viagem, manutenção"
-                            >
-
-                            <button type="submit" class="botao-acao botao-bloquear-dia">
-                                Bloquear dia
-                            </button>
-                        </form>
+                        <button type="button" id="proximo-mes-staff" class="botao-mes-staff" style="margin: 0;">
+                            ▶
+                        </button>
                     </div>
 
-                    <!-- Resumo lateral -->
-                    <div class="resumo-staff">
-                        <h3>Resumo</h3>
-
-                        <div class="card-resumo-staff">
-                            <strong>{{ total_a_fazer }}</strong>
-                            <span>Serviços a fazer</span>
-                        </div>
-
-                        <div class="card-resumo-staff">
-                            <strong>{{ total_pendentes }}</strong>
-                            <span>Pendentes</span>
-                        </div>
-
-                        <div class="card-resumo-staff">
-                            <strong>{{ total_confirmados }}</strong>
-                            <span>Confirmados</span>
-                        </div>
-
-                        <div class="card-resumo-staff">
-                            <strong>{{ total_historico }}</strong>
-                            <span>Histórico</span>
-                        </div>
+                    <div class="calendario-grade" id="calendario-staff">
+                        <!-- O JavaScript cria os dias aqui -->
                     </div>
 
-                </div>
+                    <div class="legenda-calendario">
+                        <span>
+                            <strong class="legenda-servico"></strong>
+                            Dia com serviço
+                        </span>
 
-                <!-- Abas internas dos pedidos -->
-                <h2>Pedidos</h2>
+                        <span>
+                            <strong class="legenda-bloqueado"></strong>
+                            Dia bloqueado
+                        </span>
+                    </div>
 
-                <div class="abas-agendamentos abas-menores">
-                    <button type="button" class="aba-pedido ativa" data-pedido="pedidos-a-fazer">
-                        A fazer
-                    </button>
+                    <form method="POST" class="form-bloquear-dia">
+                        {% csrf_token %}
 
-                    <button type="button" class="aba-pedido" data-pedido="pedidos-confirmados">
-                        Confirmados
-                    </button>
+                        <label for="data_bloqueio">Bloquear dia</label>
+                        <input type="date" id="data_bloqueio" name="data_bloqueio" required>
 
-                    <button type="button" class="aba-pedido" data-pedido="pedidos-historico">
-                        Histórico
-                    </button>
-                </div>
+                        <label for="motivo_bloqueio">Motivo</label>
+                        <input
+                            type="text"
+                            id="motivo_bloqueio"
+                            name="motivo_bloqueio"
+                            placeholder="Ex: indisponível, viagem, manutenção"
+                        >
 
-                <!-- Pedidos a fazer -->
-                <div id="pedidos-a-fazer" class="conteudo-pedido ativo">
-                    {% if agendamentos_a_fazer %}
-                        {% for agendamento in agendamentos_a_fazer %}
-                            <details class="card-pedido-pequeno">
-                                <summary>
-                                    <strong>{{ agendamento.servico.nome }}</strong>
-                                    <span>{{ agendamento.data }} - {{ agendamento.status }}</span>
-                                </summary>
-
-                                <div class="detalhes-pedido">
-                                    <p><strong>Cliente:</strong> {{ agendamento.cliente.nome }}</p>
-                                    <p><strong>E-mail:</strong> {{ agendamento.cliente.email }}</p>
-                                    <p><strong>Endereço:</strong> {{ agendamento.local.endereco }}</p>
-                                    <p><strong>Horário:</strong> {{ agendamento.horario }}</p>
-                                    <p><strong>Status:</strong> {{ agendamento.status }}</p>
-                                    <p><strong>Observações:</strong> {{ agendamento.observacoes }}</p>
-                                </div>
-                            </details>
-                        {% endfor %}
-                    {% else %}
-                        <p class="mensagem-vazia">Não existem serviços pendentes ou confirmados no momento.</p>
-                    {% endif %}
-                </div>
-
-                <!-- Pedidos confirmados -->
-                <div id="pedidos-confirmados" class="conteudo-pedido">
-                    {% if agendamentos_a_fazer %}
-                        {% for agendamento in agendamentos_a_fazer %}
-                            {% if agendamento.status == 'confirmado' %}
-                                <details class="card-pedido-pequeno">
-                                    <summary>
-                                        <strong>{{ agendamento.servico.nome }}</strong>
-                                        <span>{{ agendamento.data }} - confirmado</span>
-                                    </summary>
-
-                                    <div class="detalhes-pedido">
-                                        <p><strong>Cliente:</strong> {{ agendamento.cliente.nome }}</p>
-                                        <p><strong>E-mail:</strong> {{ agendamento.cliente.email }}</p>
-                                        <p><strong>Endereço:</strong> {{ agendamento.local.endereco }}</p>
-                                        <p><strong>Horário:</strong> {{ agendamento.horario }}</p>
-                                        <p><strong>Observações:</strong> {{ agendamento.observacoes }}</p>
-                                    </div>
-                                </details>
-                            {% endif %}
-                        {% endfor %}
-                    {% else %}
-                        <p class="mensagem-vazia">Não existem serviços confirmados.</p>
-                    {% endif %}
-                </div>
-
-                <!-- Histórico -->
-                <div id="pedidos-historico" class="conteudo-pedido">
-                    {% if agendamentos_historico %}
-                        {% for agendamento in agendamentos_historico %}
-                            <details class="card-pedido-pequeno">
-                                <summary>
-                                    <strong>{{ agendamento.servico.nome }}</strong>
-                                    <span>{{ agendamento.data }} - {{ agendamento.status }}</span>
-                                </summary>
-
-                                <div class="detalhes-pedido">
-                                    <p><strong>Cliente:</strong> {{ agendamento.cliente.nome }}</p>
-                                    <p><strong>E-mail:</strong> {{ agendamento.cliente.email }}</p>
-                                    <p><strong>Endereço:</strong> {{ agendamento.local.endereco }}</p>
-                                    <p><strong>Horário:</strong> {{ agendamento.horario }}</p>
-                                    <p><strong>Status:</strong> {{ agendamento.status }}</p>
-                                    <p><strong>Observações:</strong> {{ agendamento.observacoes }}</p>
-                                </div>
-                            </details>
-                        {% endfor %}
-                    {% else %}
-                        <p class="mensagem-vazia">Ainda não existem serviços concluídos ou cancelados.</p>
-                    {% endif %}
-                </div>
-
-            </div>
-
-            <!-- ABA 2: PERSONALIZAÇÃO DO SITE -->
-            <div id="personalizacao-site" class="conteudo-aba">
-
-                <h2>Personalização do Site</h2>
-                <p>Área para futuramente alterar nome, logo, cores, serviços e valores exibidos na tela inicial.</p>
-
-                <div class="card-agendamento">
-                    <h3>Identidade visual</h3>
-
-                    <form>
-                        <p>
-                            <label>Nome exibido na tela inicial</label>
-                            <input type="text" value="Agenda Fácil" disabled>
-                        </p>
-
-                        <p>
-                            <label>Logo do site</label>
-                            <input type="file" disabled>
-                        </p>
-
-                        <p>
-                            <label>Cor principal</label>
-                            <select disabled>
-                                <option>Verde institucional</option>
-                                <option>Azul profissional</option>
-                                <option>Areia minimalista</option>
-                            </select>
-                        </p>
-
-                        <button type="button" disabled>
-                            Salvar personalização
+                        <button type="submit" class="botao-acao botao-bloquear-dia">
+                            Bloquear dia
                         </button>
                     </form>
                 </div>
 
-                <div class="card-agendamento">
-                    <h3>Serviços e valores</h3>
-                    <p>Futuramente o prestador poderá editar os serviços disponíveis e os valores exibidos na home.</p>
+                <div class="resumo-staff">
+                    <h3>Resumo</h3>
 
-                    <button type="button" disabled>
-                        Editar serviços
-                    </button>
+                    <div class="card-resumo-staff">
+                        <strong>{{ total_a_fazer }}</strong>
+                        <span>Serviços a fazer</span>
+                    </div>
+
+                    <div class="card-resumo-staff">
+                        <strong>{{ total_pendentes }}</strong>
+                        <span>Pendentes</span>
+                    </div>
+
+                    <div class="card-resumo-staff">
+                        <strong>{{ total_confirmados }}</strong>
+                        <span>Confirmados</span>
+                    </div>
+
+                    <div class="card-resumo-staff">
+                        <strong>{{ total_historico }}</strong>
+                        <span>Histórico</span>
+                    </div>
+
+                    <div class="detalhes-dia-staff" id="detalhes-dia-staff">
+                        <h3>Detalhes do dia</h3>
+                        <p class="mensagem-detalhes-vazia">
+                            Clique em um dia com serviço no calendário para ver os detalhes do pedido.
+                        </p>
+                    </div>
                 </div>
 
             </div>
 
-            <a class="voltar" href="/">Voltar para a página inicial</a>
+            <h2>Pedidos</h2>
 
-        </section>
-    </div>
-    {% endblock %}
+            <div class="abas-agendamentos abas-menores">
+                <button type="button" class="aba-pedido ativa" data-pedido="pedidos-a-fazer">
+                    A fazer
+                </button>
 
-    {% block extra_js %}
-    {{ datas_bloqueadas|json_script:"datas-bloqueadas-json" }}
-    {{ datas_com_servico|json_script:"datas-servico-json" }}
+                <button type="button" class="aba-pedido" data-pedido="pedidos-confirmados">
+                    Confirmados
+                </button>
 
-    <script>
+                <button type="button" class="aba-pedido" data-pedido="pedidos-historico">
+                    Histórico
+                </button>
+            </div>
 
-        const datasBloqueadas = JSON.parse(
-            document.getElementById('datas-bloqueadas-json').textContent
-        );
+            <div id="pedidos-a-fazer" class="conteudo-pedido ativo">
+                {% if agendamentos_a_fazer %}
+                    {% for agendamento in agendamentos_a_fazer %}
+                        <details class="card-pedido-pequeno">
+                            <summary>
+                                <strong>{{ agendamento.servico.nome }}</strong>
+                                <span>{{ agendamento.data }} - {{ agendamento.status }}</span>
+                            </summary>
 
-        const datasComServico = JSON.parse(
-            document.getElementById('datas-servico-json').textContent
-        );
+                            <div class="detalhes-pedido">
+                                <p><strong>Cliente:</strong> {{ agendamento.cliente.nome }}</p>
+                                <p><strong>E-mail:</strong> {{ agendamento.cliente.email }}</p>
+                                <p><strong>Endereço:</strong> {{ agendamento.local.endereco }}</p>
+                                <p><strong>Horário:</strong> {{ agendamento.horario }}</p>
+                                <p><strong>Status:</strong> {{ agendamento.status }}</p>
+                                <p><strong>Observações:</strong> {{ agendamento.observacoes }}</p>
+                            </div>
+                        </details>
+                    {% endfor %}
+                {% else %}
+                    <p class="mensagem-vazia">Não existem serviços pendentes ou confirmados no momento.</p>
+                {% endif %}
+            </div>
 
-        const abasPrincipais = document.querySelectorAll('.aba');
-        const conteudosPrincipais = document.querySelectorAll('.conteudo-aba');
+            <div id="pedidos-confirmados" class="conteudo-pedido">
+                {% if agendamentos_a_fazer %}
+                    {% for agendamento in agendamentos_a_fazer %}
+                        {% if agendamento.status == 'confirmado' %}
+                            <details class="card-pedido-pequeno">
+                                <summary>
+                                    <strong>{{ agendamento.servico.nome }}</strong>
+                                    <span>{{ agendamento.data }} - confirmado</span>
+                                </summary>
 
-        abasPrincipais.forEach(aba => {
-            aba.addEventListener('click', () => {
-                abasPrincipais.forEach(a => a.classList.remove('ativa'));
-                conteudosPrincipais.forEach(c => c.classList.remove('ativo'));
+                                <div class="detalhes-pedido">
+                                    <p><strong>Cliente:</strong> {{ agendamento.cliente.nome }}</p>
+                                    <p><strong>E-mail:</strong> {{ agendamento.cliente.email }}</p>
+                                    <p><strong>Endereço:</strong> {{ agendamento.local.endereco }}</p>
+                                    <p><strong>Horário:</strong> {{ agendamento.horario }}</p>
+                                    <p><strong>Observações:</strong> {{ agendamento.observacoes }}</p>
+                                </div>
+                            </details>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <p class="mensagem-vazia">Não existem serviços confirmados.</p>
+                {% endif %}
+            </div>
 
-                aba.classList.add('ativa');
+            <div id="pedidos-historico" class="conteudo-pedido">
+                {% if agendamentos_historico %}
+                    {% for agendamento in agendamentos_historico %}
+                        <details class="card-pedido-pequeno">
+                            <summary>
+                                <strong>{{ agendamento.servico.nome }}</strong>
+                                <span>{{ agendamento.data }} - {{ agendamento.status }}</span>
+                            </summary>
 
-                const idAba = aba.dataset.aba;
-                document.getElementById(idAba).classList.add('ativo');
-            });
+                            <div class="detalhes-pedido">
+                                <p><strong>Cliente:</strong> {{ agendamento.cliente.nome }}</p>
+                                <p><strong>E-mail:</strong> {{ agendamento.cliente.email }}</p>
+                                <p><strong>Endereço:</strong> {{ agendamento.local.endereco }}</p>
+                                <p><strong>Horário:</strong> {{ agendamento.horario }}</p>
+                                <p><strong>Status:</strong> {{ agendamento.status }}</p>
+                                <p><strong>Observações:</strong> {{ agendamento.observacoes }}</p>
+                            </div>
+                        </details>
+                    {% endfor %}
+                {% else %}
+                    <p class="mensagem-vazia">Ainda não existem serviços concluídos ou cancelados.</p>
+                {% endif %}
+            </div>
+
+        </div>
+
+        <div id="personalizacao-site" class="conteudo-aba">
+
+            <h2>Personalização do Site</h2>
+            <p>Área para futuramente alterar nome, logo, cores, serviços e valores exibidos na tela inicial.</p>
+
+            <div class="card-agendamento">
+                <h3>Identidade visual</h3>
+
+                <form>
+                    <p>
+                        <label>Nome exibido na tela inicial</label>
+                        <input type="text" value="Agenda Fácil" disabled>
+                    </p>
+
+                    <p>
+                        <label>Logo do site</label>
+                        <input type="file" disabled>
+                    </p>
+
+                    <p>
+                        <label>Cor principal</label>
+                        <select disabled>
+                            <option>Verde institucional</option>
+                            <option>Azul profissional</option>
+                            <option>Areia minimalista</option>
+                        </select>
+                    </p>
+
+                    <button type="button" disabled>
+                        Salvar personalização
+                    </button>
+                </form>
+            </div>
+
+            <div class="card-agendamento">
+                <h3>Serviços e valores</h3>
+                <p>Futuramente o prestador poderá editar os serviços disponíveis e os valores exibidos na home.</p>
+
+                <button type="button" disabled>
+                    Editar serviços
+                </button>
+            </div>
+
+        </div>
+
+        <a class="voltar" href="/">Voltar para a página inicial</a>
+
+    </section>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+
+{{ datas_bloqueadas|json_script:"datas-bloqueadas-json" }}
+{{ eventos_calendario|json_script:"eventos-calendario-json" }}
+
+<script>
+    const datasBloqueadas = JSON.parse(
+        document.getElementById('datas-bloqueadas-json').textContent
+    );
+
+    const eventosCalendario = JSON.parse(
+        document.getElementById('eventos-calendario-json').textContent
+    );
+
+    const abasPrincipais = document.querySelectorAll('.aba');
+    const conteudosPrincipais = document.querySelectorAll('.conteudo-aba');
+
+    abasPrincipais.forEach(aba => {
+        aba.addEventListener('click', () => {
+            abasPrincipais.forEach(a => a.classList.remove('ativa'));
+            conteudosPrincipais.forEach(c => c.classList.remove('ativo'));
+
+            aba.classList.add('ativa');
+
+            const idAba = aba.dataset.aba;
+            document.getElementById(idAba).classList.add('ativo');
+        });
+    });
+
+    const abasPedidos = document.querySelectorAll('.aba-pedido');
+    const conteudosPedidos = document.querySelectorAll('.conteudo-pedido');
+
+    abasPedidos.forEach(aba => {
+        aba.addEventListener('click', () => {
+            abasPedidos.forEach(a => a.classList.remove('ativa'));
+            conteudosPedidos.forEach(c => c.classList.remove('ativo'));
+
+            aba.classList.add('ativa');
+
+            const idPedido = aba.dataset.pedido;
+            document.getElementById(idPedido).classList.add('ativo');
+        });
+    });
+
+    const calendarioStaff = document.getElementById('calendario-staff');
+    const tituloMesStaff = document.getElementById('mes-atual-staff');
+    const botaoMesAnteriorStaff = document.getElementById('mes-anterior-staff');
+    const botaoProximoMesStaff = document.getElementById('proximo-mes-staff');
+    const detalhesDiaStaff = document.getElementById('detalhes-dia-staff');
+
+    let dataAtualStaff = new Date();
+    let mesAtualStaff = dataAtualStaff.getMonth();
+    let anoAtualStaff = dataAtualStaff.getFullYear();
+
+    const nomesMesesStaff = [
+        'Janeiro',
+        'Fevereiro',
+        'Março',
+        'Abril',
+        'Maio',
+        'Junho',
+        'Julho',
+        'Agosto',
+        'Setembro',
+        'Outubro',
+        'Novembro',
+        'Dezembro'
+    ];
+
+    const nomesDiasSemanaStaff = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+
+    function formatarDataStaff(ano, mes, dia) {
+        const mesFormatado = String(mes + 1).padStart(2, '0');
+        const diaFormatado = String(dia).padStart(2, '0');
+
+        return ano + '-' + mesFormatado + '-' + diaFormatado;
+    }
+
+    function adicionarLinhaDetalhe(card, titulo, valor) {
+        const linha = document.createElement('p');
+
+        const strong = document.createElement('strong');
+        strong.textContent = titulo + ': ';
+
+        linha.appendChild(strong);
+        linha.appendChild(document.createTextNode(valor || 'Não informado'));
+
+        card.appendChild(linha);
+    }
+
+    function mostrarDetalhesDia(dataFormatada, eventosDoDia) {
+        detalhesDiaStaff.innerHTML = '';
+
+        const titulo = document.createElement('h3');
+        titulo.textContent = 'Detalhes do dia';
+        detalhesDiaStaff.appendChild(titulo);
+
+        const data = document.createElement('p');
+
+        const strongData = document.createElement('strong');
+        strongData.textContent = 'Data: ';
+
+        data.appendChild(strongData);
+        data.appendChild(document.createTextNode(dataFormatada));
+
+        detalhesDiaStaff.appendChild(data);
+
+        eventosDoDia.forEach(evento => {
+            const card = document.createElement('div');
+            card.classList.add('card-detalhe-evento');
+
+            adicionarLinhaDetalhe(card, 'Serviço', evento.servico);
+            adicionarLinhaDetalhe(card, 'Cliente', evento.cliente);
+            adicionarLinhaDetalhe(card, 'E-mail', evento.email);
+            adicionarLinhaDetalhe(card, 'Endereço', evento.endereco);
+            adicionarLinhaDetalhe(card, 'Horário', evento.horario);
+            adicionarLinhaDetalhe(card, 'Status', evento.status);
+            adicionarLinhaDetalhe(card, 'Observações', evento.observacoes || 'Sem observações');
+
+            detalhesDiaStaff.appendChild(card);
+        });
+    }
+
+    function criarCalendarioStaff(mes, ano) {
+        calendarioStaff.innerHTML = '';
+
+        tituloMesStaff.textContent = nomesMesesStaff[mes] + ' ' + ano;
+
+        nomesDiasSemanaStaff.forEach(diaSemana => {
+            const elementoDiaSemana = document.createElement('div');
+            elementoDiaSemana.classList.add('dia-semana');
+            elementoDiaSemana.textContent = diaSemana;
+            calendarioStaff.appendChild(elementoDiaSemana);
         });
 
-        const abasPedidos = document.querySelectorAll('.aba-pedido');
-        const conteudosPedidos = document.querySelectorAll('.conteudo-pedido');
+        const primeiroDiaMes = new Date(ano, mes, 1);
+        const ultimoDiaMes = new Date(ano, mes + 1, 0);
+        const quantidadeDias = ultimoDiaMes.getDate();
 
-        abasPedidos.forEach(aba => {
-            aba.addEventListener('click', () => {
-                abasPedidos.forEach(a => a.classList.remove('ativa'));
-                conteudosPedidos.forEach(c => c.classList.remove('ativo'));
+        const espacosVazios = primeiroDiaMes.getDay();
 
-                aba.classList.add('ativa');
-
-                const idPedido = aba.dataset.pedido;
-                document.getElementById(idPedido).classList.add('ativo');
-            });
-        });
-
-        const calendarioStaff = document.getElementById('calendario-staff');
-        const tituloMesStaff = document.getElementById('mes-atual-staff');
-        const botaoMesAnteriorStaff = document.getElementById('mes-anterior-staff');
-        const botaoProximoMesStaff = document.getElementById('proximo-mes-staff');
-
-        let dataAtualStaff = new Date();
-        let mesAtualStaff = dataAtualStaff.getMonth();
-        let anoAtualStaff = dataAtualStaff.getFullYear();
-
-        const nomesMesesStaff = [
-            'Janeiro',
-            'Fevereiro',
-            'Março',
-            'Abril',
-            'Maio',
-            'Junho',
-            'Julho',
-            'Agosto',
-            'Setembro',
-            'Outubro',
-            'Novembro',
-            'Dezembro'
-        ];
-
-        const nomesDiasSemanaStaff = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-
-        function formatarDataStaff(ano, mes, dia) {
-            const mesFormatado = String(mes + 1).padStart(2, '0');
-            const diaFormatado = String(dia).padStart(2, '0');
-
-            return `${ano}-${mesFormatado}-${diaFormatado}`;
+        for (let i = 0; i < espacosVazios; i++) {
+            const vazio = document.createElement('div');
+            vazio.classList.add('dia-calendario', 'vazio');
+            calendarioStaff.appendChild(vazio);
         }
 
-        function criarCalendarioStaff(mes, ano) {
-            calendarioStaff.innerHTML = '';
+        for (let dia = 1; dia <= quantidadeDias; dia++) {
+            const celulaDia = document.createElement('div');
+            celulaDia.classList.add('dia-calendario');
 
-            tituloMesStaff.textContent = `${nomesMesesStaff[mes]} ${ano}`;
+            const dataFormatada = formatarDataStaff(ano, mes, dia);
 
-            nomesDiasSemanaStaff.forEach(diaSemana => {
-                const elementoDiaSemana = document.createElement('div');
-                elementoDiaSemana.classList.add('dia-semana');
-                elementoDiaSemana.textContent = diaSemana;
-                calendarioStaff.appendChild(elementoDiaSemana);
+            const numeroDia = document.createElement('span');
+            numeroDia.classList.add('dia-numero-staff');
+            numeroDia.textContent = dia;
+
+            celulaDia.appendChild(numeroDia);
+            celulaDia.dataset.data = dataFormatada;
+
+            const eventosDoDia = eventosCalendario.filter(evento => {
+                return evento.data === dataFormatada;
             });
 
-            const primeiroDiaMes = new Date(ano, mes, 1);
-            const ultimoDiaMes = new Date(ano, mes + 1, 0);
-            const quantidadeDias = ultimoDiaMes.getDate();
-
-            const espacosVazios = primeiroDiaMes.getDay();
-
-            for (let i = 0; i < espacosVazios; i++) {
-                const vazio = document.createElement('div');
-                vazio.classList.add('dia-calendario', 'vazio');
-                calendarioStaff.appendChild(vazio);
+            if (datasBloqueadas.includes(dataFormatada)) {
+                celulaDia.classList.add('bloqueado');
+                celulaDia.title = 'Dia bloqueado pelo prestador';
             }
 
-            for (let dia = 1; dia <= quantidadeDias; dia++) {
-                const celulaDia = document.createElement('div');
-                celulaDia.classList.add('dia-calendario');
+            if (eventosDoDia.length > 0) {
+                celulaDia.classList.add('com-servico');
+                celulaDia.title = 'Clique para ver detalhes';
 
-                const dataFormatada = formatarDataStaff(ano, mes, dia);
+                eventosDoDia.forEach(evento => {
+                    const eventoElemento = document.createElement('div');
+                    eventoElemento.classList.add('evento-calendario-staff');
 
-                celulaDia.textContent = dia;
-                celulaDia.dataset.data = dataFormatada;
+                    const nomeServico = document.createElement('div');
+                    nomeServico.textContent = evento.servico;
 
-                if (datasBloqueadas.includes(dataFormatada)) {
-                    celulaDia.classList.add('bloqueado');
-                    celulaDia.title = 'Dia bloqueado pelo prestador';
-                } else if (datasComServico.includes(dataFormatada)) {
-                    celulaDia.classList.add('com-servico');
-                    celulaDia.title = 'Dia com serviço agendado';
-                }
+                    const infoEvento = document.createElement('span');
+                    infoEvento.textContent = evento.horario + ' - ' + evento.status;
 
-                calendarioStaff.appendChild(celulaDia);
+                    eventoElemento.appendChild(nomeServico);
+                    eventoElemento.appendChild(infoEvento);
+
+                    celulaDia.appendChild(eventoElemento);
+                });
+
+                celulaDia.addEventListener('click', () => {
+                    mostrarDetalhesDia(dataFormatada, eventosDoDia);
+                });
             }
+
+            calendarioStaff.appendChild(celulaDia);
         }
+    }
 
-        botaoMesAnteriorStaff.addEventListener('click', () => {
-            mesAtualStaff--;
+    botaoMesAnteriorStaff.addEventListener('click', () => {
+        mesAtualStaff--;
 
-            if (mesAtualStaff < 0) {
-                mesAtualStaff = 11;
-                anoAtualStaff--;
-            }
-
-            criarCalendarioStaff(mesAtualStaff, anoAtualStaff);
-        });
-
-        botaoProximoMesStaff.addEventListener('click', () => {
-            mesAtualStaff++;
-
-            if (mesAtualStaff > 11) {
-                mesAtualStaff = 0;
-                anoAtualStaff++;
-            }
-
-            criarCalendarioStaff(mesAtualStaff, anoAtualStaff);
-        });
+        if (mesAtualStaff < 0) {
+            mesAtualStaff = 11;
+            anoAtualStaff--;
+        }
 
         criarCalendarioStaff(mesAtualStaff, anoAtualStaff);
-    </script>
-    {% endblock %}
+    });
+
+    botaoProximoMesStaff.addEventListener('click', () => {
+        mesAtualStaff++;
+
+        if (mesAtualStaff > 11) {
+            mesAtualStaff = 0;
+            anoAtualStaff++;
+        }
+
+        criarCalendarioStaff(mesAtualStaff, anoAtualStaff);
+    });
+
+    criarCalendarioStaff(mesAtualStaff, anoAtualStaff);
+</script>
+
+{% endblock %}
