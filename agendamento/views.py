@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
-from datetime import time
+from datetime import time, datetime
 
 from .models import Servico, Cliente, LocalAtendimento, Agendamento, DiaBloqueado
 from .forms import AgendamentoForm, CadastroUsuarioForm, LoginUsuarioForm, ReclamacaoForm, EditarAgendamentoForm
@@ -92,13 +92,18 @@ def montar_pedido(request):
         latitude = request.POST.get('latitude')
         longitude = request.POST.get('longitude')
         data_servico = request.POST.get('data_servico')
+        horario_servico = request.POST.get('horario_servico')
+
+        servico = Servico.objects.get(id=servico_id)
 
         request.session['pedido'] = {
             'servico_id': servico_id,
+            'servico_nome': servico.nome,
             'endereco': endereco,
             'latitude': latitude,
             'longitude': longitude,
             'data_servico': data_servico,
+            'horario_servico': horario_servico,
         }
 
         if request.user.is_authenticated:
@@ -143,13 +148,15 @@ def confirmar_pedido(request):
         referencia=f"Latitude: {pedido['latitude']} | Longitude: {pedido['longitude']}"
     )
 
+    horario_escolhido = datetime.strptime(pedido['horario_servico'], '%H:%M').time()
+
     Agendamento.objects.create(
         usuario=request.user,
         cliente=cliente,
         servico=servico,
         local=local,
         data=pedido['data_servico'],
-        horario=time(9, 0),
+        horario=horario_escolhido,
         status='pendente',
         observacoes='Pedido criado pela página inicial.'
     )

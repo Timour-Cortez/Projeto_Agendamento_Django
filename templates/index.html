@@ -6,7 +6,7 @@ Agenda Fácil
 {% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/index.css' %}?v=8">
+<link rel="stylesheet" href="{% static 'css/index.css' %}?v=9">
 
 <link
     rel="stylesheet"
@@ -48,6 +48,45 @@ Agenda Fácil
     .site-nav a:hover {
         text-decoration: underline;
     }
+
+    .secao-horarios {
+        margin-top: 40px;
+        text-align: center;
+    }
+
+    .texto-horario {
+        color: #666;
+        margin-bottom: 20px;
+    }
+
+    .horarios-container {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .botao-horario {
+        padding: 14px 24px;
+        border: 2px solid #6b7b4b;
+        background-color: white;
+        color: #6b7b4b;
+        border-radius: 10px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .botao-horario:hover {
+        background-color: #eef3e4;
+        transform: translateY(-2px);
+    }
+
+    .botao-horario.horario-selecionado {
+        background-color: #6b7b4b;
+        color: white;
+        box-shadow: 0 0 18px rgba(107, 123, 75, 0.5);
+    }
 </style>
 {% endblock %}
 
@@ -66,6 +105,7 @@ Agenda Fácil
 
         <input type="hidden" name="servico_id" id="servico_id">
         <input type="hidden" name="data_servico" id="data_servico">
+        <input type="hidden" name="horario_servico" id="horario_servico">
         <input type="hidden" name="latitude" id="latitude">
         <input type="hidden" name="longitude" id="longitude">
 
@@ -145,6 +185,32 @@ Agenda Fácil
             </div>
         </section>
 
+        <section class="secao-horarios">
+            <h2>Escolha o horário</h2>
+
+            <p class="texto-horario">
+                Selecione um horário disponível para o serviço.
+            </p>
+
+            <div class="horarios-container">
+                <button type="button" class="botao-horario" data-horario="09:00">
+                    09:00
+                </button>
+
+                <button type="button" class="botao-horario" data-horario="11:00">
+                    11:00
+                </button>
+
+                <button type="button" class="botao-horario" data-horario="14:00">
+                    14:00
+                </button>
+
+                <button type="button" class="botao-horario" data-horario="16:00">
+                    16:00
+                </button>
+            </div>
+        </section>
+
         <button type="submit" class="botao-continuar">
             Continuar agendamento
         </button>
@@ -184,6 +250,20 @@ Agenda Fácil
             card.style.transform = 'translateY(-5px)';
 
             inputServico.value = card.dataset.servicoId;
+        });
+    });
+
+    const botoesHorario = document.querySelectorAll('.botao-horario');
+    const inputHorario = document.getElementById('horario_servico');
+
+    botoesHorario.forEach(botao => {
+        botao.addEventListener('click', () => {
+            botoesHorario.forEach(b => {
+                b.classList.remove('horario-selecionado');
+            });
+
+            botao.classList.add('horario-selecionado');
+            inputHorario.value = botao.dataset.horario;
         });
     });
 
@@ -365,6 +445,34 @@ Agenda Fácil
                 alert('Erro ao buscar o endereço.');
                 console.log(error);
             });
+    });
+
+    const formularioPedido = document.querySelector('.form-pedido');
+
+    formularioPedido.addEventListener('submit', function(evento) {
+        if (inputServico.value === '') {
+            evento.preventDefault();
+            alert('Escolha um pacote antes de continuar.');
+            return;
+        }
+
+        if (inputData.value === '') {
+            evento.preventDefault();
+            alert('Escolha uma data antes de continuar.');
+            return;
+        }
+
+        if (inputHorario.value === '') {
+            evento.preventDefault();
+            alert('Escolha um horário antes de continuar.');
+            return;
+        }
+
+        if (inputLatitude.value === '' || inputLongitude.value === '') {
+            evento.preventDefault();
+            alert('Escolha o local do serviço no mapa ou busque um endereço.');
+            return;
+        }
     });
 </script>
 
