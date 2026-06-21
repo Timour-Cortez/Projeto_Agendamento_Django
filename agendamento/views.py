@@ -3,12 +3,16 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from datetime import time, datetime
 
-from .models import Servico, Cliente, LocalAtendimento, Agendamento, DiaBloqueado
+from .models import Servico, Cliente, LocalAtendimento, Agendamento, DiaBloqueado, HorarioDisponivel
 from .forms import AgendamentoForm, CadastroUsuarioForm, LoginUsuarioForm, ReclamacaoForm, EditarAgendamentoForm
 
 
 def home(request):
     servicos = Servico.objects.all()
+
+    horarios_disponiveis = HorarioDisponivel.objects.filter(
+        ativo=True
+    ).order_by('horario')
 
     agendamentos_confirmados = Agendamento.objects.filter(
         status='confirmado'
@@ -26,6 +30,7 @@ def home(request):
 
     return render(request, 'index.html', {
         'servicos': servicos,
+        'horarios_disponiveis': horarios_disponiveis,
         'datas_indisponiveis': datas_indisponiveis,
     })
 
@@ -157,7 +162,7 @@ def confirmar_pedido(request):
         local=local,
         data=pedido['data_servico'],
         horario=horario_escolhido,
-        status='pendente',
+        status='confirmado',
         observacoes='Pedido criado pela página inicial.'
     )
 
@@ -196,6 +201,26 @@ def prestador_dashboard(request):
         return redirect('home')
 
     if request.method == 'POST':
+        acao_pedido = request.POST.get('acao_pedido')
+        agendamento_id = request.POST.get('agendamento_id')
+
+        if acao_pedido and agendamento_id:
+            agendamento = Agendamento.objects.filter(id=agendamento_id).first()
+
+            if agendamento:
+                if acao_pedido == 'confirmar':
+                    agendamento.status = 'confirmado'
+
+                elif acao_pedido == 'concluir':
+                    agendamento.status = 'concluido'
+
+                elif acao_pedido == 'cancelar':
+                    agendamento.status = 'cancelado'
+
+                agendamento.save()
+
+            return redirect('prestador_dashboard')
+
         data_bloqueio = request.POST.get('data_bloqueio')
         motivo_bloqueio = request.POST.get('motivo_bloqueio')
 
@@ -212,7 +237,7 @@ def prestador_dashboard(request):
     pedidos = Agendamento.objects.all().order_by('data', 'horario')
 
     agendamentos_a_fazer = Agendamento.objects.filter(
-        status__in=['pendente', 'confirmado']
+        status='confirmado'
     ).order_by('data', 'horario')
 
     agendamentos_historico = Agendamento.objects.filter(

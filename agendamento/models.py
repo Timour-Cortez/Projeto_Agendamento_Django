@@ -57,3 +57,11 @@ class DiaBloqueado(models.Model):
 
     def __str__(self):
         return f"{self.data} - {self.motivo}"
+
+
+class HorarioDisponivel(models.Model):
+    horario = models.TimeField(unique=True)
+    ativo = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.horario.strftime('%H:%M')

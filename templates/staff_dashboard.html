@@ -6,7 +6,7 @@ Dashboard Staff - Agenda Fácil
 {% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/login.css' %}?v=12">
+<link rel="stylesheet" href="{% static 'css/login.css' %}?v=13">
 
 <style>
     .calendario-staff .dia-calendario:not(.vazio) {
@@ -85,6 +85,17 @@ Dashboard Staff - Agenda Fácil
         color: #666;
         font-size: 14px;
     }
+
+    .acoes-status-staff {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+    }
+
+    .acoes-status-staff form {
+        margin: 0;
+    }
 </style>
 {% endblock %}
 
@@ -109,7 +120,7 @@ Dashboard Staff - Agenda Fácil
         <div id="gestao-servicos" class="conteudo-aba ativo">
 
             <h2>Agenda do Prestador</h2>
-            <p>Calendário para acompanhar serviços agendados e bloquear dias indisponíveis.</p>
+            <p>Calendário para acompanhar serviços confirmados e bloquear dias indisponíveis.</p>
 
             <div class="area-dashboard-staff">
 
@@ -175,16 +186,6 @@ Dashboard Staff - Agenda Fácil
                     </div>
 
                     <div class="card-resumo-staff">
-                        <strong>{{ total_pendentes }}</strong>
-                        <span>Pendentes</span>
-                    </div>
-
-                    <div class="card-resumo-staff">
-                        <strong>{{ total_confirmados }}</strong>
-                        <span>Confirmados</span>
-                    </div>
-
-                    <div class="card-resumo-staff">
                         <strong>{{ total_historico }}</strong>
                         <span>Histórico</span>
                     </div>
@@ -206,10 +207,6 @@ Dashboard Staff - Agenda Fácil
                     A fazer
                 </button>
 
-                <button type="button" class="aba-pedido" data-pedido="pedidos-confirmados">
-                    Confirmados
-                </button>
-
                 <button type="button" class="aba-pedido" data-pedido="pedidos-historico">
                     Histórico
                 </button>
@@ -221,46 +218,44 @@ Dashboard Staff - Agenda Fácil
                         <details class="card-pedido-pequeno">
                             <summary>
                                 <strong>{{ agendamento.servico.nome }}</strong>
-                                <span>{{ agendamento.data }} - {{ agendamento.status }}</span>
+                                <span>{{ agendamento.data }} - {{ agendamento.horario }}</span>
                             </summary>
 
                             <div class="detalhes-pedido">
                                 <p><strong>Cliente:</strong> {{ agendamento.cliente.nome }}</p>
                                 <p><strong>E-mail:</strong> {{ agendamento.cliente.email }}</p>
                                 <p><strong>Endereço:</strong> {{ agendamento.local.endereco }}</p>
+                                <p><strong>Data:</strong> {{ agendamento.data }}</p>
                                 <p><strong>Horário:</strong> {{ agendamento.horario }}</p>
                                 <p><strong>Status:</strong> {{ agendamento.status }}</p>
                                 <p><strong>Observações:</strong> {{ agendamento.observacoes }}</p>
                             </div>
+
+                            <div class="acoes-status-staff">
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="agendamento_id" value="{{ agendamento.id }}">
+                                    <input type="hidden" name="acao_pedido" value="concluir">
+
+                                    <button type="submit" class="botao-acao">
+                                        Concluir
+                                    </button>
+                                </form>
+
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="agendamento_id" value="{{ agendamento.id }}">
+                                    <input type="hidden" name="acao_pedido" value="cancelar">
+
+                                    <button type="submit" class="botao-acao botao-cancelar">
+                                        Cancelar
+                                    </button>
+                                </form>
+                            </div>
                         </details>
                     {% endfor %}
                 {% else %}
-                    <p class="mensagem-vazia">Não existem serviços pendentes ou confirmados no momento.</p>
-                {% endif %}
-            </div>
-
-            <div id="pedidos-confirmados" class="conteudo-pedido">
-                {% if agendamentos_a_fazer %}
-                    {% for agendamento in agendamentos_a_fazer %}
-                        {% if agendamento.status == 'confirmado' %}
-                            <details class="card-pedido-pequeno">
-                                <summary>
-                                    <strong>{{ agendamento.servico.nome }}</strong>
-                                    <span>{{ agendamento.data }} - confirmado</span>
-                                </summary>
-
-                                <div class="detalhes-pedido">
-                                    <p><strong>Cliente:</strong> {{ agendamento.cliente.nome }}</p>
-                                    <p><strong>E-mail:</strong> {{ agendamento.cliente.email }}</p>
-                                    <p><strong>Endereço:</strong> {{ agendamento.local.endereco }}</p>
-                                    <p><strong>Horário:</strong> {{ agendamento.horario }}</p>
-                                    <p><strong>Observações:</strong> {{ agendamento.observacoes }}</p>
-                                </div>
-                            </details>
-                        {% endif %}
-                    {% endfor %}
-                {% else %}
-                    <p class="mensagem-vazia">Não existem serviços confirmados.</p>
+                    <p class="mensagem-vazia">Não existem serviços confirmados para fazer no momento.</p>
                 {% endif %}
             </div>
 
@@ -277,6 +272,7 @@ Dashboard Staff - Agenda Fácil
                                 <p><strong>Cliente:</strong> {{ agendamento.cliente.nome }}</p>
                                 <p><strong>E-mail:</strong> {{ agendamento.cliente.email }}</p>
                                 <p><strong>Endereço:</strong> {{ agendamento.local.endereco }}</p>
+                                <p><strong>Data:</strong> {{ agendamento.data }}</p>
                                 <p><strong>Horário:</strong> {{ agendamento.horario }}</p>
                                 <p><strong>Status:</strong> {{ agendamento.status }}</p>
                                 <p><strong>Observações:</strong> {{ agendamento.observacoes }}</p>

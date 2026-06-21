@@ -185,30 +185,22 @@ Agenda Fácil
             </div>
         </section>
 
-        <section class="secao-horarios">
-            <h2>Escolha o horário</h2>
-
-            <p class="texto-horario">
-                Selecione um horário disponível para o serviço.
-            </p>
-
-            <div class="horarios-container">
-                <button type="button" class="botao-horario" data-horario="09:00">
-                    09:00
+        <div class="horarios-container">
+            {% for horario in horarios_disponiveis %}
+                <button
+                    type="button"
+                    class="botao-horario"
+                    data-horario="{{ horario.horario|time:'H:i' }}"
+                >
+                    {{ horario.horario|time:'H:i' }}
                 </button>
-
-                <button type="button" class="botao-horario" data-horario="11:00">
-                    11:00
-                </button>
-
-                <button type="button" class="botao-horario" data-horario="14:00">
-                    14:00
-                </button>
-
-                <button type="button" class="botao-horario" data-horario="16:00">
-                    16:00
-                </button>
-            </div>
+            {% empty %}
+                <p class="texto-horario">
+                    Nenhum horário disponível no momento.
+                </p>
+            {% endfor %}
+        </div>
+        
         </section>
 
         <button type="submit" class="botao-continuar">
