@@ -53,6 +53,43 @@ body {
     font-size: 14px;
 }
 
+.mensagens-container {
+    width: min(900px, 90%);
+    margin: 25px auto 0 auto;
+}
+
+.mensagem-sistema {
+    padding: 14px 18px;
+    border-radius: 10px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.mensagem-success {
+    background-color: #eef3e4;
+    color: #4f6b2f;
+    border: 1px solid #6b7b4b;
+}
+
+.mensagem-error {
+    background-color: #f5dddd;
+    color: #8a2f2f;
+    border: 1px solid #b65a5a;
+}
+
+.mensagem-warning {
+    background-color: #fff1c9;
+    color: #8a681f;
+    border: 1px solid #d6ad3a;
+}
+
+.mensagem-info {
+    background-color: #ddebf7;
+    color: #2f597a;
+    border: 1px solid #6b9bc4;
+}
+
 @media (max-width: 700px) {
     .site-header {
         flex-direction: column;

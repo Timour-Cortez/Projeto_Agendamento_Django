@@ -1,55 +1,59 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html lang="pt-BR">
-
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Agenda Fácil{% endblock %}</title>
 
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}?v=2">
 
     {% block extra_css %}
     {% endblock %}
 </head>
 
 <body>
-
     <header class="site-header">
-        <a href="/" class="site-logo">
-            Agenda Fácil
-        </a>
+        <a href="/" class="site-logo">Agenda Fácil</a>
 
         <nav class="site-nav">
             <a href="/">Início</a>
 
             {% if user.is_authenticated %}
-                <a href="/meus-agendamentos/">Meus pedidos</a>
+                <a href="{% url 'meus_agendamentos' %}">Meus Agendamentos</a>
 
                 {% if user.is_staff %}
-                    <a href="/prestador/dashboard/">Dashboard</a>
+                    <a href="{% url 'prestador_dashboard' %}">Área do Prestador</a>
                 {% endif %}
 
-                <a href="/logout/">Sair</a>
+                <a href="{% url 'logout' %}">Sair</a>
             {% else %}
-                <a href="/login/">Login</a>
+                <a href="{% url 'login' %}">Login</a>
+                <a href="{% url 'cadastro' %}">Cadastro</a>
             {% endif %}
         </nav>
     </header>
 
     <main class="site-main">
+        {% if messages %}
+            <div class="mensagens-container">
+                {% for message in messages %}
+                    <div class="mensagem-sistema mensagem-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
         {% block content %}
         {% endblock %}
     </main>
 
     <footer class="site-footer">
-        <p>Agenda Fácil — Sistema de agendamento de serviços</p>
+        <p>Agenda Fácil - Sistema de agendamento online</p>
     </footer>
 
     {% block extra_js %}
     {% endblock %}
-
 </body>
-
 </html>
