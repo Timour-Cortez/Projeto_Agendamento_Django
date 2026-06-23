@@ -23,13 +23,18 @@ body {
     text-decoration: none;
     display: flex;
     align-items: center;
+    gap: 12px;
 }
 
 .site-logo-imagem {
-    max-height: 48px;
-    max-width: 180px;
+    width: 44px;
+    height: 44px;
     object-fit: contain;
     display: block;
+}
+
+.site-logo-texto {
+    display: inline-block;
 }
 
 .site-nav {
@@ -120,7 +125,7 @@ button,
     }
 
     .site-logo-imagem {
-        max-height: 42px;
-        max-width: 150px;
+        width: 38px;
+        height: 38px;
     }
 }

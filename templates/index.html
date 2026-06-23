@@ -6,79 +6,41 @@
 {% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/index.css' %}?v=12">
-
-<link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-/>
-
-<style>
-    .secao-horarios {
-        margin-top: 40px;
-        text-align: center;
-    }
-
-    .texto-horario {
-        color: #666;
-        margin-bottom: 20px;
-    }
-
-    .horarios-container {
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-        flex-wrap: wrap;
-    }
-
-    .botao-horario {
-        padding: 14px 24px;
-        border: 2px solid var(--cor-principal);
-        background-color: white;
-        color: var(--cor-principal);
-        border-radius: 10px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: 0.2s;
-    }
-
-    .botao-horario:hover {
-        background-color: var(--cor-secundaria);
-        transform: translateY(-2px);
-    }
-
-    .botao-horario.horario-selecionado {
-        background-color: var(--cor-principal);
-        color: white;
-        box-shadow: 0 0 18px rgba(0, 0, 0, 0.18);
-    }
-
-    .botao-horario.horario-indisponivel {
-        background-color: #f1d1d1;
-        border-color: #9b3d3d;
-        color: #7d2f2f;
-        cursor: not-allowed;
-        opacity: 0.75;
-    }
-
-    .botao-horario.horario-indisponivel:hover {
-        transform: none;
-    }
-</style>
+<link rel="stylesheet" href="{% static 'css/index.css' %}?v=14">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 {% endblock %}
 
 {% block content %}
 
-<header>
-    <h1>{{ configuracao_site.titulo_home }}</h1>
-    <p>{{ configuracao_site.texto_home }}</p>
-</header>
+<section class="hero-home">
+    <div class="hero-identidade">
+        {% if configuracao_site.logo %}
+            <img
+                src="{{ configuracao_site.logo.url }}"
+                alt="{{ configuracao_site.nome_site }}"
+                class="hero-logo"
+            >
+        {% endif %}
 
-<section>
+        <div>
+            <h1>{{ configuracao_site.nome_site }}</h1>
+
+            <p class="hero-texto">
+                {{ configuracao_site.texto_home }}
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="secao-agendamento" id="agendamento">
     <form method="POST" action="/montar-pedido/" class="form-pedido">
         {% csrf_token %}
 
-        <h2>Escolha seu pacote</h2>
+        <div class="titulo-secao">
+            <p class="secao-etiqueta">Agendamento</p>
+            <h2>Monte seu pedido</h2>
+            <p>Escolha o pacote, local, data e horário do serviço.</p>
+        </div>
 
         <input type="hidden" name="servico_id" id="servico_id">
         <input type="hidden" name="data_servico" id="data_servico">
@@ -86,33 +48,42 @@
         <input type="hidden" name="latitude" id="latitude">
         <input type="hidden" name="longitude" id="longitude">
 
-        <div class="servicos">
-            {% for servico in servicos %}
-                <button
-                    type="button"
-                    class="card card-servico"
-                    data-servico-id="{{ servico.id }}"
-                >
-                    <h3>{{ servico.nome }}</h3>
-                    <p>{{ servico.descricao }}</p>
-                    <strong>R$ {{ servico.preco }}</strong>
-                </button>
-            {% endfor %}
+        <div class="bloco-agendamento">
+            <div class="titulo-bloco">
+                <span>01</span>
+                <div>
+                    <h3>Escolha seu pacote</h3>
+                    <p>Selecione uma das opções disponíveis.</p>
+                </div>
+            </div>
+
+            <div class="servicos">
+                {% for servico in servicos %}
+                    <button type="button" class="card card-servico" data-servico-id="{{ servico.id }}">
+                        <h3>{{ servico.nome }}</h3>
+                        <p>{{ servico.descricao }}</p>
+                        <strong>R$ {{ servico.preco }}</strong>
+                    </button>
+                {% empty %}
+                    <p class="mensagem-vazia">Nenhum pacote disponível no momento.</p>
+                {% endfor %}
+            </div>
         </div>
 
-        <section class="secao-mapa">
-            <h2>Escolha região</h2>
+        <div class="bloco-agendamento secao-mapa">
+            <div class="titulo-bloco">
+                <span>02</span>
+                <div>
+                    <h3>Escolha o local</h3>
+                    <p>Busque um endereço ou clique diretamente no mapa.</p>
+                </div>
+            </div>
 
             <div class="campo-endereco">
-                <label for="endereco">Endereço do serviço:</label>
+                <label for="endereco">Endereço do serviço</label>
 
                 <div class="linha-endereco">
-                    <input
-                        type="text"
-                        id="endereco"
-                        name="endereco"
-                        placeholder="Digite o endereço do serviço"
-                    >
+                    <input type="text" id="endereco" name="endereco" placeholder="Digite o endereço do serviço">
 
                     <button type="button" id="buscar-endereco" class="botao-buscar">
                         Buscar
@@ -121,74 +92,59 @@
             </div>
 
             <div id="mapa-interativo" class="caixa-mapa"></div>
-        </section>
+        </div>
 
-        <section class="secao-calendario">
-            <h2>Disponibilidade</h2>
+        <div class="bloco-agendamento secao-calendario">
+            <div class="titulo-bloco">
+                <span>03</span>
+                <div>
+                    <h3>Escolha a data</h3>
+                    <p>Selecione um dia disponível no calendário.</p>
+                </div>
+            </div>
 
             <div class="calendario-container">
                 <div class="cabecalho-calendario">
-                    <button type="button" id="mes-anterior" class="botao-mes">
-                        ◀
-                    </button>
-
+                    <button type="button" id="mes-anterior" class="botao-mes">◀</button>
                     <h3 id="mes-atual">Mês Ano</h3>
-
-                    <button type="button" id="proximo-mes" class="botao-mes">
-                        ▶
-                    </button>
+                    <button type="button" id="proximo-mes" class="botao-mes">▶</button>
                 </div>
 
-                <div class="calendario" id="calendario">
-                    <!-- O JavaScript cria os dias aqui -->
-                </div>
+                <div class="calendario" id="calendario"></div>
 
                 <div class="legenda-calendario">
-                    <div>
-                        <span class="legenda disponivel-legenda"></span>
-                        Disponível
-                    </div>
-
-                    <div>
-                        <span class="legenda selecionado-legenda"></span>
-                        Selecionado
-                    </div>
-
-                    <div>
-                        <span class="legenda indisponivel-legenda"></span>
-                        Indisponível
-                    </div>
+                    <div><span class="legenda disponivel-legenda"></span>Disponível</div>
+                    <div><span class="legenda selecionado-legenda"></span>Selecionado</div>
+                    <div><span class="legenda indisponivel-legenda"></span>Indisponível</div>
                 </div>
             </div>
-        </section>
+        </div>
 
-        <section class="secao-horarios">
-            <h2>Escolha o horário</h2>
-
-            <p class="texto-horario">
-                Selecione uma data para ver quais horários estão disponíveis.
-            </p>
+        <div class="bloco-agendamento secao-horarios">
+            <div class="titulo-bloco">
+                <span>04</span>
+                <div>
+                    <h3>Escolha o horário</h3>
+                    <p>Selecione uma data para ver quais horários estão disponíveis.</p>
+                </div>
+            </div>
 
             <div class="horarios-container">
                 {% for horario in horarios_disponiveis %}
-                    <button
-                        type="button"
-                        class="botao-horario"
-                        data-horario="{{ horario.horario|time:'H:i' }}"
-                    >
+                    <button type="button" class="botao-horario" data-horario="{{ horario.horario|time:'H:i' }}">
                         {{ horario.horario|time:'H:i' }}
                     </button>
                 {% empty %}
-                    <p class="texto-horario">
-                        Nenhum horário disponível no momento.
-                    </p>
+                    <p class="texto-horario">Nenhum horário disponível no momento.</p>
                 {% endfor %}
             </div>
-        </section>
+        </div>
 
-        <button type="submit" class="botao-continuar">
-            Continuar agendamento
-        </button>
+        <div class="area-botao-final">
+            <button type="submit" class="botao-continuar">
+                Continuar agendamento
+            </button>
+        </div>
     </form>
 </section>
 

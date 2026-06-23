@@ -5,131 +5,277 @@ body {
     color: #333;
 }
 
-/* Bloco principal da home */
-
-header {
-    position: relative;
-    text-align: center;
-    padding: 40px;
-    background-color: var(--cor-principal);
-    color: white;
-}
-
-header h1,
-header p {
-    color: white;
-}
-
-.botao-login {
-    position: absolute;
-    top: 20px;
-    right: 30px;
-    padding: 10px 18px;
-    background-color: white;
-    color: var(--cor-principal);
-    text-decoration: none;
-    border-radius: 8px;
-    font-weight: bold;
-}
-
-.botao-login:hover {
-    background-color: var(--cor-secundaria);
-}
-
 main {
-    padding: 40px;
+    padding: 0;
 }
 
 section {
-    max-width: 900px;
+    max-width: 1100px;
     margin: auto;
+}
+
+/* Faixa principal da home */
+
+.hero-home {
+    max-width: none;
+    padding: 70px 40px;
+    background:
+        linear-gradient(135deg, rgba(0, 0, 0, 0.16), rgba(0, 0, 0, 0.02)),
+        var(--cor-principal);
+    color: white;
+}
+
+.hero-identidade {
+    max-width: 1100px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 26px;
+    text-align: left;
+}
+
+.hero-logo {
+    width: 110px;
+    height: 110px;
+    object-fit: contain;
+    background-color: rgba(255, 255, 255, 0.12);
+    border-radius: 22px;
+    padding: 12px;
+    box-sizing: border-box;
+}
+
+.hero-home h1 {
+    color: white;
+    font-size: clamp(38px, 6vw, 64px);
+    line-height: 1.02;
+    margin: 0 0 14px 0;
+}
+
+.hero-texto {
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 20px;
+    line-height: 1.6;
+    max-width: 650px;
+    margin: 0;
+}
+
+/* Agendamento */
+
+.secao-agendamento {
+    padding: 60px 40px 80px 40px;
+}
+
+.form-pedido {
     text-align: center;
 }
 
-.servicos {
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-    margin-top: 30px;
-    margin-bottom: 30px;
+.secao-etiqueta {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 16px;
+    color: var(--cor-principal);
 }
 
-.card {
+.titulo-secao {
+    max-width: 720px;
+    margin: 0 auto 30px auto;
+    text-align: center;
+}
+
+.titulo-secao h2 {
+    color: #222;
+    font-size: 34px;
+    margin: 0 0 16px 0;
+}
+
+.titulo-secao p {
+    color: #666;
+}
+
+.bloco-agendamento {
+    background-color: white;
+    border-radius: 22px;
+    padding: 28px;
+    margin: 24px 0;
+    box-shadow: 0 0 20px rgba(0,0,0,0.07);
+    text-align: left;
+}
+
+.titulo-bloco {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 22px;
+}
+
+.titulo-bloco span {
+    display: inline-flex;
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--cor-secundaria);
+    color: var(--cor-principal);
+    font-weight: bold;
+}
+
+.titulo-bloco h3 {
+    margin: 0 0 4px 0;
+    color: var(--cor-principal);
+}
+
+.titulo-bloco p {
+    margin: 0;
+    color: #666;
+}
+
+/* Serviços */
+
+.servicos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 18px;
+}
+
+.card,
+.card-servico {
     background-color: white;
     padding: 25px;
-    width: 250px;
-    border-radius: 12px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    width: auto;
+    border-radius: 16px;
+    border: 2px solid #eeeeee;
+    box-shadow: 0 0 12px rgba(0,0,0,0.08);
+    cursor: pointer;
+    font-family: inherit;
+    color: inherit;
+    text-align: left;
+    transition: 0.2s;
+    appearance: none;
 }
 
-/* Parte do mapa */
+.card-servico h3 {
+    color: var(--cor-principal);
+    margin-top: 0;
+}
 
-.secao-mapa {
-    margin-top: 50px;
-    margin-bottom: 40px;
+.card-servico p {
+    color: #555;
+    line-height: 1.5;
+}
+
+.card-servico strong {
+    display: inline-block;
+    margin-top: 12px;
+    color: #222;
+    font-size: 18px;
+}
+
+.card-servico:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 18px rgba(0,0,0,0.14);
+}
+
+.card-servico.selecionado-servico {
+    border: 3px solid var(--cor-principal);
+    background-color: var(--cor-secundaria);
+    transform: translateY(-5px);
+    box-shadow: 0 0 24px rgba(0,0,0,0.16);
+}
+
+/* Mapa */
+
+.campo-endereco {
+    margin: 0 auto 18px auto;
+    max-width: 720px;
+    text-align: left;
+}
+
+.campo-endereco label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.linha-endereco {
+    display: flex;
+    gap: 10px;
+}
+
+.campo-endereco input {
+    flex: 1;
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+    font-size: 15px;
+    box-sizing: border-box;
+}
+
+.botao-buscar {
+    padding: 12px 18px;
+    background-color: var(--cor-principal);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
 }
 
 .caixa-mapa {
     width: 100%;
     max-width: 900px;
-    height: 280px;
+    height: 320px;
     margin: 20px auto 0 auto;
-    border: 2px solid #b5c7c2;
-    border-radius: 12px;
+    border: 2px solid #dde4e0;
+    border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    box-shadow: 0 0 12px rgba(0,0,0,0.08);
 }
 
-.caixa-mapa img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
-.marcador-mapa {
-    font-size: 40px;
-    margin-top: 10px;
-}
-
-/* Parte do calendário */
-
-.secao-calendario {
-    margin-top: 60px;
-    margin-bottom: 50px;
-}
-
-.secao-calendario h2 {
-    margin-bottom: 10px;
-}
+/* Calendário */
 
 .calendario-container {
-    background-color: white;
-    margin-top: 25px;
-    padding: 10px;
-    border-radius: 16px;
-    box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    background-color: #fafafa;
+    margin-top: 10px;
+    padding: 18px;
+    border-radius: 18px;
+    border: 1px solid #eeeeee;
 }
 
 .cabecalho-calendario {
     margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
 }
 
 .cabecalho-calendario h3 {
     margin: 0;
     font-size: 18px;
     color: #333;
+    min-width: 150px;
 }
 
-.cabecalho-calendario p {
-    margin-top: 8px;
-    color: #666;
+.botao-mes {
+    width: 42px;
+    height: 42px;
+    border: none;
+    border-radius: 10px;
+    background-color: var(--cor-principal);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
 }
 
 .calendario {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 6px;
+    gap: 7px;
 }
 
 .dia-semana {
@@ -140,8 +286,8 @@ section {
 }
 
 .dia {
-    height: 38px;
-    border-radius: 8px;
+    height: 40px;
+    border-radius: 9px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -162,10 +308,14 @@ section {
     border: 1px solid var(--cor-principal);
 }
 
-.indisponivel {
-    background-color: #eeeeee;
-    color: #999;
-    border: 1px solid #dddddd;
+.indisponivel,
+.dia.indisponivel,
+.dia-calendario.indisponivel {
+    background-color: #f1d1d1;
+    color: #7d2f2f;
+    border: 2px solid #9b3d3d;
+    cursor: not-allowed;
+    opacity: 0.75;
 }
 
 .selecionado {
@@ -174,12 +324,29 @@ section {
     border: 1px solid var(--cor-principal);
 }
 
+.dia:disabled {
+    cursor: not-allowed;
+}
+
+.dia-calendario:hover {
+    transform: scale(1.05);
+}
+
+.dia.indisponivel:hover,
+.dia-calendario.indisponivel:hover {
+    background-color: #f1d1d1;
+    transform: none;
+}
+
+/* Legenda */
+
 .legenda-calendario {
     display: flex;
     justify-content: center;
     gap: 25px;
-    margin-top: 25px;
+    margin-top: 22px;
     font-size: 14px;
+    flex-wrap: wrap;
 }
 
 .legenda-calendario div {
@@ -209,129 +376,109 @@ section {
     background-color: var(--cor-principal);
 }
 
-/* Formulário de montagem do pedido */
+/* Horários */
 
-.form-pedido {
-    text-align: center;
-}
-
-/* Campo de endereço */
-
-.campo-endereco {
-    margin: 20px auto;
-    max-width: 600px;
+.secao-horarios {
     text-align: left;
 }
 
-.campo-endereco label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 8px;
+.texto-horario {
+    color: #666;
+    margin-bottom: 20px;
 }
 
-.campo-endereco input {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #cccccc;
-    border-radius: 8px;
-    font-size: 15px;
-    box-sizing: border-box;
-}
-
-/* Cards de serviço clicáveis */
-
-.card-servico {
-    background-color: white;
-    padding: 25px;
-    width: 250px;
-    border-radius: 12px;
-    border: 3px solid transparent;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    cursor: pointer;
-    font-family: inherit;
-    color: inherit;
-    text-align: center;
-    transition: 0.2s;
-    appearance: none;
-}
-
-.card-servico:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 0 16px rgba(0,0,0,0.16);
-}
-
-.card-servico.selecionado-servico {
-    border: 4px solid var(--cor-principal);
-    background-color: var(--cor-secundaria);
-    transform: translateY(-5px);
-    box-shadow: 0 0 22px rgba(0,0,0,0.18);
-}
-
-/* Dias do calendário clicáveis */
-
-.dia:disabled {
-    cursor: not-allowed;
-}
-
-.dia-calendario:hover {
-    transform: scale(1.05);
-}
-
-/* Botão final */
-
-.botao-continuar {
-    margin-top: 30px;
-    padding: 14px 24px;
-    background-color: var(--cor-principal);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.botao-continuar:hover {
-    filter: brightness(0.92);
-}
-
-.botoes-usuario {
-    position: absolute;
-    top: 20px;
-    right: 30px;
+.horarios-container {
     display: flex;
-    flex-direction: column;
-    gap: 8px;
+    gap: 14px;
+    flex-wrap: wrap;
 }
 
-.botoes-usuario .botao-login {
-    position: static;
-}
-
-.botao-meus-pedidos {
-    padding: 10px 18px;
+.botao-horario {
+    padding: 13px 22px;
+    border: 2px solid var(--cor-principal);
     background-color: white;
     color: var(--cor-principal);
-    text-decoration: none;
-    border-radius: 8px;
+    border-radius: 10px;
     font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
 }
 
-.botao-meus-pedidos:hover {
+.botao-horario:hover {
     background-color: var(--cor-secundaria);
+    transform: translateY(-2px);
 }
 
-.dia.indisponivel,
-.dia-calendario.indisponivel {
+.botao-horario.horario-selecionado {
+    background-color: var(--cor-principal);
+    color: white;
+    box-shadow: 0 0 18px rgba(0,0,0,0.16);
+}
+
+.botao-horario.horario-indisponivel {
     background-color: #f1d1d1;
+    border-color: #9b3d3d;
     color: #7d2f2f;
-    border: 2px solid #9b3d3d;
     cursor: not-allowed;
     opacity: 0.75;
 }
 
-.dia.indisponivel:hover,
-.dia-calendario.indisponivel:hover {
-    background-color: #f1d1d1;
+.botao-horario.horario-indisponivel:hover {
     transform: none;
+}
+
+/* Botão final */
+
+.area-botao-final {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.botao-continuar {
+    padding: 16px 30px;
+    background-color: var(--cor-principal);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.botao-continuar:hover,
+.botao-buscar:hover,
+.botao-mes:hover {
+    filter: brightness(0.92);
+}
+
+.mensagem-vazia {
+    color: #666;
+    text-align: center;
+}
+
+/* Responsivo */
+
+@media (max-width: 850px) {
+    .hero-identidade {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .hero-logo {
+        width: 92px;
+        height: 92px;
+    }
+
+    .linha-endereco {
+        flex-direction: column;
+    }
+
+    .calendario {
+        gap: 5px;
+    }
+
+    .dia {
+        height: 34px;
+        font-size: 13px;
+    }
 }

@@ -13,7 +13,7 @@
         }
     </style>
 
-    <link rel="stylesheet" href="{% static 'css/base.css' %}?v=3">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}?v=5">
 
     {% block extra_css %}
     {% endblock %}
@@ -28,21 +28,16 @@
                     alt="{{ configuracao_site.nome_site }}"
                     class="site-logo-imagem"
                 >
-            {% else %}
-                {{ configuracao_site.nome_site }}
             {% endif %}
+
+            <span class="site-logo-texto">
+                {{ configuracao_site.nome_site }}
+            </span>
         </a>
 
         <nav class="site-nav">
-            <a href="/">Início</a>
-
             {% if user.is_authenticated %}
                 <a href="{% url 'meus_agendamentos' %}">Meus Agendamentos</a>
-
-                {% if user.is_staff %}
-                    <a href="{% url 'prestador_dashboard' %}">Área do Prestador</a>
-                {% endif %}
-
                 <a href="{% url 'logout' %}">Sair</a>
             {% else %}
                 <a href="{% url 'login' %}">Login</a>

@@ -6,11 +6,12 @@ body {
 }
 
 .container-login {
-    min-height: 100vh;
+    min-height: calc(100vh - 140px);
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 40px;
+    box-sizing: border-box;
 }
 
 .caixa-login {
@@ -21,6 +22,10 @@ body {
     border-radius: 16px;
     box-shadow: 0 0 12px rgba(0,0,0,0.1);
     text-align: center;
+}
+
+.caixa-pagamento {
+    max-width: 560px;
 }
 
 .caixa-login h1 {
@@ -40,6 +45,10 @@ form {
     gap: 10px;
 }
 
+form p {
+    margin: 0 0 8px 0;
+}
+
 label {
     font-weight: bold;
     margin-top: 10px;
@@ -53,6 +62,16 @@ textarea {
     border-radius: 8px;
     font-size: 15px;
     font-family: inherit;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--cor-principal);
+    box-shadow: 0 0 0 3px var(--cor-secundaria);
 }
 
 button {
@@ -82,12 +101,37 @@ button:hover {
     text-decoration: none;
 }
 
+.texto-cadastro a:hover,
+.voltar:hover {
+    text-decoration: underline;
+}
+
 .voltar {
     display: inline-block;
-    margin-top: 10px;
+    margin-top: 18px;
     color: var(--cor-principal);
     text-decoration: none;
     font-weight: bold;
+}
+
+/* Pagamento / resumo do pedido */
+
+.resumo-pedido {
+    background-color: var(--cor-secundaria);
+    border: 1px solid var(--cor-principal);
+    border-radius: 14px;
+    padding: 20px;
+    margin: 24px 0;
+    text-align: left;
+}
+
+.resumo-pedido p {
+    margin: 10px 0;
+    color: #333;
+}
+
+.resumo-pedido strong {
+    color: var(--cor-principal);
 }
 
 /* Página Meus Agendamentos */

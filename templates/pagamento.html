@@ -2,19 +2,19 @@
 {% load static %}
 
 {% block title %}
-Pagamento - Agenda Fácil
+Pagamento - {{ configuracao_site.nome_site }}
 {% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/login.css' %}?v=8">
+<link rel="stylesheet" href="{% static 'css/login.css' %}?v=17">
 {% endblock %}
 
 {% block content %}
 
 <div class="container-login">
-    <section class="caixa-login">
+    <section class="caixa-login caixa-pagamento">
         <h1>Resumo do pedido</h1>
-        <p>Confira as informações antes de seguir para o pagamento.</p>
+        <p>Confira as informações antes de confirmar o agendamento.</p>
 
         <div class="resumo-pedido">
             <p><strong>Usuário:</strong> {{ user.username }}</p>
@@ -22,8 +22,6 @@ Pagamento - Agenda Fácil
             <p><strong>Endereço:</strong> {{ pedido.endereco }}</p>
             <p><strong>Data escolhida:</strong> {{ pedido.data_servico }}</p>
             <p><strong>Horário escolhido:</strong> {{ pedido.horario_servico }}</p>
-            <p><strong>Latitude:</strong> {{ pedido.latitude }}</p>
-            <p><strong>Longitude:</strong> {{ pedido.longitude }}</p>
         </div>
 
         <form method="POST" action="/confirmar-pedido/">
