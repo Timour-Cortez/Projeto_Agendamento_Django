@@ -25,7 +25,7 @@ body {
 
 .caixa-login h1 {
     margin-bottom: 10px;
-    color: #6b7b4b;
+    color: var(--cor-principal);
 }
 
 .caixa-login p {
@@ -45,17 +45,20 @@ label {
     margin-top: 10px;
 }
 
-input {
+input,
+select,
+textarea {
     padding: 12px;
     border: 1px solid #cccccc;
     border-radius: 8px;
     font-size: 15px;
+    font-family: inherit;
 }
 
 button {
     margin-top: 20px;
     padding: 12px;
-    background-color: #6b7b4b;
+    background-color: var(--cor-principal);
     color: white;
     border: none;
     border-radius: 8px;
@@ -65,7 +68,7 @@ button {
 }
 
 button:hover {
-    background-color: #55633b;
+    filter: brightness(0.92);
 }
 
 .texto-cadastro {
@@ -74,7 +77,7 @@ button:hover {
 }
 
 .texto-cadastro a {
-    color: #6b7b4b;
+    color: var(--cor-principal);
     font-weight: bold;
     text-decoration: none;
 }
@@ -82,11 +85,10 @@ button:hover {
 .voltar {
     display: inline-block;
     margin-top: 10px;
-    color: #6b7b4b;
+    color: var(--cor-principal);
     text-decoration: none;
     font-weight: bold;
 }
-
 
 /* Página Meus Agendamentos */
 
@@ -105,20 +107,20 @@ button:hover {
 
 .aba {
     padding: 10px 18px;
-    border: 1px solid #6b7b4b;
+    border: 1px solid var(--cor-principal);
     background-color: white;
-    color: #6b7b4b;
+    color: var(--cor-principal);
     border-radius: 8px;
     font-weight: bold;
     cursor: pointer;
 }
 
 .aba:hover {
-    background-color: #f5f1e8;
+    background-color: var(--cor-secundaria);
 }
 
 .aba.ativa {
-    background-color: #6b7b4b;
+    background-color: var(--cor-principal);
     color: white;
 }
 
@@ -142,7 +144,7 @@ button:hover {
 
 .info-agendamento h3 {
     margin-top: 0;
-    color: #6b7b4b;
+    color: var(--cor-principal);
 }
 
 .info-agendamento p {
@@ -159,16 +161,18 @@ button:hover {
 .botao-acao {
     display: inline-block;
     padding: 10px 16px;
-    background-color: #6b7b4b;
+    background-color: var(--cor-principal);
     color: white;
     text-decoration: none;
     border-radius: 8px;
     font-weight: bold;
     text-align: center;
+    border: none;
+    cursor: pointer;
 }
 
 .botao-acao:hover {
-    background-color: #55633b;
+    filter: brightness(0.92);
 }
 
 .botao-cancelar {
@@ -183,7 +187,6 @@ button:hover {
     margin: 25px 0;
     color: #666;
 }
-
 
 /* Dashboard Staff */
 
@@ -205,7 +208,7 @@ button:hover {
 
 .calendario-staff h3 {
     margin-top: 0;
-    color: #6b7b4b;
+    color: var(--cor-principal);
 }
 
 .calendario-grade {
@@ -218,7 +221,7 @@ button:hover {
 .dia-semana {
     font-weight: bold;
     text-align: center;
-    color: #6b7b4b;
+    color: var(--cor-principal);
     padding: 8px 0;
     border-bottom: 1px solid #ddd;
 }
@@ -235,7 +238,7 @@ button:hover {
 }
 
 .dia-calendario:hover {
-    background-color: #f5f1e8;
+    background-color: var(--cor-secundaria);
 }
 
 .dia-calendario.vazio {
@@ -245,8 +248,8 @@ button:hover {
 }
 
 .dia-calendario.com-servico {
-    background-color: #dce8cf;
-    border: 2px solid #6b7b4b;
+    background-color: var(--cor-secundaria);
+    border: 2px solid var(--cor-principal);
 }
 
 .dia-calendario.bloqueado {
@@ -278,8 +281,8 @@ button:hover {
 }
 
 .legenda-servico {
-    background-color: #dce8cf;
-    border: 2px solid #6b7b4b;
+    background-color: var(--cor-secundaria);
+    border: 2px solid var(--cor-principal);
 }
 
 .legenda-bloqueado {
@@ -303,7 +306,7 @@ button:hover {
 
 .resumo-staff h3 {
     margin-top: 0;
-    color: #6b7b4b;
+    color: var(--cor-principal);
 }
 
 .card-resumo-staff {
@@ -318,7 +321,7 @@ button:hover {
 
 .card-resumo-staff strong {
     font-size: 26px;
-    color: #6b7b4b;
+    color: var(--cor-principal);
 }
 
 .card-pedido-pequeno {
@@ -354,29 +357,23 @@ button:hover {
 
 .aba-pedido {
     padding: 10px 18px;
-    border: 1px solid #6b7b4b;
+    border: 1px solid var(--cor-principal);
     background-color: white;
-    color: #6b7b4b;
+    color: var(--cor-principal);
     border-radius: 8px;
     font-weight: bold;
     cursor: pointer;
 }
 
+.aba-pedido:hover {
+    background-color: var(--cor-secundaria);
+}
+
 .aba-pedido.ativa {
-    background-color: #6b7b4b;
+    background-color: var(--cor-principal);
     color: white;
 }
 
-@media (max-width: 900px) {
-    .area-dashboard-staff {
-        grid-template-columns: 1fr;
-    }
-
-    .dia-calendario {
-        min-height: 45px;
-        font-size: 14px;
-    }
-}
 .cabecalho-calendario-staff {
     display: flex;
     flex-direction: row;
@@ -385,7 +382,6 @@ button:hover {
     gap: 18px;
     margin: 20px 0 25px 0;
 }
-
 
 .cabecalho-calendario-staff h3 {
     margin: 0;
@@ -398,7 +394,7 @@ button:hover {
     height: 45px;
     border: none;
     border-radius: 8px;
-    background-color: #6b7b4b;
+    background-color: var(--cor-principal);
     color: white;
     font-size: 20px;
     font-weight: bold;
@@ -406,9 +402,20 @@ button:hover {
 }
 
 .botao-mes-staff:hover {
-    background-color: #55633b;
+    filter: brightness(0.92);
 }
 
 .cabecalho-calendario-staff .botao-mes-staff {
     margin-top: 0;
+}
+
+@media (max-width: 900px) {
+    .area-dashboard-staff {
+        grid-template-columns: 1fr;
+    }
+
+    .dia-calendario {
+        min-height: 45px;
+        font-size: 14px;
+    }
 }

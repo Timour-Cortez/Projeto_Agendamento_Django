@@ -4,9 +4,16 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Agenda Fácil{% endblock %}</title>
+    <title>{% block title %}{{ configuracao_site.nome_site }}{% endblock %}</title>
 
-    <link rel="stylesheet" href="{% static 'css/base.css' %}?v=2">
+    <style>
+        :root {
+            --cor-principal: {{ configuracao_site.cor_principal }};
+            --cor-secundaria: {{ configuracao_site.cor_secundaria }};
+        }
+    </style>
+
+    <link rel="stylesheet" href="{% static 'css/base.css' %}?v=3">
 
     {% block extra_css %}
     {% endblock %}
@@ -14,7 +21,17 @@
 
 <body>
     <header class="site-header">
-        <a href="/" class="site-logo">Agenda Fácil</a>
+        <a href="/" class="site-logo">
+            {% if configuracao_site.logo %}
+                <img
+                    src="{{ configuracao_site.logo.url }}"
+                    alt="{{ configuracao_site.nome_site }}"
+                    class="site-logo-imagem"
+                >
+            {% else %}
+                {{ configuracao_site.nome_site }}
+            {% endif %}
+        </a>
 
         <nav class="site-nav">
             <a href="/">Início</a>
@@ -50,7 +67,7 @@
     </main>
 
     <footer class="site-footer">
-        <p>Agenda Fácil - Sistema de agendamento online</p>
+        <p>{{ configuracao_site.nome_site }} - Sistema de agendamento online</p>
     </footer>
 
     {% block extra_js %}

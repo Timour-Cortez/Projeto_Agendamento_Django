@@ -152,6 +152,101 @@ Dashboard Staff - Agenda Fácil
     .item-horario-dashboard form {
         margin: 0;
     }
+
+    .form-personalizacao-dashboard,
+    .form-servico-dashboard {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        margin-top: 15px;
+        text-align: left;
+    }
+
+    .form-personalizacao-dashboard p,
+    .form-servico-dashboard p {
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .form-personalizacao-dashboard label,
+    .form-servico-dashboard label {
+        font-weight: bold;
+        color: var(--cor-principal);
+    }
+
+    .form-personalizacao-dashboard input,
+    .form-personalizacao-dashboard select,
+    .form-servico-dashboard input,
+    .form-servico-dashboard textarea {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-family: Arial, sans-serif;
+    }
+
+    .preview-logo-dashboard {
+        margin-top: 10px;
+        max-height: 80px;
+        max-width: 220px;
+        object-fit: contain;
+        display: block;
+        border-radius: 8px;
+        background-color: #f7f7f2;
+        padding: 8px;
+        border: 1px solid #ddd;
+    }
+
+    .lista-servicos-dashboard {
+        margin-top: 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .card-servico-dashboard {
+        padding: 14px;
+        border-radius: 12px;
+        background-color: #f7f7f2;
+        border: 1px solid #ddd;
+        text-align: left;
+    }
+
+    .card-servico-dashboard summary {
+        cursor: pointer;
+        font-weight: bold;
+        color: var(--cor-principal);
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .status-servico-dashboard {
+        font-size: 13px;
+        font-weight: bold;
+    }
+
+    .status-servico-dashboard.ativo {
+        color: #4f6b2f;
+    }
+
+    .status-servico-dashboard.inativo {
+        color: #9b3d3d;
+    }
+
+    .acoes-servico-dashboard {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+    }
+
+    .acoes-servico-dashboard form {
+        margin: 0;
+    }
+
 </style>
 {% endblock %}
 
@@ -349,28 +444,76 @@ Dashboard Staff - Agenda Fácil
 
             <div class="card-agendamento">
                 <h3>Identidade visual</h3>
+                <p>Altere a logo do topo, o nome da empresa, a chamada principal e a paleta de cores do site.</p>
 
-                <form>
+                <form method="POST" enctype="multipart/form-data" class="form-personalizacao-dashboard">
+                    {% csrf_token %}
+                    <input type="hidden" name="acao_configuracao" value="salvar">
+
                     <p>
-                        <label>Nome exibido na tela inicial</label>
-                        <input type="text" value="Agenda Fácil" disabled>
+                        <label for="nome_site">Nome da empresa no topo</label>
+                        <input
+                            type="text"
+                            id="nome_site"
+                            name="nome_site"
+                            value="{{ configuracao_site.nome_site }}"
+                            required
+                        >
                     </p>
 
                     <p>
-                        <label>Logo do site</label>
-                        <input type="file" disabled>
+                        <label for="titulo_home">Título principal da tela inicial</label>
+                        <input
+                            type="text"
+                            id="titulo_home"
+                            name="titulo_home"
+                            value="{{ configuracao_site.titulo_home }}"
+                            required
+                        >
                     </p>
 
                     <p>
-                        <label>Cor principal</label>
-                        <select disabled>
-                            <option>Verde institucional</option>
-                            <option>Azul profissional</option>
-                            <option>Areia minimalista</option>
+                        <label for="texto_home">Texto da tela inicial</label>
+                        <input
+                            type="text"
+                            id="texto_home"
+                            name="texto_home"
+                            value="{{ configuracao_site.texto_home }}"
+                            required
+                        >
+                    </p>
+
+                    <p>
+                        <label for="logo">Logo do site</label>
+                        <input type="file" id="logo" name="logo">
+
+                        {% if configuracao_site.logo %}
+                            <img
+                                src="{{ configuracao_site.logo.url }}"
+                                alt="Logo atual"
+                                class="preview-logo-dashboard"
+                            >
+                        {% endif %}
+                    </p>
+
+                    <p>
+                        <label for="paleta_cores">Paleta de cores</label>
+                        <select id="paleta_cores" name="paleta_cores">
+                            <option value="verde_institucional" {% if configuracao_site.paleta_cores == 'verde_institucional' %}selected{% endif %}>
+                                Verde institucional
+                            </option>
+
+                            <option value="azul_profissional" {% if configuracao_site.paleta_cores == 'azul_profissional' %}selected{% endif %}>
+                                Azul profissional
+                            </option>
+
+                            <option value="areia_minimalista" {% if configuracao_site.paleta_cores == 'areia_minimalista' %}selected{% endif %}>
+                                Areia minimalista
+                            </option>
                         </select>
                     </p>
 
-                    <button type="button" disabled>
+                    <button type="submit" class="botao-acao">
                         Salvar personalização
                     </button>
                 </form>
@@ -439,11 +582,130 @@ Dashboard Staff - Agenda Fácil
 
             <div class="card-agendamento">
                 <h3>Serviços e valores</h3>
-                <p>Futuramente o prestador poderá editar os serviços disponíveis e os valores exibidos na home.</p>
+                <p>Crie, edite, ative ou desative os pacotes exibidos na tela inicial.</p>
 
-                <button type="button" disabled>
-                    Editar serviços
-                </button>
+                <h4>Criar novo pacote</h4>
+
+                <form method="POST" class="form-servico-dashboard">
+                    {% csrf_token %}
+                    <input type="hidden" name="acao_servico" value="criar">
+
+                    <p>
+                        <label for="novo_servico_nome">Nome do pacote</label>
+                        <input type="text" id="novo_servico_nome" name="nome" required>
+                    </p>
+
+                    <p>
+                        <label for="novo_servico_descricao">Descrição</label>
+                        <textarea id="novo_servico_descricao" name="descricao" rows="4" required></textarea>
+                    </p>
+
+                    <p>
+                        <label for="novo_servico_preco">Preço</label>
+                        <input type="text" id="novo_servico_preco" name="preco" placeholder="Ex: 250.00" required>
+                    </p>
+
+                    <p>
+                        <label for="novo_servico_duracao">Duração estimada em minutos</label>
+                        <input type="number" id="novo_servico_duracao" name="duracao_estimada" min="1" required>
+                    </p>
+
+                    <p>
+                        <label>
+                            <input type="checkbox" name="ativo" checked>
+                            Exibir este pacote na tela inicial
+                        </label>
+                    </p>
+
+                    <button type="submit" class="botao-acao">
+                        Criar pacote
+                    </button>
+                </form>
+
+                <h4>Pacotes cadastrados</h4>
+
+                <div class="lista-servicos-dashboard">
+                    {% if servicos_dashboard %}
+                        {% for servico in servicos_dashboard %}
+                            <details class="card-servico-dashboard">
+                                <summary>
+                                    <span>{{ servico.nome }} - R$ {{ servico.preco }}</span>
+
+                                    {% if servico.ativo %}
+                                        <span class="status-servico-dashboard ativo">Ativo</span>
+                                    {% else %}
+                                        <span class="status-servico-dashboard inativo">Inativo</span>
+                                    {% endif %}
+                                </summary>
+
+                                <form method="POST" class="form-servico-dashboard">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="acao_servico" value="editar">
+                                    <input type="hidden" name="servico_id" value="{{ servico.id }}">
+
+                                    <p>
+                                        <label>Nome do pacote</label>
+                                        <input type="text" name="nome" value="{{ servico.nome }}" required>
+                                    </p>
+
+                                    <p>
+                                        <label>Descrição</label>
+                                        <textarea name="descricao" rows="4" required>{{ servico.descricao }}</textarea>
+                                    </p>
+
+                                    <p>
+                                        <label>Preço</label>
+                                        <input type="text" name="preco" value="{{ servico.preco }}" required>
+                                    </p>
+
+                                    <p>
+                                        <label>Duração estimada em minutos</label>
+                                        <input type="number" name="duracao_estimada" value="{{ servico.duracao_estimada }}" min="1" required>
+                                    </p>
+
+                                    <p>
+                                        <label>
+                                            <input type="checkbox" name="ativo" {% if servico.ativo %}checked{% endif %}>
+                                            Exibir este pacote na tela inicial
+                                        </label>
+                                    </p>
+
+                                    <button type="submit" class="botao-acao">
+                                        Salvar alterações
+                                    </button>
+                                </form>
+
+                                <div class="acoes-servico-dashboard">
+                                    {% if servico.ativo %}
+                                        <form method="POST">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="acao_servico" value="desativar">
+                                            <input type="hidden" name="servico_id" value="{{ servico.id }}">
+
+                                            <button type="submit" class="botao-acao botao-cancelar">
+                                                Desativar pacote
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        <form method="POST">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="acao_servico" value="ativar">
+                                            <input type="hidden" name="servico_id" value="{{ servico.id }}">
+
+                                            <button type="submit" class="botao-acao">
+                                                Ativar pacote
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            </details>
+                        {% endfor %}
+                    {% else %}
+                        <p class="mensagem-vazia">
+                            Nenhum pacote cadastrado ainda.
+                        </p>
+                    {% endif %}
+                </div>
             </div>
 
         </div>

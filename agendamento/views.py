@@ -4,12 +4,31 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from datetime import time, datetime
 
-from .models import Servico, Cliente, LocalAtendimento, Agendamento, DiaBloqueado, HorarioDisponivel
-from .forms import AgendamentoForm, CadastroUsuarioForm, LoginUsuarioForm, ReclamacaoForm, EditarAgendamentoForm
+from .models import (
+    Servico,
+    Cliente,
+    LocalAtendimento,
+    Agendamento,
+    DiaBloqueado,
+    HorarioDisponivel,
+    ConfiguracaoSite,
+)
+
+from .forms import (
+    AgendamentoForm,
+    CadastroUsuarioForm,
+    LoginUsuarioForm,
+    ReclamacaoForm,
+    EditarAgendamentoForm,
+    ConfiguracaoSiteForm,
+    ServicoDashboardForm,
+)
 
 
 def home(request):
-    servicos = Servico.objects.all()
+    servicos = Servico.objects.filter(
+        ativo=True
+    ).order_by('nome')
 
     horarios_disponiveis = HorarioDisponivel.objects.filter(
         ativo=True
@@ -224,7 +243,6 @@ def confirmar_pedido(request):
     return redirect('meus_agendamentos')
 
 
-
 @login_required
 def meus_agendamentos(request):
     agendamentos_pendentes = Agendamento.objects.filter(
@@ -254,10 +272,76 @@ def prestador_dashboard(request):
     if not request.user.is_staff:
         return redirect('home')
 
+    configuracao, criado = ConfiguracaoSite.objects.get_or_create(
+        id=1,
+        defaults={
+            'nome_site': 'Agenda Fácil',
+            'texto_home': 'Agende serviços de forma simples, rápida e organizada.',
+            'paleta_cores': 'verde_institucional',
+        }
+    )
+
     if request.method == 'POST':
         acao_pedido = request.POST.get('acao_pedido')
         agendamento_id = request.POST.get('agendamento_id')
         acao_horario = request.POST.get('acao_horario')
+        acao_configuracao = request.POST.get('acao_configuracao')
+        acao_servico = request.POST.get('acao_servico')
+
+        if acao_configuracao == 'salvar':
+            configuracao_form = ConfiguracaoSiteForm(
+                request.POST,
+                request.FILES,
+                instance=configuracao
+            )
+
+            if configuracao_form.is_valid():
+                configuracao_form.save()
+                messages.success(request, 'Personalização do site salva com sucesso.')
+            else:
+                messages.error(request, 'Não foi possível salvar a personalização.')
+
+            return redirect('prestador_dashboard')
+
+        if acao_servico:
+            servico_id = request.POST.get('servico_id')
+
+            if acao_servico == 'criar':
+                servico_form = ServicoDashboardForm(request.POST)
+
+                if servico_form.is_valid():
+                    servico_form.save()
+                    messages.success(request, 'Pacote criado com sucesso.')
+                else:
+                    messages.error(request, 'Não foi possível criar o pacote.')
+
+            elif acao_servico == 'editar':
+                servico = Servico.objects.filter(id=servico_id).first()
+
+                if servico:
+                    servico_form = ServicoDashboardForm(request.POST, instance=servico)
+
+                    if servico_form.is_valid():
+                        servico_form.save()
+                        messages.success(request, 'Pacote atualizado com sucesso.')
+                    else:
+                        messages.error(request, 'Não foi possível atualizar o pacote.')
+
+            elif acao_servico in ['ativar', 'desativar']:
+                servico = Servico.objects.filter(id=servico_id).first()
+
+                if servico:
+                    if acao_servico == 'ativar':
+                        servico.ativo = True
+                        messages.success(request, 'Pacote ativado com sucesso.')
+
+                    elif acao_servico == 'desativar':
+                        servico.ativo = False
+                        messages.success(request, 'Pacote desativado com sucesso.')
+
+                    servico.save()
+
+            return redirect('prestador_dashboard')
 
         if acao_pedido and agendamento_id:
             agendamento = Agendamento.objects.filter(id=agendamento_id).first()
@@ -360,6 +444,7 @@ def prestador_dashboard(request):
         })
 
     horarios_dashboard = HorarioDisponivel.objects.all().order_by('horario')
+    servicos_dashboard = Servico.objects.all().order_by('nome')
 
     total_a_fazer = agendamentos_a_fazer.count()
     total_historico = agendamentos_historico.count()
@@ -375,6 +460,7 @@ def prestador_dashboard(request):
         'datas_com_servico': datas_com_servico,
         'eventos_calendario': eventos_calendario,
         'horarios_dashboard': horarios_dashboard,
+        'servicos_dashboard': servicos_dashboard,
         'total_a_fazer': total_a_fazer,
         'total_historico': total_historico,
         'total_pendentes': total_pendentes,
@@ -382,7 +468,7 @@ def prestador_dashboard(request):
     })
 
 
-def cliente_acompanhamento(request, pedido_id):
+def cliente_acompanhamento(request, pedido_id=None):
     return render(request, 'agendamento/cliente_acompanhamento.html', {
         'pedido': None,
     })

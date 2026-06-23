@@ -17,10 +17,19 @@ body {
 }
 
 .site-logo {
-    color: #6b7b4b;
+    color: var(--cor-principal);
     font-size: 24px;
     font-weight: bold;
     text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.site-logo-imagem {
+    max-height: 48px;
+    max-width: 180px;
+    object-fit: contain;
+    display: block;
 }
 
 .site-nav {
@@ -31,7 +40,7 @@ body {
 }
 
 .site-nav a {
-    color: #6b7b4b;
+    color: var(--cor-principal);
     text-decoration: none;
     font-weight: bold;
 }
@@ -67,9 +76,9 @@ body {
 }
 
 .mensagem-success {
-    background-color: #eef3e4;
-    color: #4f6b2f;
-    border: 1px solid #6b7b4b;
+    background-color: var(--cor-secundaria);
+    color: var(--cor-principal);
+    border: 1px solid var(--cor-principal);
 }
 
 .mensagem-error {
@@ -90,6 +99,15 @@ body {
     border: 1px solid #6b9bc4;
 }
 
+button,
+.botao-acao,
+.botao-continuar,
+.botao-buscar,
+.botao-mes,
+.botao-mes-staff {
+    border-color: var(--cor-principal);
+}
+
 @media (max-width: 700px) {
     .site-header {
         flex-direction: column;
@@ -99,5 +117,10 @@ body {
 
     .site-nav {
         justify-content: center;
+    }
+
+    .site-logo-imagem {
+        max-height: 42px;
+        max-width: 150px;
     }
 }

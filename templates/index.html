@@ -2,11 +2,11 @@
 {% load static %}
 
 {% block title %}
-Agenda Fácil
+{{ configuracao_site.nome_site }}
 {% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/index.css' %}?v=10">
+<link rel="stylesheet" href="{% static 'css/index.css' %}?v=12">
 
 <link
     rel="stylesheet"
@@ -14,41 +14,6 @@ Agenda Fácil
 />
 
 <style>
-    .site-header {
-        width: 100%;
-        background-color: #ffffff;
-        border-bottom: 1px solid #ddd;
-        padding: 18px 40px;
-        box-sizing: border-box;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .site-logo {
-        color: #6b7b4b;
-        font-size: 24px;
-        font-weight: bold;
-        text-decoration: none;
-    }
-
-    .site-nav {
-        display: flex;
-        gap: 18px;
-        align-items: center;
-        flex-wrap: wrap;
-    }
-
-    .site-nav a {
-        color: #6b7b4b;
-        text-decoration: none;
-        font-weight: bold;
-    }
-
-    .site-nav a:hover {
-        text-decoration: underline;
-    }
-
     .secao-horarios {
         margin-top: 40px;
         text-align: center;
@@ -68,9 +33,9 @@ Agenda Fácil
 
     .botao-horario {
         padding: 14px 24px;
-        border: 2px solid #6b7b4b;
+        border: 2px solid var(--cor-principal);
         background-color: white;
-        color: #6b7b4b;
+        color: var(--cor-principal);
         border-radius: 10px;
         font-weight: bold;
         cursor: pointer;
@@ -78,14 +43,14 @@ Agenda Fácil
     }
 
     .botao-horario:hover {
-        background-color: #eef3e4;
+        background-color: var(--cor-secundaria);
         transform: translateY(-2px);
     }
 
     .botao-horario.horario-selecionado {
-        background-color: #6b7b4b;
+        background-color: var(--cor-principal);
         color: white;
-        box-shadow: 0 0 18px rgba(107, 123, 75, 0.5);
+        box-shadow: 0 0 18px rgba(0, 0, 0, 0.18);
     }
 
     .botao-horario.horario-indisponivel {
@@ -105,8 +70,8 @@ Agenda Fácil
 {% block content %}
 
 <header>
-    <h1>Agenda Fácil</h1>
-    <p>Agende serviços de forma simples, rápida e organizada.</p>
+    <h1>{{ configuracao_site.titulo_home }}</h1>
+    <p>{{ configuracao_site.texto_home }}</p>
 </header>
 
 <section>
@@ -252,18 +217,13 @@ Agenda Fácil
         card.addEventListener('click', () => {
             cardsServico.forEach(c => {
                 c.classList.remove('selecionado-servico');
-                c.style.border = '3px solid transparent';
-                c.style.backgroundColor = 'white';
-                c.style.boxShadow = '0 0 10px rgba(0,0,0,0.1)';
-                c.style.transform = 'none';
+                c.style.border = '';
+                c.style.backgroundColor = '';
+                c.style.boxShadow = '';
+                c.style.transform = '';
             });
 
             card.classList.add('selecionado-servico');
-            card.style.border = '5px solid #6b7b4b';
-            card.style.backgroundColor = '#eef3e4';
-            card.style.boxShadow = '0 0 25px rgba(107, 123, 75, 0.7)';
-            card.style.transform = 'translateY(-5px)';
-
             inputServico.value = card.dataset.servicoId;
         });
     });

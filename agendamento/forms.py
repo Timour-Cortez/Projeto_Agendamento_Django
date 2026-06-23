@@ -1,7 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
-from .models import Agendamento
+
+from .models import Agendamento, ConfiguracaoSite, Servico
 
 
 class AgendamentoForm(forms.ModelForm):
@@ -12,6 +13,48 @@ class AgendamentoForm(forms.ModelForm):
             'data': forms.DateInput(attrs={'type': 'date'}),
             'horario': forms.TimeInput(attrs={'type': 'time'}),
             'observacoes': forms.Textarea(attrs={'rows': 4}),
+        }
+
+
+class ConfiguracaoSiteForm(forms.ModelForm):
+    class Meta:
+        model = ConfiguracaoSite
+        fields = ['nome_site', 'titulo_home', 'texto_home', 'logo', 'paleta_cores']
+        labels = {
+            'nome_site': 'Nome da empresa',
+            'titulo_home': 'Título principal da tela inicial',
+            'texto_home': 'Texto da tela inicial',
+            'logo': 'Logo do site',
+            'paleta_cores': 'Paleta de cores',
+        }
+        widgets = {
+            'nome_site': forms.TextInput(attrs={
+                'placeholder': 'Ex: Atobá Drones'
+            }),
+            'titulo_home': forms.TextInput(attrs={
+                'placeholder': 'Ex: Filmagens aéreas profissionais com drones'
+            }),
+            'texto_home': forms.TextInput(attrs={
+                'placeholder': 'Ex: Agende seu serviço com segurança, qualidade e planejamento.'
+            }),
+        }
+
+
+class ServicoDashboardForm(forms.ModelForm):
+    class Meta:
+        model = Servico
+        fields = ['nome', 'descricao', 'preco', 'duracao_estimada', 'ativo']
+        labels = {
+            'nome': 'Nome do pacote',
+            'descricao': 'Descrição',
+            'preco': 'Preço',
+            'duracao_estimada': 'Duração estimada em minutos',
+            'ativo': 'Exibir este pacote na tela inicial',
+        }
+        widgets = {
+            'descricao': forms.Textarea(attrs={
+                'rows': 4
+            }),
         }
 
 
@@ -41,6 +84,7 @@ class CadastroUsuarioForm(UserCreationForm):
     class Meta:
         model = User
         fields = ['username', 'email', 'password1', 'password2']
+
 
 class LoginUsuarioForm(AuthenticationForm):
     username = forms.CharField(
