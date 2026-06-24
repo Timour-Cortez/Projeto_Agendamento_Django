@@ -6,7 +6,7 @@ Meus Agendamentos - {{ configuracao_site.nome_site }}
 {% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/login.css' %}?v=15">
+<link rel="stylesheet" href="{% static 'css/login.css' %}?v=17">
 {% endblock %}
 
 {% block content %}
@@ -14,51 +14,25 @@ Meus Agendamentos - {{ configuracao_site.nome_site }}
 <div class="container-login">
     <section class="caixa-login painel-agendamentos">
         <h1>Meus Agendamentos</h1>
-        <p>Acompanhe seus pedidos e serviços agendados.</p>
+        <p>Acompanhe seus serviços confirmados e seu histórico de atendimentos.</p>
 
         <div class="abas-agendamentos">
-            <button type="button" class="aba ativa" data-aba="pendentes">
-                Pendentes
-            </button>
-
-            <button type="button" class="aba" data-aba="confirmados">
+            <button type="button" class="aba ativa" data-aba="confirmados">
                 Confirmados
+                {% if agendamentos_confirmados %}
+                    ({{ agendamentos_confirmados|length }})
+                {% endif %}
             </button>
 
-            <button type="button" class="aba" data-aba="concluidos">
-                Concluídos
+            <button type="button" class="aba" data-aba="historico">
+                Histórico
+                {% if agendamentos_historico %}
+                    ({{ agendamentos_historico|length }})
+                {% endif %}
             </button>
         </div>
 
-        <div id="pendentes" class="conteudo-aba ativo">
-            {% if agendamentos_pendentes %}
-                {% for agendamento in agendamentos_pendentes %}
-                    <div class="card-agendamento">
-                        <div class="info-agendamento">
-                            <h3>{{ agendamento.servico.nome }}</h3>
-                            <p><strong>Endereço:</strong> {{ agendamento.local.endereco }}</p>
-                            <p><strong>Data:</strong> {{ agendamento.data }}</p>
-                            <p><strong>Horário:</strong> {{ agendamento.horario }}</p>
-                            <p><strong>Status:</strong> {{ agendamento.status }}</p>
-                        </div>
-
-                        <div class="acoes-agendamento">
-                            <a class="botao-acao" href="/agendamento/{{ agendamento.id }}/editar/">
-                                Editar
-                            </a>
-
-                            <a class="botao-acao botao-cancelar" href="/agendamento/{{ agendamento.id }}/cancelar/">
-                                Cancelar
-                            </a>
-                        </div>
-                    </div>
-                {% endfor %}
-            {% else %}
-                <p class="mensagem-vazia">Você não possui agendamentos pendentes.</p>
-            {% endif %}
-        </div>
-
-        <div id="confirmados" class="conteudo-aba">
+        <div id="confirmados" class="conteudo-aba ativo">
             {% if agendamentos_confirmados %}
                 {% for agendamento in agendamentos_confirmados %}
                     <div class="card-agendamento">
@@ -67,7 +41,11 @@ Meus Agendamentos - {{ configuracao_site.nome_site }}
                             <p><strong>Endereço:</strong> {{ agendamento.local.endereco }}</p>
                             <p><strong>Data:</strong> {{ agendamento.data }}</p>
                             <p><strong>Horário:</strong> {{ agendamento.horario }}</p>
-                            <p><strong>Status:</strong> {{ agendamento.status }}</p>
+                            <p><strong>Status:</strong> {{ agendamento.get_status_display }}</p>
+
+                            {% if agendamento.observacoes %}
+                                <p><strong>Observações:</strong> {{ agendamento.observacoes }}</p>
+                            {% endif %}
                         </div>
 
                         <div class="acoes-agendamento">
@@ -82,31 +60,37 @@ Meus Agendamentos - {{ configuracao_site.nome_site }}
                     </div>
                 {% endfor %}
             {% else %}
-                <p class="mensagem-vazia">Você não possui agendamentos confirmados.</p>
+                <p class="mensagem-vazia">Você ainda não possui agendamentos confirmados.</p>
             {% endif %}
         </div>
 
-        <div id="concluidos" class="conteudo-aba">
-            {% if agendamentos_concluidos %}
-                {% for agendamento in agendamentos_concluidos %}
+        <div id="historico" class="conteudo-aba">
+            {% if agendamentos_historico %}
+                {% for agendamento in agendamentos_historico %}
                     <div class="card-agendamento">
                         <div class="info-agendamento">
                             <h3>{{ agendamento.servico.nome }}</h3>
                             <p><strong>Endereço:</strong> {{ agendamento.local.endereco }}</p>
                             <p><strong>Data:</strong> {{ agendamento.data }}</p>
                             <p><strong>Horário:</strong> {{ agendamento.horario }}</p>
-                            <p><strong>Status:</strong> {{ agendamento.status }}</p>
+                            <p><strong>Status:</strong> {{ agendamento.get_status_display }}</p>
+
+                            {% if agendamento.observacoes %}
+                                <p><strong>Observações:</strong> {{ agendamento.observacoes }}</p>
+                            {% endif %}
                         </div>
 
-                        <div class="acoes-agendamento">
-                            <a class="botao-acao" href="#">
-                                Adicionar review
-                            </a>
-                        </div>
+                        {% if agendamento.status == 'concluido' %}
+                            <div class="acoes-agendamento">
+                                <a class="botao-acao" href="#">
+                                    Adicionar review
+                                </a>
+                            </div>
+                        {% endif %}
                     </div>
                 {% endfor %}
             {% else %}
-                <p class="mensagem-vazia">Você ainda não possui serviços concluídos.</p>
+                <p class="mensagem-vazia">Você ainda não possui histórico de agendamentos.</p>
             {% endif %}
         </div>
 

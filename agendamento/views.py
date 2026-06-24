@@ -2,13 +2,16 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
-from datetime import time, datetime
+from datetime import datetime, timedelta
+
+from django.utils import timezone
 
 from .models import (
     Servico,
     Cliente,
     LocalAtendimento,
     Agendamento,
+    PedidoPendente,
     DiaBloqueado,
     HorarioDisponivel,
     ConfiguracaoSite,
@@ -23,6 +26,10 @@ from .forms import (
     ConfiguracaoSiteForm,
     ServicoDashboardForm,
 )
+
+
+def reserva_ainda_valida():
+    return timezone.now() - timedelta(minutes=15)
 
 
 def home(request):
@@ -45,6 +52,11 @@ def home(request):
         status='confirmado'
     ).order_by('data', 'horario')
 
+    pedidos_pendentes_validos = PedidoPendente.objects.filter(
+        status_pagamento='aguardando_pagamento',
+        criado_em__gte=reserva_ainda_valida()
+    ).order_by('data', 'horario')
+
     horarios_ocupados_por_data = {}
 
     for agendamento in agendamentos_confirmados:
@@ -55,6 +67,16 @@ def home(request):
             horarios_ocupados_por_data[data_formatada] = []
 
         horarios_ocupados_por_data[data_formatada].append(horario_formatado)
+
+    for pedido_pendente in pedidos_pendentes_validos:
+        data_formatada = pedido_pendente.data.strftime('%Y-%m-%d')
+        horario_formatado = pedido_pendente.horario.strftime('%H:%M')
+
+        if data_formatada not in horarios_ocupados_por_data:
+            horarios_ocupados_por_data[data_formatada] = []
+
+        if horario_formatado not in horarios_ocupados_por_data[data_formatada]:
+            horarios_ocupados_por_data[data_formatada].append(horario_formatado)
 
     return render(request, 'index.html', {
         'servicos': servicos,
@@ -130,9 +152,12 @@ def montar_pedido(request):
 
         servico = Servico.objects.get(id=servico_id)
 
+        request.session.pop('pedido_pendente_id', None)
+
         request.session['pedido'] = {
             'servico_id': servico_id,
             'servico_nome': servico.nome,
+            'servico_preco': str(servico.preco),
             'endereco': endereco,
             'latitude': latitude,
             'longitude': longitude,
@@ -155,25 +180,156 @@ def pagamento(request):
     if not pedido:
         return redirect('home')
 
-    return render(request, 'pagamento.html', {'pedido': pedido})
+    pedido_pendente_id = request.session.get('pedido_pendente_id')
+    pedido_pendente = None
+
+    if pedido_pendente_id:
+        pedido_pendente = PedidoPendente.objects.filter(
+            id=pedido_pendente_id,
+            usuario=request.user,
+            status_pagamento='aguardando_pagamento'
+        ).first()
+
+    if not pedido_pendente:
+        servico = Servico.objects.get(id=pedido['servico_id'])
+        horario_escolhido = datetime.strptime(pedido['horario_servico'], '%H:%M').time()
+
+        dia_bloqueado = DiaBloqueado.objects.filter(
+            data=pedido['data_servico']
+        ).exists()
+
+        if dia_bloqueado:
+            del request.session['pedido']
+            messages.error(
+                request,
+                'Essa data foi bloqueada pelo prestador. Escolha outra data para continuar.'
+            )
+            return redirect('home')
+
+        horario_ocupado = Agendamento.objects.filter(
+            data=pedido['data_servico'],
+            horario=horario_escolhido,
+            status='confirmado'
+        ).exists()
+
+        if horario_ocupado:
+            del request.session['pedido']
+            messages.error(
+                request,
+                'Esse horário acabou de ficar indisponível. Escolha outro horário para continuar.'
+            )
+            return redirect('home')
+
+        pedido_pendente_ocupando = PedidoPendente.objects.filter(
+            data=pedido['data_servico'],
+            horario=horario_escolhido,
+            status_pagamento='aguardando_pagamento',
+            criado_em__gte=reserva_ainda_valida()
+        ).exists()
+
+        if pedido_pendente_ocupando:
+            del request.session['pedido']
+            messages.error(
+                request,
+                'Esse horário acabou de ficar temporariamente reservado. Escolha outro horário para continuar.'
+            )
+            return redirect('home')
+
+        horario_ativo = HorarioDisponivel.objects.filter(
+            horario=horario_escolhido,
+            ativo=True
+        ).exists()
+
+        if not horario_ativo:
+            del request.session['pedido']
+            messages.error(
+                request,
+                'Esse horário não está mais disponível. Escolha outro horário para continuar.'
+            )
+            return redirect('home')
+
+        cliente, criado = Cliente.objects.get_or_create(
+            email=request.user.email,
+            defaults={
+                'nome': request.user.username,
+                'telefone': ''
+            }
+        )
+
+        local = LocalAtendimento.objects.create(
+            endereco=pedido['endereco'],
+            bairro='Não informado',
+            cidade='Rio de Janeiro',
+            referencia=f"Latitude: {pedido['latitude']} | Longitude: {pedido['longitude']}"
+        )
+
+        pedido_pendente = PedidoPendente.objects.create(
+            usuario=request.user,
+            cliente=cliente,
+            servico=servico,
+            local=local,
+            data=pedido['data_servico'],
+            horario=horario_escolhido,
+            valor=servico.preco,
+            status_pagamento='aguardando_pagamento'
+        )
+
+        request.session['pedido_pendente_id'] = pedido_pendente.id
+
+    return render(request, 'pagamento.html', {
+        'pedido': pedido,
+        'pedido_pendente': pedido_pendente,
+    })
 
 
 @login_required
 def confirmar_pedido(request):
-    pedido = request.session.get('pedido')
+    if request.method != 'POST':
+        return redirect('pagamento')
 
-    if not pedido:
+    pedido = request.session.get('pedido')
+    pedido_pendente_id = request.session.get('pedido_pendente_id')
+
+    if not pedido or not pedido_pendente_id:
         return redirect('home')
 
-    servico = Servico.objects.get(id=pedido['servico_id'])
-    horario_escolhido = datetime.strptime(pedido['horario_servico'], '%H:%M').time()
+    pedido_pendente = PedidoPendente.objects.filter(
+        id=pedido_pendente_id,
+        usuario=request.user,
+        status_pagamento='aguardando_pagamento'
+    ).first()
+
+    if not pedido_pendente:
+        messages.error(
+            request,
+            'Não foi possível encontrar um pagamento pendente para este pedido.'
+        )
+        return redirect('home')
+
+    if pedido_pendente.criado_em < reserva_ainda_valida():
+        pedido_pendente.status_pagamento = 'expirado'
+        pedido_pendente.save()
+
+        request.session.pop('pedido', None)
+        request.session.pop('pedido_pendente_id', None)
+
+        messages.error(
+            request,
+            'O tempo de reserva desse horário expirou. Escolha outro horário para continuar.'
+        )
+        return redirect('home')
 
     dia_bloqueado = DiaBloqueado.objects.filter(
-        data=pedido['data_servico']
+        data=pedido_pendente.data
     ).exists()
 
     if dia_bloqueado:
-        del request.session['pedido']
+        pedido_pendente.status_pagamento = 'recusado'
+        pedido_pendente.save()
+
+        request.session.pop('pedido', None)
+        request.session.pop('pedido_pendente_id', None)
+
         messages.error(
             request,
             'Essa data foi bloqueada pelo prestador. Escolha outra data para continuar.'
@@ -181,89 +337,95 @@ def confirmar_pedido(request):
         return redirect('home')
 
     horario_ocupado = Agendamento.objects.filter(
-        data=pedido['data_servico'],
-        horario=horario_escolhido,
+        data=pedido_pendente.data,
+        horario=pedido_pendente.horario,
         status='confirmado'
     ).exists()
 
     if horario_ocupado:
-        del request.session['pedido']
+        pedido_pendente.status_pagamento = 'recusado'
+        pedido_pendente.save()
+
+        request.session.pop('pedido', None)
+        request.session.pop('pedido_pendente_id', None)
+
         messages.error(
             request,
             'Esse horário acabou de ficar indisponível. Escolha outro horário para continuar.'
         )
         return redirect('home')
 
-    horario_ativo = HorarioDisponivel.objects.filter(
-        horario=horario_escolhido,
-        ativo=True
-    ).exists()
-
-    if not horario_ativo:
-        del request.session['pedido']
-        messages.error(
-            request,
-            'Esse horário não está mais disponível. Escolha outro horário para continuar.'
-        )
-        return redirect('home')
-
-    cliente, criado = Cliente.objects.get_or_create(
-        email=request.user.email,
-        defaults={
-            'nome': request.user.username,
-            'telefone': ''
-        }
-    )
-
-    local = LocalAtendimento.objects.create(
-        endereco=pedido['endereco'],
-        bairro='Não informado',
-        cidade='Rio de Janeiro',
-        referencia=f"Latitude: {pedido['latitude']} | Longitude: {pedido['longitude']}"
-    )
+    pedido_pendente.status_pagamento = 'aprovado'
+    pedido_pendente.pagamento_id = f'SIMULADO-{pedido_pendente.id}'
+    pedido_pendente.save()
 
     Agendamento.objects.create(
         usuario=request.user,
-        cliente=cliente,
-        servico=servico,
-        local=local,
-        data=pedido['data_servico'],
-        horario=horario_escolhido,
+        cliente=pedido_pendente.cliente,
+        servico=pedido_pendente.servico,
+        local=pedido_pendente.local,
+        data=pedido_pendente.data,
+        horario=pedido_pendente.horario,
         status='confirmado',
-        observacoes='Pedido criado pela página inicial.'
+        observacoes='Pedido criado após pagamento simulado aprovado.'
     )
 
-    del request.session['pedido']
+    request.session.pop('pedido', None)
+    request.session.pop('pedido_pendente_id', None)
 
     messages.success(
         request,
-        'Pedido confirmado com sucesso.'
+        'Pagamento aprovado. Pedido confirmado com sucesso.'
     )
 
     return redirect('meus_agendamentos')
 
 
 @login_required
-def meus_agendamentos(request):
-    agendamentos_pendentes = Agendamento.objects.filter(
-        usuario=request.user,
-        status='pendente'
+def pagamento_recusado(request):
+    if request.method != 'POST':
+        return redirect('pagamento')
+
+    pedido_pendente_id = request.session.get('pedido_pendente_id')
+
+    if pedido_pendente_id:
+        pedido_pendente = PedidoPendente.objects.filter(
+            id=pedido_pendente_id,
+            usuario=request.user,
+            status_pagamento='aguardando_pagamento'
+        ).first()
+
+        if pedido_pendente:
+            pedido_pendente.status_pagamento = 'recusado'
+            pedido_pendente.pagamento_id = f'SIMULADO-RECUSADO-{pedido_pendente.id}'
+            pedido_pendente.save()
+
+    request.session.pop('pedido', None)
+    request.session.pop('pedido_pendente_id', None)
+
+    messages.error(
+        request,
+        'Pagamento recusado. O pedido não foi lançado no sistema.'
     )
 
+    return redirect('home')
+
+
+@login_required
+def meus_agendamentos(request):
     agendamentos_confirmados = Agendamento.objects.filter(
         usuario=request.user,
         status='confirmado'
-    )
+    ).order_by('data', 'horario')
 
-    agendamentos_concluidos = Agendamento.objects.filter(
+    agendamentos_historico = Agendamento.objects.filter(
         usuario=request.user,
-        status='concluido'
-    )
+        status__in=['concluido', 'cancelado']
+    ).order_by('-data', '-horario')
 
     return render(request, 'meus_agendamentos.html', {
-        'agendamentos_pendentes': agendamentos_pendentes,
         'agendamentos_confirmados': agendamentos_confirmados,
-        'agendamentos_concluidos': agendamentos_concluidos,
+        'agendamentos_historico': agendamentos_historico,
     })
 
 

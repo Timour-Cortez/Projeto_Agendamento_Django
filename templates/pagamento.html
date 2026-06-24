@@ -6,29 +6,43 @@ Pagamento - {{ configuracao_site.nome_site }}
 {% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/login.css' %}?v=17">
+<link rel="stylesheet" href="{% static 'css/login.css' %}?v=18">
 {% endblock %}
 
 {% block content %}
 
 <div class="container-login">
     <section class="caixa-login caixa-pagamento">
-        <h1>Resumo do pedido</h1>
-        <p>Confira as informações antes de confirmar o agendamento.</p>
+        <h1>Pagamento</h1>
+        <p>Confira as informações antes de simular a aprovação do pagamento.</p>
 
         <div class="resumo-pedido">
             <p><strong>Usuário:</strong> {{ user.username }}</p>
             <p><strong>Serviço escolhido:</strong> {{ pedido.servico_nome }}</p>
+            <p><strong>Valor:</strong> R$ {{ pedido.servico_preco }}</p>
             <p><strong>Endereço:</strong> {{ pedido.endereco }}</p>
             <p><strong>Data escolhida:</strong> {{ pedido.data_servico }}</p>
             <p><strong>Horário escolhido:</strong> {{ pedido.horario_servico }}</p>
+
+            {% if pedido_pendente %}
+                <p><strong>Status do pagamento:</strong> {{ pedido_pendente.get_status_pagamento_display }}</p>
+                <p><strong>Reserva:</strong> este horário fica reservado temporariamente enquanto o pagamento é processado.</p>
+            {% endif %}
         </div>
 
         <form method="POST" action="/confirmar-pedido/">
             {% csrf_token %}
 
             <button type="submit">
-                Confirmar pedido
+                Simular pagamento aprovado
+            </button>
+        </form>
+
+        <form method="POST" action="/pagamento/recusado/">
+            {% csrf_token %}
+
+            <button type="submit" class="botao-cancelar">
+                Simular pagamento recusado
             </button>
         </form>
 

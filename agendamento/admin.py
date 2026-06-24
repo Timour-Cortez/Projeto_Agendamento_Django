@@ -6,6 +6,7 @@ from .models import (
     Cliente,
     LocalAtendimento,
     Agendamento,
+    PedidoPendente,
     DiaBloqueado,
     HorarioDisponivel,
 )
@@ -16,5 +17,6 @@ admin.site.register(Cliente)
 admin.site.register(Servico)
 admin.site.register(LocalAtendimento)
 admin.site.register(Agendamento)
+admin.site.register(PedidoPendente)
 admin.site.register(DiaBloqueado)
 admin.site.register(HorarioDisponivel)
