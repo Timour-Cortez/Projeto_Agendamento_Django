@@ -7,6 +7,17 @@ class ConfiguracaoSite(models.Model):
         ('verde_institucional', 'Verde institucional'),
         ('azul_profissional', 'Azul profissional'),
         ('areia_minimalista', 'Areia minimalista'),
+
+        ('preto_premium', 'Preto premium'),
+        ('grafite_tecnologico', 'Grafite tecnológico'),
+        ('azul_marinho_executivo', 'Azul marinho executivo'),
+        ('vermelho_energia', 'Vermelho energia'),
+        ('laranja_criativo', 'Laranja criativo'),
+        ('roxo_moderno', 'Roxo moderno'),
+        ('rosa_elegante', 'Rosa elegante'),
+        ('verde_saude', 'Verde saúde'),
+        ('azul_claro_leve', 'Azul claro leve'),
+        ('marrom_artesanal', 'Marrom artesanal'),
     ]
 
     nome_site = models.CharField(
@@ -37,8 +48,18 @@ class ConfiguracaoSite(models.Model):
             'verde_institucional': '#6b7b4b',
             'azul_profissional': '#2f5f7f',
             'areia_minimalista': '#9c7b4f',
-        }
 
+            'preto_premium': '#1f1f1f',
+            'grafite_tecnologico': '#2b2f36',
+            'azul_marinho_executivo': '#1f3a5f',
+            'vermelho_energia': '#9b2f2f',
+            'laranja_criativo': '#c76b2c',
+            'roxo_moderno': '#5b3f8c',
+            'rosa_elegante': '#b05a7a',
+            'verde_saude': '#3f7f5f',
+            'azul_claro_leve': '#3f88a8',
+            'marrom_artesanal': '#7a4f35',
+        }
         return cores.get(self.paleta_cores, '#6b7b4b')
 
     @property
@@ -47,8 +68,18 @@ class ConfiguracaoSite(models.Model):
             'verde_institucional': '#eef3e4',
             'azul_profissional': '#e4eef3',
             'areia_minimalista': '#f3ede4',
-        }
 
+            'preto_premium': '#f2f2f2',
+            'grafite_tecnologico': '#e8eaed',
+            'azul_marinho_executivo': '#e6edf5',
+            'vermelho_energia': '#f5e3e3',
+            'laranja_criativo': '#f7eadf',
+            'roxo_moderno': '#eee7f7',
+            'rosa_elegante': '#f7e6ee',
+            'verde_saude': '#e5f3eb',
+            'azul_claro_leve': '#e4f3f8',
+            'marrom_artesanal': '#f1e7df',
+        }
         return cores.get(self.paleta_cores, '#eef3e4')
 
 
