@@ -1,0 +1,28 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redefinir senha - Agenda Fácil</title>
+    <link rel="stylesheet" href="{% static 'css/esqueci_senha.css' %}">
+</head>
+
+<body>
+    <main class="container-login">
+        <section class="caixa-login">
+            <h1>Criar nova senha</h1>
+            <p>Digite e confirme sua nova senha abaixo.</p>
+
+            <form method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Salvar nova senha</button>
+            </form>
+
+            <a class="voltar" href="/login/">Voltar para o login</a>
+        </section>
+    </main>
+</body>
+</html>
