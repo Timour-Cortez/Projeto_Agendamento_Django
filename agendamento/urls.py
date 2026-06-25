@@ -20,4 +20,6 @@ urlpatterns = [
     path('cliente/pedido/<int:pedido_id>/acompanhar/', views.cliente_acompanhamento, name='cliente_acompanhamento'),
     path('reclame-aqui/', views.reclame_aqui, name='reclame_aqui'),
     path('acompanhamento/', views.cliente_acompanhamento, name='cliente_acompanhamento'),
+    
+    path('assinatura/', views.assinatura, name='assinatura'),
 ]
