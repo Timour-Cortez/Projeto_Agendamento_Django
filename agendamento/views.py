@@ -6,6 +6,8 @@ from datetime import time
 from .models import Servico, Cliente, LocalAtendimento, Agendamento, PlanoAssinatura, Assinatura
 from .forms import AgendamentoForm, CadastroUsuarioForm, LoginUsuarioForm, ReclamacaoForm, EditarAgendamentoForm
 
+from django.shortcuts import get_object_or_404
+
 
 def home(request):
     servicos = Servico.objects.all()
@@ -239,7 +241,7 @@ def assinatura(request):
 
     if request.method == 'POST':
         plano_id = request.POST.get('plano_id')
-        plano = PlanoAssinatura.objects.get(id=plano_id)
+        plano = get_object_or_404(PlanoAssinatura, id=plano_id)
 
         if assinatura_ativa:
             assinatura_ativa.plano = plano
