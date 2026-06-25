@@ -3,7 +3,7 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from datetime import time
 
-from .models import Servico, Cliente, LocalAtendimento, Agendamento
+from .models import Servico, Cliente, LocalAtendimento, Agendamento, PlanoAssinatura, Assinatura
 from .forms import AgendamentoForm, CadastroUsuarioForm, LoginUsuarioForm, ReclamacaoForm, EditarAgendamentoForm
 
 
