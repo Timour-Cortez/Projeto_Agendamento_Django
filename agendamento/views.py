@@ -233,7 +233,7 @@ def assinatura(request):
 
     assinatura_ativa = None
     try:
-        assinatura_ativa = request.user.assinatura
+        assinatura_ativa = Assinatura.objects.filter(usuario=request.user, ativa=True).first()
     except Assinatura.DoesNotExist:
         pass
 
