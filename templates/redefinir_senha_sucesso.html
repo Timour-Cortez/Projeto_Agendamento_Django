@@ -1,0 +1,23 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Senha redefinida - Agenda Fácil</title>
+    <link rel="stylesheet" href="{% static 'css/esqueci_senha.css' %}">
+</head>
+
+<body>
+    <main class="container-login">
+        <section class="caixa-login">
+            <h1>Senha redefinida!</h1>
+            <p>Sua senha foi alterada com sucesso. Agora você pode entrar com a nova senha.</p>
+
+            <a href="/login/">Ir para o login</a>
+            <a class="voltar" href="/">Voltar para a página inicial</a>
+        </section>
+    </main>
+</body>
+</html>
