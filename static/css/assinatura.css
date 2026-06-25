@@ -1,0 +1,158 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f5f5f5;
+    color: #333;
+}
+
+.cabecalho {
+    background: #6b7b4b;
+    padding: 16px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    color: white;
+    font-size: 1.3rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.link-cabecalho {
+    color: white;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 48px 24px;
+}
+
+.topo-pagina {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.topo-pagina h1 {
+    font-size: 1.8rem;
+    color: #2c3e1e;
+    margin-bottom: 8px;
+}
+
+.topo-pagina p {
+    color: #666;
+    font-size: 1rem;
+}
+
+.aviso-plano-ativo {
+    background: #eef3e4;
+    border: 1px solid #6b7b4b;
+    border-radius: 8px;
+    padding: 14px 20px;
+    margin-bottom: 28px;
+    color: #4a5a2e;
+    font-size: 0.95rem;
+    text-align: center;
+}
+
+.grade-planos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-bottom: 36px;
+}
+
+.card-plano {
+    background: white;
+    border-radius: 12px;
+    padding: 36px 28px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    border: 2px solid transparent;
+    position: relative;
+}
+
+.card-ativo {
+    border-color: #6b7b4b;
+}
+
+.badge-ativo {
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #6b7b4b;
+    color: white;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 4px 16px;
+    border-radius: 20px;
+}
+
+.nome-plano {
+    font-size: 1.4rem;
+    color: #2c3e1e;
+    margin-bottom: 12px;
+}
+
+.preco-plano {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #6b7b4b;
+    margin-bottom: 8px;
+}
+
+.preco-plano span {
+    font-size: 1rem;
+    font-weight: 400;
+    color: #888;
+}
+
+.desconto-plano {
+    color: #555;
+    font-size: 0.95rem;
+    margin-bottom: 28px;
+}
+
+.botao-assinar {
+    width: 100%;
+    padding: 12px;
+    background: #6b7b4b;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.botao-assinar:hover {
+    background: #58673c;
+}
+
+.mensagem-vazia {
+    text-align: center;
+    color: #888;
+    grid-column: 1 / -1;
+}
+
+.voltar {
+    display: block;
+    text-align: center;
+    color: #6b7b4b;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.voltar:hover {
+    text-decoration: underline;
+}
