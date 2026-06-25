@@ -1,0 +1,9 @@
+Olá {{ user.username }},
+
+Recebemos uma solicitação para redefinir a senha da sua conta no AgendaFácil.
+
+Clique no link abaixo para criar uma nova senha:
+
+{{ protocol }}://{{ domain }}{% url 'password_reset_confirm' uidb64=uid token=token %}
+
+Se você não solicitou a redefinição de senha, ignore este e-mail.
