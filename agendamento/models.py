@@ -149,12 +149,26 @@ class PedidoPendente(models.Model):
     data = models.DateField()
     horario = models.TimeField()
     valor = models.DecimalField(max_digits=8, decimal_places=2)
+
     status_pagamento = models.CharField(
         max_length=30,
         choices=STATUS_PAGAMENTO_CHOICES,
         default='aguardando_pagamento'
     )
+
+    asaas_customer_id = models.CharField(max_length=100, blank=True)
+    asaas_payment_id = models.CharField(max_length=100, blank=True)
+    asaas_invoice_url = models.URLField(max_length=500, blank=True)
+
     pagamento_id = models.CharField(max_length=100, blank=True)
+
+    agendamento = models.OneToOneField(
+        Agendamento,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
 

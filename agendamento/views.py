@@ -3,8 +3,13 @@ from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from datetime import datetime, timedelta
+import json
 
+import requests
+from django.conf import settings
+from django.http import HttpResponse
 from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import (
     Servico,
@@ -30,6 +35,130 @@ from .forms import (
 
 def reserva_ainda_valida():
     return timezone.now() - timedelta(minutes=15)
+
+
+def asaas_headers():
+    return {
+        'Content-Type': 'application/json',
+        'access_token': settings.ASAAS_API_KEY,
+        'User-Agent': 'AgendaFacil-Django/1.0',
+    }
+
+
+def asaas_post(endpoint, payload):
+    url = f'{settings.ASAAS_BASE_URL.rstrip("/")}/{endpoint.lstrip("/")}'
+
+    resposta = requests.post(
+        url,
+        headers=asaas_headers(),
+        json=payload,
+        timeout=30
+    )
+
+    try:
+        dados = resposta.json()
+    except ValueError:
+        dados = {}
+
+    return resposta.status_code, dados
+
+
+def criar_agendamento_por_pedido_pendente(pedido_pendente, pagamento_id=''):
+    if pedido_pendente.agendamento:
+        return pedido_pendente.agendamento
+
+    agendamento = Agendamento.objects.create(
+        usuario=pedido_pendente.usuario,
+        cliente=pedido_pendente.cliente,
+        servico=pedido_pendente.servico,
+        local=pedido_pendente.local,
+        data=pedido_pendente.data,
+        horario=pedido_pendente.horario,
+        status='confirmado',
+        observacoes='Pedido criado após pagamento aprovado.'
+    )
+
+    pedido_pendente.status_pagamento = 'aprovado'
+
+    if pagamento_id:
+        pedido_pendente.pagamento_id = str(pagamento_id)
+
+    pedido_pendente.agendamento = agendamento
+    pedido_pendente.save()
+
+    return agendamento
+
+
+def criar_cliente_asaas(pedido_pendente):
+    if pedido_pendente.asaas_customer_id:
+        return pedido_pendente.asaas_customer_id, None
+
+    usuario = pedido_pendente.usuario
+    cliente = pedido_pendente.cliente
+
+    payload = {
+        'name': cliente.nome or usuario.username,
+        'cpfCnpj': settings.ASAAS_TEST_CPF_CNPJ,
+        'email': cliente.email or usuario.email,
+        'externalReference': f'usuario-{usuario.id}',
+        'notificationDisabled': True,
+    }
+
+    status_code, dados = asaas_post('/customers', payload)
+
+    if status_code not in [200, 201]:
+        return None, dados
+
+    asaas_customer_id = dados.get('id')
+
+    if not asaas_customer_id:
+        return None, dados
+
+    pedido_pendente.asaas_customer_id = asaas_customer_id
+    pedido_pendente.save()
+
+    return asaas_customer_id, None
+
+
+def criar_cobranca_asaas(request, pedido_pendente):
+    if pedido_pendente.asaas_invoice_url:
+        return pedido_pendente.asaas_invoice_url, None
+
+    asaas_customer_id, erro_cliente = criar_cliente_asaas(pedido_pendente)
+
+    if erro_cliente:
+        return None, erro_cliente
+
+    descricao = (
+        f'Agendamento - {pedido_pendente.servico.nome} - '
+        f'{pedido_pendente.data} às {pedido_pendente.horario.strftime("%H:%M")}'
+    )
+
+    payload = {
+        'customer': asaas_customer_id,
+        'billingType': 'UNDEFINED',
+        'value': float(pedido_pendente.valor),
+        'dueDate': timezone.localdate().isoformat(),
+        'description': descricao,
+        'externalReference': str(pedido_pendente.id),
+    }
+
+    status_code, dados = asaas_post('/payments', payload)
+
+    if status_code not in [200, 201]:
+        return None, dados
+
+    asaas_payment_id = dados.get('id')
+    invoice_url = dados.get('invoiceUrl')
+
+    if not invoice_url:
+        return None, dados
+
+    pedido_pendente.asaas_payment_id = asaas_payment_id or ''
+    pedido_pendente.asaas_invoice_url = invoice_url
+    pedido_pendente.save()
+
+    return invoice_url, None
 
 
 def home(request):
@@ -283,6 +412,65 @@ def pagamento(request):
 
 
 @login_required
+def iniciar_pagamento_asaas(request):
+    if request.method != 'POST':
+        return redirect('pagamento')
+
+    if not settings.ASAAS_API_KEY:
+        messages.error(
+            request,
+            'Chave API do Asaas não configurada no ambiente.'
+        )
+        return redirect('pagamento')
+
+    pedido_pendente_id = request.session.get('pedido_pendente_id')
+
+    if not pedido_pendente_id:
+        messages.error(
+            request,
+            'Não foi possível encontrar o pedido pendente para pagamento.'
+        )
+        return redirect('home')
+
+    pedido_pendente = PedidoPendente.objects.filter(
+        id=pedido_pendente_id,
+        usuario=request.user,
+        status_pagamento='aguardando_pagamento'
+    ).first()
+
+    if not pedido_pendente:
+        messages.error(
+            request,
+            'Esse pedido não está mais aguardando pagamento.'
+        )
+        return redirect('home')
+
+    if pedido_pendente.criado_em < reserva_ainda_valida():
+        pedido_pendente.status_pagamento = 'expirado'
+        pedido_pendente.save()
+
+        request.session.pop('pedido', None)
+        request.session.pop('pedido_pendente_id', None)
+
+        messages.error(
+            request,
+            'O tempo de reserva desse horário expirou. Escolha outro horário para continuar.'
+        )
+        return redirect('home')
+
+    invoice_url, erro = criar_cobranca_asaas(request, pedido_pendente)
+
+    if erro:
+        messages.error(
+            request,
+            f'Não foi possível criar a cobrança no Asaas: {erro}'
+        )
+        return redirect('pagamento')
+
+    return redirect(invoice_url)
+
+
+@login_required
 def confirmar_pedido(request):
     if request.method != 'POST':
         return redirect('pagamento')
@@ -355,19 +543,9 @@ def confirmar_pedido(request):
         )
         return redirect('home')
 
-    pedido_pendente.status_pagamento = 'aprovado'
-    pedido_pendente.pagamento_id = f'SIMULADO-{pedido_pendente.id}'
-    pedido_pendente.save()
-
-    Agendamento.objects.create(
-        usuario=request.user,
-        cliente=pedido_pendente.cliente,
-        servico=pedido_pendente.servico,
-        local=pedido_pendente.local,
-        data=pedido_pendente.data,
-        horario=pedido_pendente.horario,
-        status='confirmado',
-        observacoes='Pedido criado após pagamento simulado aprovado.'
+    criar_agendamento_por_pedido_pendente(
+        pedido_pendente,
+        pagamento_id=f'SIMULADO-{pedido_pendente.id}'
     )
 
     request.session.pop('pedido', None)
@@ -409,6 +587,73 @@ def pagamento_recusado(request):
     )
 
     return redirect('home')
+
+
+@login_required
+def retorno_pagamento_sucesso(request):
+    messages.info(
+        request,
+        'O Asaas retornou o pagamento como finalizado. O pedido será confirmado pelo webhook quando a aprovação for recebida.'
+    )
+    return redirect('meus_agendamentos')
+
+
+@login_required
+def retorno_pagamento_falha(request):
+    messages.error(
+        request,
+        'O pagamento não foi aprovado pelo Asaas. O pedido não foi confirmado.'
+    )
+    return redirect('home')
+
+
+@csrf_exempt
+def webhook_asaas(request):
+    if request.method != 'POST':
+        return HttpResponse(status=200)
+
+    try:
+        dados = json.loads(request.body.decode('utf-8')) if request.body else {}
+    except json.JSONDecodeError:
+        dados = {}
+
+    evento = dados.get('event')
+    pagamento = dados.get('payment', {})
+
+    asaas_payment_id = pagamento.get('id')
+    external_reference = pagamento.get('externalReference')
+
+    if not external_reference and asaas_payment_id:
+        pedido_pendente = PedidoPendente.objects.filter(
+            asaas_payment_id=asaas_payment_id
+        ).first()
+    else:
+        pedido_pendente = PedidoPendente.objects.filter(
+            id=external_reference
+        ).first()
+
+    if not pedido_pendente:
+        return HttpResponse(status=200)
+
+    if asaas_payment_id:
+        pedido_pendente.asaas_payment_id = asaas_payment_id
+
+    if evento in ['PAYMENT_RECEIVED', 'PAYMENT_CONFIRMED']:
+        criar_agendamento_por_pedido_pendente(
+            pedido_pendente,
+            pagamento_id=asaas_payment_id or ''
+        )
+
+    elif evento in ['PAYMENT_DELETED', 'PAYMENT_REFUNDED', 'PAYMENT_CHARGEBACK_REQUESTED']:
+        if pedido_pendente.status_pagamento != 'aprovado':
+            pedido_pendente.status_pagamento = 'recusado'
+            pedido_pendente.pagamento_id = asaas_payment_id or ''
+            pedido_pendente.save()
+
+    else:
+        pedido_pendente.save()
+
+    return HttpResponse(status=200)
 
 
 @login_required

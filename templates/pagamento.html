@@ -6,7 +6,7 @@ Pagamento - {{ configuracao_site.nome_site }}
 {% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/login.css' %}?v=18">
+<link rel="stylesheet" href="{% static 'css/login.css' %}?v=20">
 {% endblock %}
 
 {% block content %}
@@ -14,7 +14,7 @@ Pagamento - {{ configuracao_site.nome_site }}
 <div class="container-login">
     <section class="caixa-login caixa-pagamento">
         <h1>Pagamento</h1>
-        <p>Confira as informações antes de simular a aprovação do pagamento.</p>
+        <p>Confira as informações antes de seguir para o pagamento.</p>
 
         <div class="resumo-pedido">
             <p><strong>Usuário:</strong> {{ user.username }}</p>
@@ -29,6 +29,18 @@ Pagamento - {{ configuracao_site.nome_site }}
                 <p><strong>Reserva:</strong> este horário fica reservado temporariamente enquanto o pagamento é processado.</p>
             {% endif %}
         </div>
+
+        <form method="POST" action="{% url 'iniciar_pagamento_asaas' %}">
+            {% csrf_token %}
+
+            <button type="submit">
+                Pagar com Asaas
+            </button>
+        </form>
+
+        <hr>
+
+        <p><strong>Teste local:</strong> use estes botões enquanto o webhook real ainda não estiver configurado.</p>
 
         <form method="POST" action="/confirmar-pedido/">
             {% csrf_token %}

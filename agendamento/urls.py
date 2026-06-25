@@ -12,6 +12,11 @@ urlpatterns = [
 
     path('confirmar-pedido/', views.confirmar_pedido, name='confirmar_pedido'),
     path('pagamento/recusado/', views.pagamento_recusado, name='pagamento_recusado'),
+    path('pagamento/asaas/', views.iniciar_pagamento_asaas, name='iniciar_pagamento_asaas'),
+
+    path('pagamento/retorno/sucesso/', views.retorno_pagamento_sucesso, name='retorno_pagamento_sucesso'),
+    path('pagamento/retorno/falha/', views.retorno_pagamento_falha, name='retorno_pagamento_falha'),
+    path('webhook/asaas/', views.webhook_asaas, name='webhook_asaas'),
 
     path('meus-agendamentos/', views.meus_agendamentos, name='meus_agendamentos'),
 
