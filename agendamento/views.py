@@ -226,3 +226,35 @@ def cancelar_agendamento(request, agendamento_id):
     return render(request, 'cancelar_agendamento.html', {
         'agendamento': agendamento
     })
+
+@login_required
+def assinatura(request):
+    planos = PlanoAssinatura.objects.all()
+
+    assinatura_ativa = None
+    try:
+        assinatura_ativa = request.user.assinatura
+    except Assinatura.DoesNotExist:
+        pass
+
+    if request.method == 'POST':
+        plano_id = request.POST.get('plano_id')
+        plano = PlanoAssinatura.objects.get(id=plano_id)
+
+        if assinatura_ativa:
+            assinatura_ativa.plano = plano
+            assinatura_ativa.ativa = True
+            assinatura_ativa.save()
+        else:
+            Assinatura.objects.create(
+                usuario=request.user,
+                plano=plano,
+                ativa=True
+            )
+
+        return redirect('assinatura')
+
+    return render(request, 'assinatura.html', {
+        'planos': planos,
+        'assinatura_ativa': assinatura_ativa,
+    })
