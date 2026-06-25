@@ -11,8 +11,14 @@ DEBUG = True
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
+    'fester-corned-unveiled.ngrok-free.dev',
+    '.ngrok-free.dev',
+    '.ngrok-free.app',
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://fester-corned-unveiled.ngrok-free.dev',
+]
 
 INSTALLED_APPS = [
     'agendamento',
