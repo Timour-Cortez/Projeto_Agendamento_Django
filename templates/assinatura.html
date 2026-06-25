@@ -1,0 +1,69 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assinatura - Agenda Fácil</title>
+    <link rel="stylesheet" href="{% static 'css/assinatura.css' %}">
+</head>
+
+<body>
+
+    <header class="cabecalho">
+        <a href="/" class="logo">AgendaFácil</a>
+        <a href="/meus-agendamentos/" class="link-cabecalho">Meus agendamentos</a>
+    </header>
+
+    <main class="container">
+
+        <div class="topo-pagina">
+            <h1>Planos de Assinatura</h1>
+            <p>Assine um plano e tenha desconto em todos os seus agendamentos.</p>
+        </div>
+
+        {% if assinatura_ativa %}
+        <div class="aviso-plano-ativo">
+            Você já possui o plano <strong>{{ assinatura_ativa.plano }}</strong> ativo desde {{ assinatura_ativa.data_inicio }}.
+        </div>
+        {% endif %}
+
+        <div class="grade-planos">
+            {% for plano in planos %}
+            <div class="card-plano {% if assinatura_ativa.plano == plano %}card-ativo{% endif %}">
+
+                {% if assinatura_ativa.plano == plano %}
+                <span class="badge-ativo">Plano atual</span>
+                {% endif %}
+
+                <h2 class="nome-plano">{{ plano.get_nome_display }}</h2>
+                <p class="preco-plano">R$ {{ plano.preco_mensal }}<span>/mês</span></p>
+                <p class="desconto-plano">{{ plano.percentual_desconto }}% de desconto em todos os serviços</p>
+
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="plano_id" value="{{ plano.id }}">
+                    <button type="submit" class="botao-assinar">
+                        {% if assinatura_ativa.plano == plano %}
+                            Plano ativo
+                        {% elif assinatura_ativa %}
+                            Trocar para este plano
+                        {% else %}
+                            Assinar
+                        {% endif %}
+                    </button>
+                </form>
+
+            </div>
+            {% empty %}
+            <p class="mensagem-vazia">Nenhum plano disponível no momento.</p>
+            {% endfor %}
+        </div>
+
+        <a class="voltar" href="/">Voltar para a página inicial</a>
+
+    </main>
+
+</body>
+</html>
