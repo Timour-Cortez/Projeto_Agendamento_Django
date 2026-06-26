@@ -50,25 +50,17 @@ body {
 }
 
 /* ==========================================
-   ESTILIZAÇÃO DOS CAMPOS GERADOS PELO DJANGO (form.as_p)
+   ESTILIZAÇÃO DO NOVO CAMPO DE INPUT (MANUAL)
    ========================================== */
-/* O Django joga o label e o input dentro de tags <p> */
-.caixa-login form p {
-    text-align: left; /* Alinha os campos para a esquerda */
-    margin-bottom: 1.25rem;
+/* Substituiu o antigo 'form p' do Django para dar o espaçamento correto */
+.grupo-input {
+    width: 100%;
+    text-align: left; /* Alinha o campo para a esquerda */
+    margin-bottom: 1.5rem; /* Espaço perfeito entre a caixinha de texto e o botão */
 }
 
-.caixa-login form label {
-    display: block;
-    font-weight: 600;
-    font-size: 0.85rem;
-    color: #374151;
-    margin-bottom: 0.4rem;
-}
-
-/* Estiliza o input de e-mail injetado pelo Django */
-.caixa-login form input[type="email"],
-.caixa-login form input[type="text"] {
+/* Estiliza o input de e-mail que adicionamos no HTML */
+.grupo-input input[type="email"] {
     width: 100%;
     padding: 0.75rem 1rem;
     border: 1px solid #d1d5db;
@@ -79,15 +71,15 @@ body {
     transition: all 0.2s ease;
 }
 
-/* Efeito de foco ao clicar no campo */
-.caixa-login form input:focus {
+/* Efeito de foco profissional ao clicar no campo para digitar */
+.grupo-input input[type="email"]:focus {
     outline: none;
     border-color: #3b82f6; /* Azul focado em segurança */
     background-color: #ffffff;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
-/* Erros de validação do formulário */
+/* Erros de validação do formulário (mantido caso use no futuro) */
 .caixa-login .errorlist {
     list-style: none;
     color: #dc2626;

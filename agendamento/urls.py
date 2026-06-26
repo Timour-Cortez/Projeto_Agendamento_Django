@@ -21,4 +21,5 @@ urlpatterns = [
     path('reclame-aqui/', views.reclame_aqui, name='reclame_aqui'),
     
     path('assinatura/', views.assinatura, name='assinatura'),
+    path('esqueci-senha/', views.esqueci_senha, name='esqueci_senha'),
 ]

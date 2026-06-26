@@ -260,3 +260,5 @@ def assinatura(request):
         'planos': planos,
         'assinatura_ativa': assinatura_ativa,
     })
+def esqueci_senha(request):
+    return render(request, 'esqueci_senha.html')
