@@ -1,0 +1,136 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Prestador - Agenda Fácil</title>
+    <link rel="stylesheet" href="{% static 'css/cadastro_prestador.css' %}">
+</head>
+<body>
+
+    <main class="container-cadastro">
+        <section class="caixa-cadastro">
+            <h1>Seja um Prestador</h1>
+            <p class="subtitulo">Preencha seus dados para começar a atender</p>
+
+            <div class="barra-progresso">
+                <div class="passo ativo" id="progresso-1">1</div>
+                <div class="linha-conectora"></div>
+                <div class="passo" id="progresso-2">2</div>
+            </div>
+
+            <form method="POST" enctype="multipart/form-data" id="form-cadastro">
+                {% csrf_token %}
+
+                <div class="etapa-formulario" id="etapa-1">
+                    <h2>Etapa 1: Dados Pessoais</h2>
+
+                    <div class="grupo-input">
+                        <label for="nome">Nome Completo</label>
+                        <input type="text" id="nome" name="nome" placeholder="Digite seu nome completo" required>
+                    </div>
+
+                    <div class="grupo-input">
+                        <label for="email">E-mail Profissional</label>
+                        <input type="email" id="email" name="email" placeholder="exemplo@email.com" required>
+                    </div>
+
+                    <div class="grupo-input">
+                        <label for="telefone">Telefone / WhatsApp</label>
+                        <input type="tel" id="telefone" name="telefone" placeholder="(00) 99999-9999" required>
+                    </div>
+
+                    <div class="grupo-inputs-lado">
+                        <div class="grupo-input">
+                            <label for="senha">Criar Senha</label>
+                            <input type="password" id="senha" name="senha" placeholder="No mínimo 6 dígitos" required>
+                        </div>
+                        <div class="grupo-input">
+                            <label for="confirmar_senha">Confirmar Senha</label>
+                            <input type="password" id="confirmar_senha" name="confirmar_senha" placeholder="Repita a senha" required>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn-proximo" onclick="irParaEtapa(2)">Próxima Etapa ➡️</button>
+                </div>
+
+                <div class="etapa-formulario escondido" id="etapa-2">
+                    <h2>Etapa 2: Perfil Profissional</h2>
+
+                    <div class="grupo-inputs-lado">
+                        <div class="grupo-input">
+                            <label for="tipo_documento">Tipo de Registro</label>
+                            <select id="tipo_documento" name="tipo_documento">
+                                <option value="cpf">Pessoa Física (CPF)</option>
+                                <option value="cnpj">Empresa / MEI (CNPJ)</option>
+                            </select>
+                        </div>
+                        <div class="grupo-input">
+                            <label for="documento">Número do Registro</label>
+                            <input type="text" id="documento" name="documento" placeholder="000.000.000-00" required>
+                        </div>
+                    </div>
+
+                    <div class="grupo-input">
+                        <label for="especialidade">Sua Especialidade</label>
+                        <select id="especialidade" name="especialidade" required>
+                            <option value="">Selecione sua profissão...</option>
+                            <option value="eletricista">Eletricista</option>
+                            <option value="encanador">Encanador</option>
+                            <option value="pintor">Pintor</option>
+                            <option value="diarista">Diarista / Faxina</option>
+                            <option value="mecanico">Mecânico</option>
+                            <option value="outro">Outros Serviços</option>
+                        </select>
+                    </div>
+
+                    <div class="grupo-input">
+                        <label for="bio">Descrição dos seus Serviços (Biografia)</label>
+                        <textarea id="bio" name="bio" rows="3" placeholder="Conte um pouco sobre sua experiência e especialidades..."></textarea>
+                    </div>
+
+                    <div class="grupo-inputs-lado">
+                        <div class="grupo-input">
+                            <label for="foto_perfil">Foto de Perfil (Rosto)</label>
+                            <input type="file" id="foto_perfil" name="foto_perfil" accept="image/*" required>
+                        </div>
+                        <div class="grupo-input">
+                            <label for="foto_doc">Foto do Documento (RG/CNH)</label>
+                            <input type="file" id="foto_doc" name="foto_doc" accept="image/*" required>
+                        </div>
+                    </div>
+
+                    <div class="botoes-container">
+                        <button type="button" class="btn-voltar" onclick="irParaEtapa(1)">⬅️ Voltar</button>
+                        <button type="submit" class="btn-enviar">Finalizar Cadastro 🎉</button>
+                    </div>
+                </div>
+
+            </form>
+
+            <a class="link-login" href="/login-prestador/">Já tem conta? Faça login aqui</a>
+        </section>
+    </main>
+
+    <script>
+        function irParaEtapa(numeroEtapa) {
+            const etapa1 = document.getElementById('etapa-1');
+            const etapa2 = document.getElementById('etapa-2');
+            const progresso2 = document.getElementById('progresso-2');
+
+            if (numeroEtapa === 2) {
+                etapa1.classList.add('escondido');
+                etapa2.classList.remove('escondido');
+                progresso2.classList.add('ativo');
+            } else {
+                etapa2.classList.add('escondido');
+                etapa1.classList.remove('escondido');
+                progresso2.classList.remove('ativo');
+            }
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,257 @@
+/* ==========================================
+   RESET E CONFIGURAÇÕES GERAIS
+   ========================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #0f1117; /* Fundo escuro idêntico ao seu padrão */
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+
+/* Container de Cadastro */
+.container-cadastro {
+    width: 100%;
+    max-width: 520px; /* Um pouco mais largo para os campos caberem lado a lado */
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+.caixa-cadastro {
+    background-color: #ffffff;
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================
+   ELEMENTOS DE TEXTO
+   ========================================== */
+.caixa-cadastro h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #111827;
+    text-align: center;
+    margin-bottom: 0.3rem;
+}
+
+.subtitulo {
+    font-size: 0.9rem;
+    color: #6b7280;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.etapa-formulario h2 {
+    font-size: 1.15rem;
+    color: #374151;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    border-left: 4px solid #10b981; /* Detalhe em verde igual ao seu agendamento */
+    padding-left: 8px;
+}
+
+/* ==========================================
+   BARRA DE PROGRESSO VISUAL (1 e 2)
+   ========================================== */
+.barra-progresso {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2.5rem;
+}
+
+.passo {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #e5e7eb;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    border: 2px solid #e5e7eb;
+}
+
+.passo.ativo {
+    background-color: #10b981; /* O verde profissional que você já usa */
+    color: #ffffff;
+    border-color: #10b981;
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
+}
+
+.linha-conectora {
+    height: 3px;
+    width: 60px;
+    background-color: #e5e7eb;
+    margin: 0 8px;
+}
+
+/* ==========================================
+   ESTILIZAÇÃO DOS CAMPOS DE ENTRADA
+   ========================================== */
+.grupo-input {
+    width: 100%;
+    margin-bottom: 1.25rem;
+    text-align: left;
+}
+
+.grupo-input label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+/* Inputs, Selects e Textarea */
+.grupo-input input[type="text"],
+.grupo-input input[type="email"],
+.grupo-input input[type="password"],
+.grupo-input input[type="tel"],
+.grupo-input select,
+.grupo-input textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: #111827;
+    background-color: #f9fafb;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+
+.grupo-input textarea {
+    resize: none;
+}
+
+/* Foco nos campos ao clicar */
+.grupo-input input:focus,
+.grupo-input select:focus,
+.grupo-input textarea:focus {
+    outline: none;
+    border-color: #10b981; /* Foco em verde */
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+}
+
+/* Flexibilidade para colocar campos lado a lado */
+.grupo-inputs-lado {
+    display: flex;
+    gap: 15px;
+    width: 100%;
+}
+
+.grupo-inputs-lado .grupo-input {
+    flex: 1;
+}
+
+/* Input especial para carregar arquivos (FOTOS) */
+.grupo-input input[type="file"] {
+    width: 100%;
+    padding: 0.5rem;
+    background-color: #f3f4f6;
+    border: 1px dashed #cbd5e1;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+/* Botão nativo de escolha do arquivo dentro do input file */
+.grupo-input input[type="file"]::-webkit-file-upload-button {
+    background-color: #374151;
+    color: #ffffff;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-right: 8px;
+    font-weight: 600;
+}
+
+.grupo-input input[type="file"]::-webkit-file-upload-button:hover {
+    background-color: #1f2937;
+}
+
+/* Esconde a Etapa 2 inicialmente */
+.escondido {
+    display: none !important;
+}
+
+/* ==========================================
+   BOTÕES DE AÇÃO E AVANÇO
+   ========================================== */
+button {
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-proximo, .btn-enviar {
+    width: 100%;
+    padding: 0.85rem;
+    background-color: #10b981;
+    color: #ffffff;
+}
+
+.btn-proximo:hover, .btn-enviar:hover {
+    background-color: #059669;
+}
+
+/* Alinhamento dos botões na Etapa 2 */
+.botoes-container {
+    display: flex;
+    gap: 15px;
+    margin-top: 1rem;
+    width: 100%;
+}
+
+.btn-voltar {
+    flex: 1;
+    padding: 0.85rem;
+    background-color: #f3f4f6;
+    color: #4b5563;
+}
+
+.btn-voltar:hover {
+    background-color: #e5e7eb;
+}
+
+.botoes-container .btn-enviar {
+    flex: 2; /* Deixa o botão de finalizar maior */
+}
+
+/* Link de login no rodapé */
+.link-login {
+    display: block;
+    text-align: center;
+    margin-top: 1.75rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.link-login:hover {
+    color: #111827;
+}

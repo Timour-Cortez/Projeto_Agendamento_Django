@@ -262,3 +262,5 @@ def assinatura(request):
     })
 def esqueci_senha(request):
     return render(request, 'esqueci_senha.html')
+def cadastro_prestador(request):
+    return render(request, 'cadastro_prestador.html')
