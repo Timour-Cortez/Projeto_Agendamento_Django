@@ -13,13 +13,18 @@
     <main class="container-login">
         <section class="caixa-login">
             <h1>Criar nova senha</h1>
-            <p>Digite e confirme sua nova senha abaixo.</p>
 
-            <form method="POST">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit">Salvar nova senha</button>
-            </form>
+            {% if validlink %}
+                <p>Digite e confirme sua nova senha abaixo.</p>
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="botao-enviar">Salvar nova senha</button>
+                </form>
+            {% else %}
+                <p>Este link é inválido ou já foi utilizado.</p>
+                <a href="/esqueci-senha/">Solicitar um novo link</a>
+            {% endif %}
 
             <a class="voltar" href="/login/">Voltar para o login</a>
         </section>
