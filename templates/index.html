@@ -37,6 +37,10 @@
             <form method="POST" action="/montar-pedido/" class="form-pedido">
                 {% csrf_token %}
 
+                {% if erro %}
+                <p class="mensagem-erro">{{ erro }}</p>
+                {% endif %}
+
                 <h2>Escolha seu pacote</h2>
 
                 <input type="hidden" name="servico_id" id="servico_id">
