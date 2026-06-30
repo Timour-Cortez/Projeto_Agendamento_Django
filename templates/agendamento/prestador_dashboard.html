@@ -22,9 +22,9 @@
 
   {% for pedido in pedidos %}
   <div style="background:white;border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
-    <strong>{{ pedido.cliente.nome }}</strong> — {{ pedido.pacote }}<br>
-    <span>📍 {{ pedido.endereco }}</span><br>
-    <span>🗓️ {{ pedido.horario_solicitado }}</span>
+    <strong>{{ pedido.cliente.nome }}</strong> — {{ pedido.servico.nome }}<br>
+    <span>📍 {{ pedido.local.endereco }}</span><br>
+    <span>🗓️ {{ pedido.data }} às {{ pedido.horario }}</span>
   </div>
   {% empty %}
   <div style="background:white;border-radius:12px;padding:40px;text-align:center;color:#5a7163;">
