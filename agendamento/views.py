@@ -78,6 +78,13 @@ def montar_pedido(request):
         longitude = request.POST.get('longitude')
         data_servico = request.POST.get('data_servico')
 
+        if not servico_id:
+            servicos = Servico.objects.all()
+            return render(request, 'index.html', {
+                'servicos': servicos,
+                'erro': 'Você esqueceu de escolher um serviço.'
+            })
+
         request.session['pedido'] = {
             'servico_id': servico_id,
             'servico_nome': Servico.objects.get(id=servico_id).nome,
@@ -86,12 +93,10 @@ def montar_pedido(request):
             'longitude': longitude,
             'data_servico': data_servico,
         }
-
         if request.user.is_authenticated:
             return redirect('pagamento')
         else:
             return redirect('login')
-
     return redirect('home')
 
 
