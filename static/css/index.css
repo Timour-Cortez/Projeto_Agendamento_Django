@@ -316,3 +316,14 @@ section {
 .botao-meus-pedidos:hover {
     background-color: #f5f1e8;
 }
+
+.mensagem-erro {
+    color: #c0392b;
+    background: #fdecea;
+    border: 1px solid #c0392b;
+    border-radius: 8px;
+    padding: 12px 20px;
+    text-align: center;
+    margin: 16px auto;
+    max-width: 600px;
+}
