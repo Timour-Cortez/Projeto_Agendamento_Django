@@ -269,4 +269,32 @@ def assinatura(request):
 
     
 def cadastro_prestador(request):
+    if request.method == 'POST':
+        nome = request.POST.get('nome')
+        email = request.POST.get('email')
+        telefone = request.POST.get('telefone')
+        senha = request.POST.get('senha')
+        tipo_documento = request.POST.get('tipo_documento')
+        documento = request.POST.get('documento')
+        especialidade = request.POST.get('especialidade')
+        bio = request.POST.get('bio', '')
+
+        usuario = User.objects.create_user(
+            username=email,
+            email=email,
+            password=senha,
+            first_name=nome
+        )
+
+        Prestador.objects.create(
+            usuario=usuario,
+            telefone=telefone,
+            tipo_documento=tipo_documento,
+            numero_documento=documento,
+            especialidade=especialidade,
+            bio=bio
+        )
+
+        return redirect('login')
+
     return render(request, 'cadastro_prestador.html')
