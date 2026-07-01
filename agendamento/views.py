@@ -129,6 +129,11 @@ def criar_cobranca_asaas(request, pedido_pendente):
     if erro_cliente:
         return None, erro_cliente
 
+    if settings.ASAAS_PUBLIC_URL:
+        base_url = settings.ASAAS_PUBLIC_URL.rstrip('/')
+    else:
+        base_url = request.build_absolute_uri('/').rstrip('/')
+
     descricao = (
         f'Agendamento - {pedido_pendente.servico.nome} - '
         f'{pedido_pendente.data} às {pedido_pendente.horario.strftime("%H:%M")}'
@@ -141,6 +146,10 @@ def criar_cobranca_asaas(request, pedido_pendente):
         'dueDate': timezone.localdate().isoformat(),
         'description': descricao,
         'externalReference': str(pedido_pendente.id),
+        'callback': {
+            'successUrl': f'{base_url}/pagamento/retorno/sucesso/',
+            'autoRedirect': True,
+        },
     }
 
     status_code, dados = asaas_post('/payments', payload)
@@ -593,7 +602,7 @@ def pagamento_recusado(request):
 def retorno_pagamento_sucesso(request):
     messages.info(
         request,
-        'O Asaas retornou o pagamento como finalizado. O pedido será confirmado pelo webhook quando a aprovação for recebida.'
+        'Pagamento finalizado. Estamos conferindo a confirmação do Asaas. Se aprovado, seu agendamento aparecerá abaixo.'
     )
     return redirect('meus_agendamentos')
 
